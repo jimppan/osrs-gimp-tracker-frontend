@@ -35,11 +35,15 @@ export class Camera
 
     setPosition(x, y)
     {
+        x = Math.round(x);
+        y = Math.round(y);
+
         this.position.x = x;
         this.position.y = y;
 
         APP.stage.x = this.position.x;
         APP.stage.y = this.position.y;
+
         this.needsUpdate = true;
     }
 
@@ -61,24 +65,24 @@ export class Camera
 
     getCursorWorldPosition()
     {
-        return this.screenPosToWorldPos(this.getCursorPosition().x, this.getCursorPosition().y);
+        return this.screenToWorldPos(this.getCursorPosition().x, this.getCursorPosition().y);
     }
 
-    screenPosToWorldPos(x, y)
+    screenToWorldPos(x, y)
     {
         const oldScale = this.zoom.x;
         const point = {
             x: x / oldScale - this.position.x / oldScale,
             y: y / oldScale - this.position.y / oldScale
             };
-       //point.y = (point.y - CHUNK_TILE_HEIGHT) * -1;
+        //point.y = (point.y - CHUNK_TILE_HEIGHT) * -1;
         return point;
     }
 
     isWorldPositionInView(x, y)
     {
-        var topLeft = this.screenPosToWorldPos(0, 0);
-        var bottomRight = this.screenPosToWorldPos(window.innerWidth, window.innerHeight);
+        var topLeft = this.screenToWorldPos(0, 0);
+        var bottomRight = this.screenToWorldPos(window.innerWidth, window.innerHeight);
 
         if(x < topLeft.x || x > bottomRight.x)
             return false;
@@ -91,8 +95,8 @@ export class Camera
 
     isXInView(x)
     {
-        var topLeft = this.screenPosToWorldPos(0, 0);
-        var bottomRight = this.screenPosToWorldPos(window.innerWidth, window.innerHeight);
+        var topLeft = this.screenToWorldPos(0, 0);
+        var bottomRight = this.screenToWorldPos(window.innerWidth, window.innerHeight);
 
         if(x < topLeft.x || x > bottomRight.x)
             return false;
@@ -102,8 +106,8 @@ export class Camera
 
     isYInView(y)
     {
-        var topLeft = this.screenPosToWorldPos(0, 0);
-        var bottomRight = this.screenPosToWorldPos(window.innerWidth, window.innerHeight);
+        var topLeft = this.screenToWorldPos(0, 0);
+        var bottomRight = this.screenToWorldPos(window.innerWidth, window.innerHeight);
 
         if(y < topLeft.y || y > bottomRight.y)
             return false;
@@ -115,10 +119,8 @@ export class Camera
     // starting from top left to bottom right
     getChunksInView()
     {
-        var topLeftPos = this.screenPosToWorldPos(0, 0);
+        var topLeftPos = this.screenToWorldPos(0, 0);
         var topLeftChunk = WORLD.getChunkPositionFromWorldPosition(topLeftPos.x, topLeftPos.y);
-        console.log(topLeftChunk);
-        var count = 0;
 
         var xChunkMax = Math.floor(((topLeftChunk.x + window.innerWidth) / getChunkWidth()) / this.zoom.x) + 2;
         var yChunkMax = Math.floor(((topLeftChunk.y + window.innerHeight) / getChunkHeight()) / this.zoom.y) + 2;
@@ -130,7 +132,6 @@ export class Camera
             for(var y = topLeftChunk.y; y < topLeftChunk.y + yChunkMax; y++)
             {
                 chunkPosList.push({x:x, y:y});
-                count++;
             }
         }
         //console.log(count);

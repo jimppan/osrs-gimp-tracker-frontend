@@ -1,3 +1,5 @@
+import { CHUNK_TILE_HEIGHT } from "./world.js";
+
 export class Input
 {
     constructor()
@@ -21,7 +23,7 @@ export class Input
 
     onMouseWheel(deltaY)
     {
-        const scaleBy = 1.2;
+        const scaleBy = 2;
         const oldScale = CAMERA.zoom.x;
         const mousePointTo = {
         x: CAMERA.getCursorPosition().x / oldScale - CAMERA.position.x / oldScale,
@@ -29,6 +31,7 @@ export class Input
         };
 
         const newScale = deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
+        console.log(newScale);
         CAMERA.setZoom(newScale, newScale);
         CAMERA.setPosition(-(mousePointTo.x - CAMERA.getCursorPosition().x / newScale) * newScale, -(mousePointTo.y - CAMERA.getCursorPosition().y / newScale) * newScale);
     }
@@ -58,8 +61,13 @@ export class Input
         else if(e.data.buttons == 2)
         {
             // right click
-            console.log(WORLD.getChunkPositionFromWorldPosition(CAMERA.getCursorWorldPosition().x, CAMERA.getCursorWorldPosition().y));
-            WORLD.clearMap();
+
+            var cursorPos = CAMERA.getCursorPosition();
+            var worldPos = CAMERA.screenToWorldPos(cursorPos.x, cursorPos.y);
+            var worldTile = WORLD.getTilePositionFromWorldPosition(worldPos.x, worldPos.y);
+            
+            console.log(worldTile);
+            console.log(APP.renderer.projection.transform);
         }
     }
 

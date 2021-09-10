@@ -1,15 +1,15 @@
 import {RenderQueue} from './renderqueue.js'
 
 export var MAP_ID = 0;
-export var MAP_ZOOM_LEVEL = 3;
+export var MAP_ZOOM_LEVEL = 2;
 
-export function getChunkWidth() {return Math.pow(2, 6+MAP_ZOOM_LEVEL);} // in pixels, 512 by default zoom LVL 3
-export function getChunkHeight() {return Math.pow(2, 6+MAP_ZOOM_LEVEL);} // in pixels, 512 by default zoom LVL 3
+export function getChunkWidth() {return Math.pow(2, 6+MAP_ZOOM_LEVEL);} // in pixels, 256 by default zoom LVL 2
+export function getChunkHeight() {return Math.pow(2, 6+MAP_ZOOM_LEVEL);} // in pixels, 256 by default zoom LVL 2
 
 export const CHUNK_TILE_WIDTH = Math.pow(2, 6);  // 64 tiles
 export const CHUNK_TILE_HEIGHT = Math.pow(2, 6); // 64 tiles
 
-export const TILE_SIZE = 8.0;
+export const TILE_SIZE = getChunkWidth() / CHUNK_TILE_WIDTH; //
 export const START_TILE = {x:3221, y:3218}; // starting pos for camera (lumbridge)
 
 const MAX_CHUNK_WIDTH = 100;
@@ -159,7 +159,7 @@ export class World
             chunk.init(chunks[j].x, (chunks[j].y - MAX_CHUNK_HEIGHT) *-1);
             this.map.addChunk(chunk);
 
-            var path = BuildChunkTexturePath(mapID, GIMP_TRACKER_CACHE_VERSION, 3, chunks[j].x, chunks[j].y, chunks[j].z);
+            var path = BuildChunkTexturePath(mapID, GIMP_TRACKER_CACHE_VERSION, MAP_ZOOM_LEVEL, chunks[j].x, chunks[j].y, chunks[j].z);
             texturePaths.push(path);
         }
         APP.loader.add(texturePaths);
@@ -182,6 +182,13 @@ export class World
     {
         var newX = Math.floor(x / TILE_SIZE);
         var newY = Math.floor(y / TILE_SIZE);
+
+        // 3246 what we get
+        // 3218 want
+
+        //var chunkCount = Math.floor(y / 64);
+        //var world
+       // console.log(chunkCount);
         
         return {x: newX, y: newY};
     }
@@ -212,7 +219,7 @@ export class World
             if(chunk == null)
                 continue;
 
-            chunk.setSprite(this.map.id, 3, 0);
+            chunk.setSprite(this.map.id, MAP_ZOOM_LEVEL, 0);
             APP.stage.addChild(chunk.sprite);
             chunk.setRendered(true);
         } 
