@@ -6,3 +6,7 @@ var CAMERA = null;
 var INPUT = null;
 
 var RENDERQUEUE = null;
+
+var SOCKET = null;
+
+var PLAYERS = new Map(); // connected players

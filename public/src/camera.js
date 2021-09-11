@@ -1,4 +1,4 @@
-import { getChunkWidth, getChunkHeight, TILE_SIZE, CHUNK_TILE_HEIGHT } from "./world.js";
+import { getChunkWidth, getChunkHeight, TILE_SIZE, CHUNK_TILE_HEIGHT, MAX_CHUNK_HEIGHT } from "./world.js";
 
 export class Camera
 {
@@ -7,7 +7,6 @@ export class Camera
         this.position = {x:0.0, y:0.0};
         this.zoom = {x:1.0, y:1.0};
 
-        this.scaleMode = PIXI.settings.SCALE_MODE.NEAREST;
         APP.ticker.add((delta) => {this.update(delta)})
         this.tickCounter = 0;
         this.needsUpdate = false;
@@ -28,11 +27,6 @@ export class Camera
         }
     }
 
-    setScaleMode(scaleMode)
-    {
-        this.scaleMode = PIXI.settings.SCALE_MODE = scaleMode;
-    }
-
     setPosition(x, y)
     {
         x = Math.round(x);
@@ -41,8 +35,8 @@ export class Camera
         this.position.x = x;
         this.position.y = y;
 
-        APP.stage.x = this.position.x;
-        APP.stage.y = this.position.y;
+        APP.stage.position.x = this.position.x;
+        APP.stage.position.y = this.position.y;
 
         this.needsUpdate = true;
     }
@@ -51,6 +45,20 @@ export class Camera
     {
         this.zoom.x = APP.stage.scale.x = x;
         this.zoom.y = APP.stage.scale.y = y;
+
+        //console.log(this.zoom);
+        
+        /* APP.hudContainer.scale.x = 1 / this.zoom.x;
+        APP.hudContainer.scale.y = 1 / this.zoom.y; */
+
+        for(var [key, value] of PLAYERS)
+        {
+            value.playerText.scale.x = 1 / this.zoom.x;
+            value.playerText.scale.y = 1 / this.zoom.y;
+
+            value.playerText.position.y = WORLD.invertWorldPosY(value.position.y) - ((1 / this.zoom.y) * 20)
+        }
+
         this.needsUpdate = true;
     }
 
@@ -73,9 +81,11 @@ export class Camera
         const oldScale = this.zoom.x;
         const point = {
             x: x / oldScale - this.position.x / oldScale,
-            y: y / oldScale - this.position.y / oldScale
+            y: y / oldScale - this.position.y / oldScale,
             };
-        //point.y = (point.y - CHUNK_TILE_HEIGHT) * -1;
+
+        // voodoo to invert Y coordinate to match runescapes coordinates
+        y = -y + (MAX_CHUNK_HEIGHT * getChunkHeight()) + (CHUNK_TILE_HEIGHT * TILE_SIZE);
         return point;
     }
 

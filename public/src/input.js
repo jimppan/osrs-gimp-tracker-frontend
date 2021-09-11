@@ -55,8 +55,6 @@ export class Input
                 console.log("In view");
             else
                 console.log("Not in view"); */
-
-            WORLD.updateMap();
         }
         else if(e.data.buttons == 2)
         {
@@ -66,8 +64,8 @@ export class Input
             var worldPos = CAMERA.screenToWorldPos(cursorPos.x, cursorPos.y);
             var worldTile = WORLD.getTilePositionFromWorldPosition(worldPos.x, worldPos.y);
             
+            worldTile.y = WORLD.invertTilePosY(worldTile.y);
             console.log(worldTile);
-            console.log(APP.renderer.projection.transform);
         }
     }
 

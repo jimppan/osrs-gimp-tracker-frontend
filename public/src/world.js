@@ -1,4 +1,5 @@
-import {RenderQueue} from './renderqueue.js'
+import { RenderQueue } from './renderqueue.js'
+import { Player } from './player.js'
 
 export var MAP_ID = 0;
 export var MAP_ZOOM_LEVEL = 2;
@@ -12,8 +13,39 @@ export const CHUNK_TILE_HEIGHT = Math.pow(2, 6); // 64 tiles
 export const TILE_SIZE = getChunkWidth() / CHUNK_TILE_WIDTH; //
 export const START_TILE = {x:3221, y:3218}; // starting pos for camera (lumbridge)
 
-const MAX_CHUNK_WIDTH = 100;
-const MAX_CHUNK_HEIGHT = 100;
+export const MAX_CHUNK_WIDTH = 100;
+export const MAX_CHUNK_HEIGHT = 100;
+
+export const LAYERS = 
+{
+    MAP: 0,
+    OBJECT: 1,
+    PLAYER: 2,
+}
+
+export function ConnectPlayer(name, pos)
+{
+    var player = new Player(name, pos);
+    player.init();
+    PLAYERS.set(name, player);
+    return player;
+}
+
+export function GetPlayer(name)
+{
+    return PLAYERS.get(name);
+}
+
+export function DisconnectPlayer(name)
+{
+    var player = PLAYERS.get(name);
+    if(player == null)
+        return;
+
+    APP.objectContainer.removeChild(player.playerGraphic);
+    APP.hudContainer.removeChild(player.playerText);
+    PLAYERS.delete(name);
+}
 
 function BuildChunkTexturePath(mapId, cacheVersion, zoomLevel, x, y, z)
 {
@@ -51,6 +83,8 @@ export class Chunk
 
         // old way of rendering
         //this.sprite.texture = PIXI.Sprite.from(spritePath).texture
+
+        this.sprite.zIndex = LAYERS.MAP;
 
         this.sprite.x = this.position.x * getChunkWidth();
         this.sprite.y = this.position.y * getChunkHeight();
@@ -137,7 +171,7 @@ export class World
         });
     }
 
-    initMap(mapID)
+    init(mapID)
     {
         var mapChunkData = this.chunkData.chunkPos[mapID];
         this.map.name = mapChunkData.name;
@@ -164,8 +198,10 @@ export class World
         }
         APP.loader.add(texturePaths);
         APP.loader.load();
-    }
 
+        //ConnectPlayer("Iron Rush B", START_TILE);
+        //ConnectPlayer("Bond Scape", {x:START_TILE.x + 50, y:START_TILE.y});
+    }
     // 3200, 3200 to 50, 50 (50 * 64)
     getChunkPositionFromWorldPosition(x, y)
     {
@@ -182,15 +218,19 @@ export class World
     {
         var newX = Math.floor(x / TILE_SIZE);
         var newY = Math.floor(y / TILE_SIZE);
-
-        // 3246 what we get
-        // 3218 want
-
-        //var chunkCount = Math.floor(y / 64);
-        //var world
-       // console.log(chunkCount);
         
         return {x: newX, y: newY};
+    }
+
+    // perform voodoo to convert pixi space to osrs space
+    invertWorldPosY(y)
+    {
+        return -y + (MAX_CHUNK_HEIGHT * getChunkHeight()) + (CHUNK_TILE_HEIGHT * TILE_SIZE);
+    }
+
+    invertTilePosY(y)
+    {
+        return -y + (MAX_CHUNK_HEIGHT * CHUNK_TILE_HEIGHT) + CHUNK_TILE_HEIGHT - 1;
     }
 
     clearMap()
@@ -203,7 +243,7 @@ export class World
                 if(chunk == null)
                     continue;
                     
-                APP.stage.removeChild(chunk.sprite);
+                APP.worldContainer.removeChild(chunk.sprite);
                 chunk.setRendered(false);
             }
         }
@@ -223,5 +263,25 @@ export class World
             APP.stage.addChild(chunk.sprite);
             chunk.setRendered(true);
         } 
+        console.log(chunksInView.length);
     }
+
+    // always show map
+    /* updateMap()
+    {
+        for(var x = 0; x < 100; x++)
+        {
+            for(var y = 0; y < 100; y++)
+            {
+                var chunk = this.map.getChunk({x:x, y:y});
+                if(chunk == null)
+                    continue;
+
+                chunk.setSprite(this.map.id, MAP_ZOOM_LEVEL, 0);
+
+                APP.worldContainer.addChild(chunk.sprite);
+                chunk.setRendered(true);
+            }
+        }
+    } */
 }
