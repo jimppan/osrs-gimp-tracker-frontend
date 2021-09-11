@@ -260,7 +260,7 @@ export class World
                 continue;
 
             chunk.setSprite(this.map.id, MAP_ZOOM_LEVEL, 0);
-            APP.stage.addChild(chunk.sprite);
+            APP.worldContainer.addChild(chunk.sprite);
             chunk.setRendered(true);
         } 
         console.log(chunksInView.length);
