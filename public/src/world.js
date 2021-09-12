@@ -198,9 +198,6 @@ export class World
         }
         APP.loader.add(texturePaths);
         APP.loader.load();
-
-        //ConnectPlayer("Iron Rush B", START_TILE);
-        //ConnectPlayer("Bond Scape", {x:START_TILE.x + 50, y:START_TILE.y});
     }
     // 3200, 3200 to 50, 50 (50 * 64)
     getChunkPositionFromWorldPosition(x, y)
@@ -263,7 +260,6 @@ export class World
             APP.worldContainer.addChild(chunk.sprite);
             chunk.setRendered(true);
         } 
-        console.log(chunksInView.length);
     }
 
     // always show map

@@ -1,0 +1,1 @@
+const CONFIG_BACKEND_URL = 'localhost:5000'

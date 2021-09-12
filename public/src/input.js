@@ -1,5 +1,3 @@
-import { CHUNK_TILE_HEIGHT } from "./world.js";
-
 export class Input
 {
     constructor()

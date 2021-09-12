@@ -1,4 +1,4 @@
-import { START_TILE, TILE_SIZE, LAYERS} from "./world.js";
+import { TILE_SIZE, LAYERS} from "./world.js";
 
 const PLAYER_TEXT_OFFSET = {x:0, y:20}
 

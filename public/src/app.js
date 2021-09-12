@@ -1,7 +1,7 @@
 import {} from "./font.js"
 
-import {Camera} from './camera.js'
-import { TILE_SIZE, CHUNK_TILE_HEIGHT, World } from "./world.js";
+import { Camera} from './camera.js'
+import { World } from "./world.js";
 import { Input } from "./input.js";
 import { RenderQueue } from "./renderqueue.js"
 
@@ -51,14 +51,7 @@ PIXI.settings.RESOLUTION = window.devicePixelRatio;
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.ROUND_PIXELS = true;
 
-
-
-/* const osrsFont = new FontFace('OSRS Font', 'url(font/RuneScape-Bold-12.ttf)');
-
 //stage.sortableChildren = true;
-
-/* MAP_LAYER = new PIXI.display.Layer();
-OBJECTS_LAYER = new PIXI.display.Layer(); */
 
 
 // render loop
@@ -67,7 +60,6 @@ ticker.add(() => {
 })
 
 ticker.start();
-
 
 
 document.body.appendChild(APP.view);

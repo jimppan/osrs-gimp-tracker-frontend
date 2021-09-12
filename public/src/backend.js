@@ -1,7 +1,16 @@
 import { ConnectPlayer, DisconnectPlayer, GetPlayer } from './world.js'
 import { TILE_SIZE } from './world.js'
 
-SOCKET = io.connect('backend-ip', {query:{system:'frontend'}}); // make the backend know we're sending communicating from frontend
+const CURRENT_SYSTEM = 'frontend'
+
+const SocketEvent = 
+{
+    JOIN: 'BEND_CLIENT_JOIN',
+    UPDATE: 'BEND_CLIENT_UPDATE',
+    DISCONNECT: 'BEND_CLIENT_DISCONNECT',
+}
+
+SOCKET = io.connect(CONFIG_BACKEND_URL, {query:{system:CURRENT_SYSTEM}}); // make the backend know we're sending communicating from frontend
 
 SOCKET.on('connect', () => 
 {
@@ -11,16 +20,16 @@ SOCKET.on('connect', () =>
     })
 
     // Client joins the map
-    SOCKET.on('BEND_CLIENT_JOIN', ({name, pos}) =>
+    SOCKET.on(SocketEvent.JOIN, ({name, pos}) =>
     {
-        console.log("BEND_CLIENT_JOIN - ", name);
+        console.log(SocketEvent.JOIN, ": ", name);
         ConnectPlayer(name, pos);
     });
 
     // Client gets updated
-    SOCKET.on('BEND_CLIENT_UPDATE', ({name, pos}) =>
+    SOCKET.on(SocketEvent.UPDATE, ({name, pos}) =>
     {
-        console.log("BEND_CLIENT_UPDATE - ", name);
+        console.log(SocketEvent.UPDATE, ": ", name);
         var player = GetPlayer(name);
         if(player == null)
             player = ConnectPlayer(name, pos);
@@ -32,12 +41,12 @@ SOCKET.on('connect', () =>
     });
 
     // Client leaves (Closes runelite or DCs intentionally)
-    SOCKET.on('BEND_CLIENT_DISCONNECT', ({name}) =>
+    SOCKET.on(SocketEvent.DISCONNECT, ({name}) =>
     {
-        console.log("BEND_CLIENT_DISCONNECT - ", name);
+        console.log(SocketEvent.DISCONNECT, ": ", name);
         DisconnectPlayer(name);
     });
 
 
-    console.log("Connected")
+    console.log("Connected to backend")
 });
