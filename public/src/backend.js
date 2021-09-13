@@ -14,6 +14,9 @@ SOCKET = io.connect(CONFIG_BACKEND_URL, {query:{system:CURRENT_SYSTEM}}); // mak
 
 SOCKET.on('connect', () => 
 {
+    // clear map once we connect, so any previous data is wiped
+
+
     SOCKET.on('disconnect', ()=>
     {
         console.log("Disconnected");
@@ -23,7 +26,10 @@ SOCKET.on('connect', () =>
     SOCKET.on(SocketEvent.JOIN, ({name, pos}) =>
     {
         console.log(SocketEvent.JOIN, ": ", name);
-        ConnectPlayer(name, pos);
+
+        var player = GetPlayer(name);
+        if(player == null)
+            ConnectPlayer(name, pos);
     });
 
     // Client gets updated
@@ -36,7 +42,7 @@ SOCKET.on('connect', () =>
         else
         {
             // update state
-            player.setPosition(pos.x * TILE_SIZE, pos.y * TILE_SIZE + TILE_SIZE);
+            player.setPosition(pos.x, pos.y);
         }
     });
 

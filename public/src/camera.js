@@ -47,16 +47,18 @@ export class Camera
         this.zoom.y = APP.stage.scale.y = y;
 
         //console.log(this.zoom);
-        
-        /* APP.hudContainer.scale.x = 1 / this.zoom.x;
-        APP.hudContainer.scale.y = 1 / this.zoom.y; */
 
-        for(var [key, value] of PLAYERS)
+        for(var i = 0; i < WORLD.entities.length; i++)
         {
-            value.playerText.scale.x = 1 / this.zoom.x;
-            value.playerText.scale.y = 1 / this.zoom.y;
+            var entity = WORLD.entities[i];
+            
+            if(!entity.keepScale)
+                continue;
 
-            value.playerText.position.y = WORLD.invertWorldPosY(value.position.y) - ((1 / this.zoom.y) * 20)
+            entity.graphic.scale.x = 1 / this.zoom.x;
+            entity.graphic.scale.y = 1 / this.zoom.y;
+
+            //value.playerText.graphic.position.y = value.graphic.position.y - ((1 / CAMERA.zoom.y) * 20)
         }
 
         this.needsUpdate = true;

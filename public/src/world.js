@@ -28,6 +28,8 @@ export function ConnectPlayer(name, pos)
     var player = new Player(name, pos);
     player.init();
     PLAYERS.set(name, player);
+    WORLD.addEntity(player);
+
     return player;
 }
 
@@ -42,8 +44,7 @@ export function DisconnectPlayer(name)
     if(player == null)
         return;
 
-    APP.objectContainer.removeChild(player.playerGraphic);
-    APP.hudContainer.removeChild(player.playerText);
+    WORLD.deleteEntity(player);
     PLAYERS.delete(name);
 }
 
@@ -157,7 +158,29 @@ export class World
         this.map = new WorldMap();
         this.chunkData = null;
         this.loadChunkData();
+        this.entities = [];
     }
+
+    addEntity(entity)
+    {
+        for(var i = 0; i < entity.children.length; i++)
+            this.addEntity(entity.children[i]);
+
+        this.entities.push(entity);
+        entity.addToStage();
+    }
+
+    deleteEntity(entity)
+    {
+        for(var i = 0; i < entity.children.length; i++)
+            this.deleteEntity(entity.children[i]);
+
+        entity.removeFromStage();
+        var index = this.entities.indexOf(entity);
+        if(index > -1)
+            this.entities.splice(index, 1);
+    }
+
 
     loadChunkData()
     {
