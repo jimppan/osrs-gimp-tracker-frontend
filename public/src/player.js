@@ -1,7 +1,5 @@
 import { TILE_SIZE, LAYERS} from "./world.js";
-import { WorldObject, WorldText } from "./entity.js";
-
-const PLAYER_TEXT_OFFSET = {x:0, y:20}
+import { WorldObject, WorldText } from "./object.js";
 
 const PLAYER_TEXT_STYLE = new PIXI.TextStyle({
     fontFamily: 'OSRS Font',
@@ -18,37 +16,35 @@ export class Player extends WorldObject
         super(name);
 
         this.playerText = new WorldText("PlayerText", name, PLAYER_TEXT_STYLE);
-        //this.position = {x:tilePos.x * TILE_SIZE, y:tilePos.y * TILE_SIZE + TILE_SIZE}
+        //this.playerTest = new WorldText("debugtext", "another piece of text", PLAYER_TEXT_STYLE);
         this.gamePosition = {x:tilePos.x, y:tilePos.y}
     }
 
     init()
     {
+        this.interactable = true;
+
         this.graphic = new PIXI.Graphics();
         this.graphic.beginFill(0x00ff00);
-        this.graphic.drawRect(0, 0, TILE_SIZE, TILE_SIZE);
+        this.graphic.drawRect(0, 0, TILE_SIZE, -TILE_SIZE);
         this.graphic.endFill();
 
+        this.width = TILE_SIZE;
+        this.height = -TILE_SIZE;
+
         this.graphic.zIndex = LAYERS.PLAYER;
-
         this.playerText.keepScale = true;
-        this.playerText.setPosition(this.gamePosition.x, this.gamePosition.y);
+        this.playerText.setPosition(this.gamePosition.x, this.gamePosition.y + 1);
+        this.playerText.interactable = true;
         this.addChild(this.playerText);
+        
+        /* this.playerTest.keepScale = true;
+        this.playerTest.interactable = true;
+        this.playerTest.setPosition(this.gamePosition.x - 5, this.gamePosition.y - 5);
+        this.addChild(this.playerTest); */
+
         this.setPosition(this.gamePosition.x, this.gamePosition.y)
+        
     }
-
-    /* setPosition(x, y)
-    {
-        super.setPosition(x, y);
-
-        // perform black magic to not scale player nameplate and also move it properly with the player
-         this.playerText.graphic.position.x = this.graphic.position.x + Math.round(PLAYER_TEXT_OFFSET.x);
-        this.playerText.graphic.position.y = this.graphic.position.y + Math.round(-PLAYER_TEXT_OFFSET.y);
-
-        this.playerText.graphic.scale.x = 1 / CAMERA.zoom.x;
-        this.playerText.graphic.scale.y = 1 / CAMERA.zoom.y;
-
-        this.playerText.graphic.position.y = WORLD.invertWorldPosY(y * TILE_SIZE + TILE_SIZE) - ((1 / CAMERA.zoom.y) * 20)
-    } */
 }
 

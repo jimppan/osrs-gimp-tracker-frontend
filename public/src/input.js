@@ -1,3 +1,6 @@
+import { Hud } from "./hud/hud.js";
+import { createOverlay, deleteOverlay, getOverlay } from "./overlays.js";
+
 export class Input
 {
     constructor()
@@ -12,8 +15,9 @@ export class Input
         APP.renderer.plugins.interaction.on('pointerup', (e) => {this.onMouseUp(e)});
         APP.renderer.plugins.interaction.on('pointermove', (e) => {this.onMouseMove(e)});
 
-        APP.view.addEventListener('mousewheel', (e) => {this.onMouseWheel(e.deltaY)});
-        APP.view.addEventListener('contextmenu', (e) => {
+        document.addEventListener('mousewheel', (e) => {this.onMouseWheel(e.deltaY)});
+        document.addEventListener('keydown', (e) => {this.onKeyPress(e)});
+        document.addEventListener('contextmenu', (e) => {
             window.wasRightClick=true;
             e.preventDefault();
           });
@@ -34,42 +38,124 @@ export class Input
         CAMERA.setPosition(-(mousePointTo.x - CAMERA.getCursorPosition().x / newScale) * newScale, -(mousePointTo.y - CAMERA.getCursorPosition().y / newScale) * newScale);
     }
 
+    unhoverObject(object)
+    {
+        var overlay = getOverlay(object);
+        if(overlay != null && SELECTED_OBJECT != object)
+            deleteOverlay(object);
+
+        MOUSE_OVER_OBJECT = null;
+        HUD.update();
+    }
+
+    hoverObject(object)
+    {
+        var overlay = getOverlay(object);
+        if(overlay == null)
+            createOverlay(object);
+
+        MOUSE_OVER_OBJECT = object;
+        HUD.update();
+    }
+
+    selectObject(object)
+    {
+        var overlay = getOverlay(object);
+        if(overlay == null)
+            createOverlay(object);
+
+        SELECTED_OBJECT = MOUSE_OVER_OBJECT;
+
+        HUD.update();
+    }
+
+    deselectObject()
+    {
+        if(SELECTED_OBJECT == null)
+            return;
+
+        var overlay = getOverlay(SELECTED_OBJECT);
+        if(overlay == null)
+            deleteOverlay(SELECTED_OBJECT);
+
+        SELECTED_OBJECT = null;
+        HUD.update();
+    }
+
+    onKeyPress(e)
+    {
+        if(e.keyCode == 27)
+        {
+            // escape
+            this.deselectObject();
+        }
+        console.log(e.keyCode);
+    }
+
     onMouseDown(e)
     {
         if(e.data.buttons == 1)
         {
             // left click
-
             this.mouseDownPos = CAMERA.getCursorPosition();
             this.mouseIsDown = true;
-
-            //this.world.clearMap();
-            //console.log(this.mouseDownPos);
-
-            //console.log(this.camera.getCursorPosition());
             
+            HUD.playClickAnimation();
 
-            /* if(this.camera.isWorldPositionInView(0, 0))
-                console.log("In view");
-            else
-                console.log("Not in view"); */
+            if(MOUSE_OVER_OBJECT != null)
+            {
+                if(SELECTED_OBJECT == MOUSE_OVER_OBJECT)
+                    this.deselectObject();
+                else if(MOUSE_OVER_OBJECT != null)
+                    this.selectObject(MOUSE_OVER_OBJECT);
+            }
         }
         else if(e.data.buttons == 2)
         {
             // right click
 
-            var cursorPos = CAMERA.getCursorPosition();
-            var worldPos = CAMERA.screenToWorldPos(cursorPos.x, cursorPos.y);
-            var worldTile = WORLD.getTilePositionFromWorldPosition(worldPos.x, worldPos.y);
-            
-            worldTile.y = WORLD.invertTilePosY(worldTile.y);
-            console.log(worldTile);
+        }
+        else if(e.data.buttons == 4)
+        {
+            DEVELOPER_MODE = !DEVELOPER_MODE;
+            console.log(DEVELOPER_MODE);
         }
     }
 
     onMouseUp(e)
     {
         this.mouseIsDown = false;
+    }
+
+    update()
+    {
+        MOUSE_OVER_OBJECT = null;
+
+        for(var i = 0; i < OBJECTS.length; i++)
+        {
+            var object = OBJECTS[i];
+
+            // this is a root and its interactable
+            if(object.interactable && object.parent == null)
+            {
+                var box = object.getInteractableRect();
+                var cursorPos = CAMERA.getCursorWorldPosition();
+
+                if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
+                    cursorPos.y <= box.y && cursorPos.y > box.y + box.height)
+                {
+                    object.wasHovered = true;
+                    this.hoverObject(object);
+                }
+                else
+                {
+                    if(object.wasHovered)
+                    {
+                        this.unhoverObject(object);
+                    }
+                }
+            }
+        } 
     }
 
     onMouseMove()
@@ -83,7 +169,7 @@ export class Input
 
             CAMERA.setPosition(newX, newY);
 
-            this.mouseDownPos = CAMERA.getCursorPosition();
+            this.mouseDownPos = currMouse;
         }
     }
 }

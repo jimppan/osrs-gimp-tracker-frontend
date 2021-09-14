@@ -1,5 +1,6 @@
 import { RenderQueue } from './renderqueue.js'
 import { Player } from './player.js'
+import { StageObject, WorldObject, WorldText, SpawnObject, DeleteObject } from './object.js';
 
 export var MAP_ID = 0;
 export var MAP_ZOOM_LEVEL = 2;
@@ -28,7 +29,7 @@ export function ConnectPlayer(name, pos)
     var player = new Player(name, pos);
     player.init();
     PLAYERS.set(name, player);
-    WORLD.addEntity(player);
+    SpawnObject(player);
 
     return player;
 }
@@ -44,16 +45,14 @@ export function DisconnectPlayer(name)
     if(player == null)
         return;
 
-    WORLD.deleteEntity(player);
     PLAYERS.delete(name);
+    DeleteObject(player);
 }
 
 function BuildChunkTexturePath(mapId, cacheVersion, zoomLevel, x, y, z)
 {
     return `img/maps${mapId}_${cacheVersion}/${zoomLevel}/${z}_${x}_${y}.png`;
 }
-
-var renderQueue = new RenderQueue();
 
 // a 64x64 tile chunk of a map
 export class Chunk
@@ -77,7 +76,7 @@ export class Chunk
         var spritePath = BuildChunkTexturePath(mapId, GIMP_TRACKER_CACHE_VERSION, zoomLevel, this.position.x, newY, plane);
         
         // this texture have not loaded, and we're waiting for it to load, add it to render queue
-         if(APP.loader.resources[spritePath].texture == null)
+        if(APP.loader.resources[spritePath].texture == null)
             RENDERQUEUE.add(spritePath, this);
         else
             this.sprite.texture = APP.loader.resources[spritePath].texture; 
@@ -158,30 +157,8 @@ export class World
         this.map = new WorldMap();
         this.chunkData = null;
         this.loadChunkData();
-        this.entities = [];
     }
-
-    addEntity(entity)
-    {
-        for(var i = 0; i < entity.children.length; i++)
-            this.addEntity(entity.children[i]);
-
-        this.entities.push(entity);
-        entity.addToStage();
-    }
-
-    deleteEntity(entity)
-    {
-        for(var i = 0; i < entity.children.length; i++)
-            this.deleteEntity(entity.children[i]);
-
-        entity.removeFromStage();
-        var index = this.entities.indexOf(entity);
-        if(index > -1)
-            this.entities.splice(index, 1);
-    }
-
-
+    
     loadChunkData()
     {
         var chunkDataURL = "./chunkpos.json";
@@ -219,9 +196,10 @@ export class World
             var path = BuildChunkTexturePath(mapID, GIMP_TRACKER_CACHE_VERSION, MAP_ZOOM_LEVEL, chunks[j].x, chunks[j].y, chunks[j].z);
             texturePaths.push(path);
         }
+
         APP.loader.add(texturePaths);
-        APP.loader.load();
     }
+
     // 3200, 3200 to 50, 50 (50 * 64)
     getChunkPositionFromWorldPosition(x, y)
     {
@@ -263,7 +241,7 @@ export class World
                 if(chunk == null)
                     continue;
                     
-                APP.worldContainer.removeChild(chunk.sprite);
+                APP.mapContainer.removeChild(chunk.sprite);
                 chunk.setRendered(false);
             }
         }
@@ -280,7 +258,7 @@ export class World
                 continue;
 
             chunk.setSprite(this.map.id, MAP_ZOOM_LEVEL, 0);
-            APP.worldContainer.addChild(chunk.sprite);
+            APP.mapContainer.addChild(chunk.sprite);
             chunk.setRendered(true);
         } 
     }
@@ -298,7 +276,7 @@ export class World
 
                 chunk.setSprite(this.map.id, MAP_ZOOM_LEVEL, 0);
 
-                APP.worldContainer.addChild(chunk.sprite);
+                APP.mapContainer.addChild(chunk.sprite);
                 chunk.setRendered(true);
             }
         }

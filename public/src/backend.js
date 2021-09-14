@@ -11,12 +11,15 @@ const SocketEvent =
 }
 
 SOCKET = io.connect(CONFIG_BACKEND_URL, {query:{system:CURRENT_SYSTEM}}); // make the backend know we're sending communicating from frontend
+var ADDED_LISTENERS = false;
 
 SOCKET.on('connect', () => 
 {
     // clear map once we connect, so any previous data is wiped
 
-
+    if(ADDED_LISTENERS)
+        return;
+    ADDED_LISTENERS = true;
     SOCKET.on('disconnect', ()=>
     {
         console.log("Disconnected");

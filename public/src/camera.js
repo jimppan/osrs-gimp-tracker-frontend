@@ -1,4 +1,5 @@
 import { getChunkWidth, getChunkHeight, TILE_SIZE, CHUNK_TILE_HEIGHT, MAX_CHUNK_HEIGHT } from "./world.js";
+import { updateOverlay } from "./overlays.js";
 
 export class Camera
 {
@@ -7,12 +8,11 @@ export class Camera
         this.position = {x:0.0, y:0.0};
         this.zoom = {x:1.0, y:1.0};
 
-        APP.ticker.add((delta) => {this.update(delta)})
         this.tickCounter = 0;
         this.needsUpdate = false;
     }
 
-    update(delta)
+    update()
     {
         this.tickCounter++;
         // update every 20 ticks sounds fine
@@ -35,30 +35,29 @@ export class Camera
         this.position.x = x;
         this.position.y = y;
 
-        APP.stage.position.x = this.position.x;
-        APP.stage.position.y = this.position.y;
+        APP.worldContainer.position.x = this.position.x;
+        APP.worldContainer.position.y = this.position.y;
 
         this.needsUpdate = true;
     }
 
     setZoom(x, y)
     {
-        this.zoom.x = APP.stage.scale.x = x;
-        this.zoom.y = APP.stage.scale.y = y;
+        this.zoom.x = APP.worldContainer.scale.x = x;
+        this.zoom.y = APP.worldContainer.scale.y = y;
 
         //console.log(this.zoom);
 
-        for(var i = 0; i < WORLD.entities.length; i++)
+        for(var i = 0; i < OBJECTS.length; i++)
         {
-            var entity = WORLD.entities[i];
+            var object = OBJECTS[i];
             
-            if(!entity.keepScale)
-                continue;
-
-            entity.graphic.scale.x = 1 / this.zoom.x;
-            entity.graphic.scale.y = 1 / this.zoom.y;
-
-            //value.playerText.graphic.position.y = value.graphic.position.y - ((1 / CAMERA.zoom.y) * 20)
+            if(object.keepScale)
+            {
+                object.graphic.scale.x = 1 / this.zoom.x;
+                object.graphic.scale.y = 1 / this.zoom.y;
+            }
+            updateOverlay(object);
         }
 
         this.needsUpdate = true;
@@ -68,7 +67,6 @@ export class Camera
     {
         var x = APP.renderer.plugins.interaction.mouse.global.x;
         var y = APP.renderer.plugins.interaction.mouse.global.y;
-       // var y = (window.innerHeight - this.app.renderer.plugins.interaction.mouse.global.y);
 
         return {x:x, y:y};
     }
