@@ -89,6 +89,15 @@ export class StageObject extends GameObject
         }
     }
 
+    setAnchor(x, y)
+    {
+        for(var i = 0; i < this.children.length; i++)
+            this.children[i].setAnchor(x, y);
+
+        if(this.graphic != null && this.graphic.anchor != null)
+            this.graphic.anchor.set(x, y);
+    }
+
     // automatically calculates bounds of an object, including all its children
     getInteractableRect()
     {
@@ -201,8 +210,17 @@ export class StageObject extends GameObject
         var realX = this.gamePosition.x * TILE_SIZE;
         var realY = this.gamePosition.y * TILE_SIZE;
 
-        this.graphic.position.x = Math.round(realX);
-        this.graphic.position.y = Math.round(WORLD.invertWorldPosY(realY));
+        if(this.graphic != null)
+        {
+            this.graphic.position.x = Math.round(realX);
+            this.graphic.position.y = Math.round(WORLD.invertWorldPosY(realY));
+        }
+        else
+        {
+            // most likely a hud object, use gamePosition as screenpos
+            this.gamePosition.x = Math.round(realX);
+            this.gamePosition.y = Math.round(WORLD.invertWorldPosY(realY));
+        }
         
         if(this.keepScale)
         {
@@ -221,6 +239,37 @@ export class WorldObject extends StageObject
 
 
     } 
+}
+
+// object in the world
+export class HudObject extends StageObject
+{
+    constructor(name)
+    {
+        super(name);
+    } 
+
+    setPosition(x, y)
+    {
+        for(var i = 0; i < this.children.length; i++)
+        {
+            var diffPos = this.children[i].getRelativeGamePosition();
+            this.children[i].setPosition(x + diffPos.x, y + diffPos.y);
+        }
+
+        
+        if(this.graphic != null)
+        {
+            this.graphic.position.x = this.gamePosition.x = x;
+            this.graphic.position.y = this.gamePosition.y = y;
+        }
+        else
+        {
+            // most likely a hud object, use gamePosition as screenpos
+            this.gamePosition.x = x;
+            this.gamePosition.y = y;
+        }
+    }
 }
 
 export class WorldText extends StageObject
@@ -249,6 +298,24 @@ export function SpawnObject(object)
     for(var i = 0; i < object.children.length; i++)
         SpawnObject(object.children[i]);
 
+    if(object instanceof HudObject)
+    {
+        HUD_OBJECTS.push(object);
+        if(object.graphic == null)
+            return;
+
+         APP.hudContainer.addChild(object.graphic);
+        return;
+    }
+
+    OBJECTS.push(object);
+    if(object.graphic == null)
+    {
+        // if the graphic was null, then its just an empty parent
+        // used to group stuff up
+        return;
+    }
+
     if(object instanceof WorldText)
         APP.overlayContainer.addChild(object.graphic);
     else if(object instanceof Overlay)
@@ -259,9 +326,6 @@ export function SpawnObject(object)
         APP.overlayContainer.addChild(object.graphic);
     else
         APP.objectContainer.addChild(object.graphic);
-
-
-    OBJECTS.push(object);
 }
 
 export function DeleteObject(object)
@@ -269,6 +333,34 @@ export function DeleteObject(object)
     for(var i = 0; i < object.children.length; i++)
         DeleteObject(object.children[i]);
 
+    if(object instanceof HudObject)
+    {
+        var index = HUD_OBJECTS.indexOf(object);
+        if(index > -1)
+            HUD_OBJECTS.splice(index, 1);
+
+        HUD_OBJECTS.push(object);
+        if(object.graphic == null)
+            return;
+
+        APP.hudContainer.delete(object.graphic);
+        return;
+    }
+
+    var index = OBJECTS.indexOf(object);
+    if(index > -1)
+        OBJECTS.splice(index, 1);
+
+    if(SELECTED_OBJECT == object)
+        INPUT.deselectObject();
+
+    if(object.graphic == null)
+    {
+        // if the graphic was null, then its just an empty parent
+        // used to group stuff up
+        return;
+    }
+
     if(object instanceof WorldText)
         APP.overlayContainer.removeChild(object.graphic);
     else if(object instanceof Overlay)
@@ -279,11 +371,4 @@ export function DeleteObject(object)
         APP.overlayContainer.removeChild(object.graphic);
     else
         APP.objectContainer.removeChild(object.graphic);
-
-    var index = OBJECTS.indexOf(object);
-    if(index > -1)
-        OBJECTS.splice(index, 1);
-
-    if(SELECTED_OBJECT == object)
-        INPUT.deselectObject();
 }

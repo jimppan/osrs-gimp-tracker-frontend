@@ -1,4 +1,5 @@
 import { StageObject, SpawnObject } from "../object.js";
+import { MainInterface } from "./interface.js"
 
 const HUD_TEXT = new PIXI.TextStyle({
     fontFamily: 'OSRS Font',
@@ -13,20 +14,18 @@ const HUD_TEXT = new PIXI.TextStyle({
 
 const POINTER_CLICK_EMPTY_PATH = 
 [
-    //'300-1.png',
-    'img/ui/299-0.png',
-    'img/ui/299-1.png',
-    'img/ui/299-2.png',
-    'img/ui/299-3.png',
+    '299-0.png',
+    '299-1.png',
+    '299-2.png',
+    '299-3.png',
 ]
 
 const POINTER_CLICK_OBJECT_PATH = 
 [
-    //'300-1.png',
-    'img/ui/299-4.png',
-    'img/ui/299-5.png',
-    'img/ui/299-6.png',
-    'img/ui/299-7.png',
+    '299-4.png',
+    '299-5.png',
+    '299-6.png',
+    '299-7.png',
 ]
 
 var POINTER_CLICK_EMPTY_TEXTURES = [];
@@ -36,6 +35,8 @@ export class Hud
 {
     constructor()
     {
+        this.mainInterface = new MainInterface();
+
         this.hoverText = new PIXI.Text("", HUD_TEXT);
         this.hoverText.position.x += 2;
         this.hoverText.position.y += 2;
@@ -47,12 +48,18 @@ export class Hud
 
     init()
     {
+        this.mainInterface.init();
+
+        APP.loader.baseUrl = 'img/ui/';
         APP.loader.add(POINTER_CLICK_EMPTY_PATH);
         APP.loader.add(POINTER_CLICK_OBJECT_PATH);
+        APP.loader.baseUrl = '';
     }
 
     onAssetsLoaded()
     {
+        this.mainInterface.onAssetsLoaded();
+
         // set animation texture arrays
         for(var i = 0; i < POINTER_CLICK_EMPTY_PATH.length; i++)
         {

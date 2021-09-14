@@ -51,7 +51,7 @@ export function DisconnectPlayer(name)
 
 function BuildChunkTexturePath(mapId, cacheVersion, zoomLevel, x, y, z)
 {
-    return `img/maps${mapId}_${cacheVersion}/${zoomLevel}/${z}_${x}_${y}.png`;
+    return `maps${mapId}_${cacheVersion}/${zoomLevel}/${z}_${x}_${y}.png`;
 }
 
 // a 64x64 tile chunk of a map
@@ -158,7 +158,7 @@ export class World
         this.chunkData = null;
         this.loadChunkData();
     }
-    
+
     loadChunkData()
     {
         var chunkDataURL = "./chunkpos.json";
@@ -196,8 +196,9 @@ export class World
             var path = BuildChunkTexturePath(mapID, GIMP_TRACKER_CACHE_VERSION, MAP_ZOOM_LEVEL, chunks[j].x, chunks[j].y, chunks[j].z);
             texturePaths.push(path);
         }
-
+        APP.loader.baseUrl = 'img/';
         APP.loader.add(texturePaths);
+        APP.loader.baseUrl = '';
     }
 
     // 3200, 3200 to 50, 50 (50 * 64)
