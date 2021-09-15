@@ -1,6 +1,6 @@
 import { TILE_SIZE, LAYERS} from "./world.js";
 import { WorldObject, WorldText, SpawnObject, DeleteObject} from "./object.js";
-import { INVALID_ITEM, INVENTORY_SIZE } from "./hud/inventory.js";
+import { INVALID_ITEM, INVENTORY_SIZE } from "./hud/maininterface/inventory.js";
 
 const PLAYER_TEXT_STYLE = new PIXI.TextStyle({
     fontFamily: 'OSRS Font',
@@ -37,7 +37,7 @@ export class Player extends WorldObject
 
     onClick()
     {
-        HUD.mainInterface.update();
+        //HUD.mainInterface.update();
     }
 
     init()

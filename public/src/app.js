@@ -7,7 +7,7 @@ import { RenderQueue } from "./renderqueue.js"
 import { AddItemComposition } from "./itemdatabase.js";
 import { Hud } from "./hud/hud.js"
 
-import {} from "./backend.js" // idk whats going on but if I load font after I connect socket, fonts wont load
+import { ConnectToBackend } from "./backend.js" // idk whats going on but if I load font after I connect socket, fonts wont load
 
 
 const canvas = document.getElementById('osrscanvas');
@@ -43,6 +43,8 @@ stage.addChild(devContainer);
 
 var ticker = new PIXI.Ticker();
 var loader = new PIXI.Loader();
+
+
 
 APP = {
     stage: stage,
@@ -147,7 +149,8 @@ function loaderComplete(loader, resources)
     
         renderer.render(stage);
     })
-    
+
+    ConnectToBackend();
     ticker.start();
     
     document.body.appendChild(APP.view);

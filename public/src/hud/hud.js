@@ -1,16 +1,6 @@
 import { StageObject, SpawnObject } from "../object.js";
-import { MainInterface } from "./interface.js"
-
-const HUD_TEXT = new PIXI.TextStyle({
-    fontFamily: 'OSRS Font',
-    fontSize:'16px',
-    fill: ['#ffffff'],
-    //strokeThickness:1,
-    dropShadow : true,
-    dropShadowAlpha: 1,
-    dropShadowAngle:0.6,
-    dropShadowDistance: 4,
-})
+import { HoverTooltip } from "./hovertooltip.js";
+import { MainInterface } from "./maininterface.js"
 
 const POINTER_CLICK_EMPTY_PATH = 
 [
@@ -35,15 +25,10 @@ export class Hud
 {
     constructor()
     {
-        this.mainInterface = new MainInterface();
+        this.mainInterface = new MainInterface("MainInterface");
+        this.hoverTooltip = new HoverTooltip("HoverTooltip");
 
-        this.hoverText = new PIXI.Text("", HUD_TEXT);
-        this.hoverText.position.x += 2;
-        this.hoverText.position.y += 2;
-        this.hoverText.resolution = 4;
-        this.hoverText.anchor.set(0, 0);
-
-        APP.hudContainer.addChild(this.hoverText);
+        SpawnObject(this.hoverTooltip);
     }
 
     init()
@@ -76,19 +61,16 @@ export class Hud
         this.clickAnim.graphic.onComplete = () => {this.clickAnim.graphic.visible = false;}
         this.clickAnim.keepScale = true;
         this.clickAnim.graphic.zIndex = 1;
+
+        this.mainInterface.setVisibility(false);
+
         SpawnObject(this.clickAnim);
+        SpawnObject(this.mainInterface);
     }
 
     update()
     {
-        if(MOUSE_OVER_OBJECT != null)
-        {
-            this.hoverText.text = MOUSE_OVER_OBJECT.name;
-        }
-        else
-        {
-            this.hoverText.text = "";
-        }
+        this.mainInterface.update();
     }
 
     playClickAnimation()

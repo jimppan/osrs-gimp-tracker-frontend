@@ -1,6 +1,7 @@
-import { GetItemComposition, ItemComposition } from "../itemdatabase.js";
-import { HudObject, SpawnObject } from "../object.js";
-import { Player } from "../player.js";
+import { GetItemComposition } from "../../itemdatabase.js";
+import { HudObject } from "../../object.js";
+import { Player } from "../../player.js";
+import { Interface } from "../interface.js";
 
 export const INVENTORY_SIZE = 28;
 export const INVALID_ITEM = -1;
@@ -39,13 +40,21 @@ export class InterfaceItemSlot extends HudObject
         this.text.graphic.visible = false;
         
         this.icon.graphic.anchor.set(0.5, 0.5);
-        this.text.graphic.anchor.set(0.5, 0.5);
+        this.text.graphic.anchor.set(0, 0.5);
 
-        this.text.setPosition(-8, -4);
+        this.text.setPosition(-18, -4);
         this.text.setParent(this.icon);
         this.icon.setParent(this);
         
         this.text.graphic.zIndex = 1;
+    }
+
+    setVisibility(value)
+    {
+        this.icon.setVisibility(value);
+
+        var comp = GetItemComposition(this.itemId);
+        this.text.graphic.visible = this.quantity > 0 && comp.stackable && value;
     }
 
     loadSprite()
@@ -86,14 +95,14 @@ export class InterfaceItemSlot extends HudObject
             this.icon.graphic.texture = PIXI.Texture.from(`img/items/${itemIconId}.png`);
             this.text.graphic.text = `${this.quantity}`;
             
-            this.text.graphic.visible = this.quantity > 0 && comp.stackable;
-            this.icon.graphic.visible = true;
+            this.text.graphic.visible = this.quantity > 0 && comp.stackable && this.parent.isVisible();
+            this.icon.graphic.visible = this.parent.isVisible();
             console.log(this.quantity);
         }
     }
 }
 
-export class InventoryInterface extends HudObject
+export class InventoryInterface extends Interface
 {
     constructor(name)
     {
@@ -105,8 +114,8 @@ export class InventoryInterface extends HudObject
             this.inventorySlots[i] = new InterfaceItemSlot("InterfaceItemSlot", INVALID_ITEM, 0);
             this.inventorySlots[i].setParent(this);
 
-            var x = i % 4;
-            var y = Math.floor(i / 4);
+            var x = i % INVENTORY_ROWS;
+            var y = Math.floor(i / INVENTORY_ROWS);
 
             this.inventorySlots[i].setPosition(INVENTORY_OFFSET.x + (40 * x), INVENTORY_OFFSET.y + (36 * y));
         }

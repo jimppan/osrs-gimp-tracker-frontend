@@ -1,6 +1,7 @@
 import { Hud } from "./hud/hud.js";
 import { HudObject, StageObject } from "./object.js";
 import { createOverlay, deleteOverlay, getOverlay } from "./overlays.js";
+import { SetDeveloperMode } from "./developer.js";
 
 export class Input
 {
@@ -48,20 +49,23 @@ export class Input
                 deleteOverlay(object);
         }
 
+        object.wasHovered = false;
         MOUSE_OVER_OBJECT = null;
-        HUD.update();
+        HUD.hoverTooltip.update();
     }
 
     hoverObject(object)
     {
         if(object.createOverlay)
         {
+
             var overlay = getOverlay(object);
             if(overlay == null)
                 createOverlay(object);
         }
+        object.wasHovered = true;
         MOUSE_OVER_OBJECT = object;
-        HUD.update();
+        HUD.hoverTooltip.update();
     }
 
     selectObject(object)
@@ -88,7 +92,7 @@ export class Input
         if(SELECTED_OBJECT.createOverlay)
         {
             var overlay = getOverlay(SELECTED_OBJECT);
-            if(overlay == null)
+            if(overlay != null)
                 deleteOverlay(SELECTED_OBJECT);
         }
 
@@ -125,7 +129,6 @@ export class Input
                 }
                 else if(MOUSE_OVER_OBJECT != null)
                 {
-
                     if(MOUSE_OVER_OBJECT.selectable)
                     {
                         this.selectObject(MOUSE_OVER_OBJECT);
@@ -149,7 +152,7 @@ export class Input
         else if(e.data.buttons == 4)
         {
             DEVELOPER_MODE = !DEVELOPER_MODE;
-            console.log(DEVELOPER_MODE);
+            SetDeveloperMode(DEVELOPER_MODE);
         }
     }
 
@@ -160,13 +163,11 @@ export class Input
 
     update()
     {
-        MOUSE_OVER_OBJECT = null;
-
         // prio hud objects
         for(var i = HUD_OBJECTS.length-1; i >= 0; i--)
         {
             var object = HUD_OBJECTS[i];
-            if(object.interactable)
+            if(object.interactable && object.isVisible())
             {
                 // no need for any weird maths or conversions for HUD
                 var box = object.getInteractableRect();
@@ -175,16 +176,15 @@ export class Input
                 if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
                     cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
                 {
-                    object.wasHovered = true;
-                    this.hoverObject(object);
+                    if(!object.wasHovered)
+                        this.hoverObject(object);
                     return;
                 }
                 else
                 {
                     if(object.wasHovered)
-                    {
                         this.unhoverObject(object);
-                    }
+
                 }
             }
         }
@@ -194,7 +194,7 @@ export class Input
             var object = OBJECTS[i];
 
             // this is a root and its interactable
-            if(object.interactable && object.parent == null)
+            if(object.interactable && object.parent == null && object.isVisible())
             {
                 var box = object.getInteractableRect();
                 var cursorPos = CAMERA.getCursorWorldPosition();
@@ -202,16 +202,14 @@ export class Input
                 if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
                     cursorPos.y <= box.y && cursorPos.y > box.y + box.height)
                 {
-                    object.wasHovered = true;
-                    this.hoverObject(object);
+                    if(!object.wasHovered)
+                        this.hoverObject(object);
                     return;
                 }
                 else
                 {
                     if(object.wasHovered)
-                    {
                         this.unhoverObject(object);
-                    }
                 }
             }
         } 

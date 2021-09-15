@@ -59,7 +59,7 @@ export class GameObject
     }
 }
 
-// an overlay, button, UI etc..
+// any renderable on the stage, wether its UI or a player
 export class StageObject extends GameObject
 {
     constructor(name)
@@ -81,6 +81,20 @@ export class StageObject extends GameObject
     onClick()
     {
 
+    }
+
+    isVisible()
+    {
+        return this.graphic != null && this.graphic.visible;
+    }
+
+    setVisibility(value)
+    {
+        for(var i = 0; i < this.children.length; i++)
+            this.children[i].setVisibility(value);
+
+        if(this.graphic != null)
+            this.graphic.visible = value;
     }
 
     getBounds()
@@ -269,7 +283,6 @@ export class HudObject extends StageObject
             this.children[i].setPosition(x + diffPos.x, y + diffPos.y);
         }
 
-        
         if(this.graphic != null)
         {
             this.graphic.position.x = this.gamePosition.x = x;
@@ -281,6 +294,14 @@ export class HudObject extends StageObject
             this.gamePosition.x = x;
             this.gamePosition.y = y;
         }
+    }
+}
+
+export class DevObject extends HudObject
+{
+    constructor(name)
+    {
+        super(name);
     }
 }
 
@@ -309,6 +330,16 @@ export function SpawnObject(object)
 {
     for(var i = 0; i < object.children.length; i++)
         SpawnObject(object.children[i]);
+
+    if(object instanceof DevObject)
+    {
+        DEV_OBJECTS.push(object);
+        if(object.graphic == null)
+            return;
+
+        APP.devContainer.addChild(object.graphic);
+        return;
+    }
 
     if(object instanceof HudObject)
     {
@@ -344,6 +375,20 @@ export function DeleteObject(object)
 {
     for(var i = 0; i < object.children.length; i++)
         DeleteObject(object.children[i]);
+
+    if(object instanceof DevObject)
+    {
+        var index = DEV_OBJECTS.indexOf(object);
+        if(index > -1)
+        DEV_OBJECTS.splice(index, 1);
+
+        DEV_OBJECTS.push(object);
+        if(object.graphic == null)
+            return;
+
+        APP.devContainer.delete(object.graphic);
+        return;
+    }
 
     if(object instanceof HudObject)
     {
