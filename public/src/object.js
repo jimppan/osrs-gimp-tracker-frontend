@@ -71,9 +71,16 @@ export class StageObject extends GameObject
 
         this.interactable = false;
         this.wasHovered = false;
+        this.createOverlay = false;
+        this.selectable = false;
 
         this.width = 0;
         this.height = 0;
+    }
+
+    onClick()
+    {
+
     }
 
     getBounds()
@@ -248,6 +255,11 @@ export class HudObject extends StageObject
     {
         super(name);
     } 
+
+    getInteractableRect()
+    {
+        return this.graphic.getBounds();
+    }
 
     setPosition(x, y)
     {

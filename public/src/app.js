@@ -4,6 +4,7 @@ import { Camera} from './camera.js'
 import { World } from "./world.js";
 import { Input } from "./input.js";
 import { RenderQueue } from "./renderqueue.js"
+import { AddItemComposition } from "./itemdatabase.js";
 import { Hud } from "./hud/hud.js"
 
 import {} from "./backend.js" // idk whats going on but if I load font after I connect socket, fonts wont load
@@ -66,6 +67,7 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 PIXI.settings.ROUND_PIXELS = true;
 
 overlayContainer.sortableChildren = true;
+hudContainer.sortableChildren = true;
 
 // Preload some assets
 //APP.ticker.maxFPS = 144;
@@ -88,13 +90,45 @@ HUD = new Hud();
 APP.loader.use(onTextureLoaded);
 APP.loader.reset();
 
-INPUT.init();
-WORLD.init(0);
-HUD.init();
 
-// preload resources
-APP.loader.load(loaderComplete);
+var chunkposJsonURL = "./chunkpos.json";
+var itemcompJsonURL = "./itemcomp.json";
 
+// load json data first, needed to preload textures
+$.ajax({
+    type: 'GET',
+    url: chunkposJsonURL,
+    dataType: 'json',
+    success: (chunkpos) => 
+    {
+        JSON_MAP_DATA = chunkpos;
+        $.ajax({
+            type: 'GET',
+            url: itemcompJsonURL,
+            dataType: 'json',
+            success: (itemcomp) => 
+            {
+                for(var i = 0; i < itemcomp.items.length; i++)
+                {
+                    var item = itemcomp.items[i];
+                    AddItemComposition(item.id, item.name, item.stackable, item.tradable);
+                }
+
+                APP.loader.reset();
+
+                // init
+                INPUT.init();
+                WORLD.init(0);
+                HUD.init();
+
+                // preload textures
+                APP.loader.load(loaderComplete);
+            },
+            async: false
+        });
+    },
+    async: false
+});
 
 // once we loaded resources, start the app
 function loaderComplete(loader, resources)

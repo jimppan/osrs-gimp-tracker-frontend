@@ -9,7 +9,7 @@ const HUD_TEXT = new PIXI.TextStyle({
     dropShadow : true,
     dropShadowAlpha: 1,
     dropShadowAngle:0.6,
-    dropShadowDistance: 64,
+    dropShadowDistance: 4,
 })
 
 const POINTER_CLICK_EMPTY_PATH = 
@@ -40,7 +40,7 @@ export class Hud
         this.hoverText = new PIXI.Text("", HUD_TEXT);
         this.hoverText.position.x += 2;
         this.hoverText.position.y += 2;
-        this.hoverText.resolution = 64;
+        this.hoverText.resolution = 4;
         this.hoverText.anchor.set(0, 0);
 
         APP.hudContainer.addChild(this.hoverText);

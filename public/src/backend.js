@@ -1,5 +1,4 @@
-import { ConnectPlayer, DisconnectPlayer, GetPlayer } from './world.js'
-import { TILE_SIZE } from './world.js'
+import { ConnectPlayer, GetPlayer, DisconnectPlayer, IsValidPacket } from './player.js'
 
 const CURRENT_SYSTEM = 'frontend'
 
@@ -26,33 +25,33 @@ SOCKET.on('connect', () =>
     })
 
     // Client joins the map
-    SOCKET.on(SocketEvent.JOIN, ({name, pos}) =>
+    SOCKET.on(SocketEvent.JOIN, (packet) =>
     {
-        console.log(SocketEvent.JOIN, ": ", name);
-
         var player = GetPlayer(name);
         if(player == null)
-            ConnectPlayer(name, pos);
+            ConnectPlayer(packet);
     });
 
     // Client gets updated
-    SOCKET.on(SocketEvent.UPDATE, ({name, pos}) =>
+    SOCKET.on(SocketEvent.UPDATE, (packet) =>
     {
+        if(!IsValidPacket(packet))
+            return;
+
         console.log(SocketEvent.UPDATE, ": ", name);
-        var player = GetPlayer(name);
+        var player = GetPlayer(packet.name);
         if(player == null)
-            player = ConnectPlayer(name, pos);
+            player = ConnectPlayer(packet);
         else
         {
             // update state
-            player.setPosition(pos.x, pos.y);
+            player.parsePacket(packet)
         }
     });
 
     // Client leaves (Closes runelite or DCs intentionally)
     SOCKET.on(SocketEvent.DISCONNECT, ({name}) =>
     {
-        console.log(SocketEvent.DISCONNECT, ": ", name);
         DisconnectPlayer(name);
     });
 

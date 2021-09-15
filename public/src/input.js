@@ -1,4 +1,5 @@
 import { Hud } from "./hud/hud.js";
+import { HudObject, StageObject } from "./object.js";
 import { createOverlay, deleteOverlay, getOverlay } from "./overlays.js";
 
 export class Input
@@ -40,9 +41,12 @@ export class Input
 
     unhoverObject(object)
     {
-        var overlay = getOverlay(object);
-        if(overlay != null && SELECTED_OBJECT != object)
-            deleteOverlay(object);
+        if(object.createOverlay)
+        {
+            var overlay = getOverlay(object);
+            if(overlay != null && SELECTED_OBJECT != object)
+                deleteOverlay(object);
+        }
 
         MOUSE_OVER_OBJECT = null;
         HUD.update();
@@ -50,22 +54,29 @@ export class Input
 
     hoverObject(object)
     {
-        var overlay = getOverlay(object);
-        if(overlay == null)
-            createOverlay(object);
-
+        if(object.createOverlay)
+        {
+            var overlay = getOverlay(object);
+            if(overlay == null)
+                createOverlay(object);
+        }
         MOUSE_OVER_OBJECT = object;
         HUD.update();
     }
 
     selectObject(object)
     {
-        var overlay = getOverlay(object);
-        if(overlay == null)
-            createOverlay(object);
+        if(!object.selectable)
+            return;
+
+        if(object.createOverlay)
+        {
+            var overlay = getOverlay(object);
+            if(overlay == null)
+                createOverlay(object);
+        }
 
         SELECTED_OBJECT = MOUSE_OVER_OBJECT;
-
         HUD.update();
     }
 
@@ -74,9 +85,12 @@ export class Input
         if(SELECTED_OBJECT == null)
             return;
 
-        var overlay = getOverlay(SELECTED_OBJECT);
-        if(overlay == null)
-            deleteOverlay(SELECTED_OBJECT);
+        if(SELECTED_OBJECT.createOverlay)
+        {
+            var overlay = getOverlay(SELECTED_OBJECT);
+            if(overlay == null)
+                deleteOverlay(SELECTED_OBJECT);
+        }
 
         SELECTED_OBJECT = null;
         HUD.update();
@@ -100,14 +114,31 @@ export class Input
             this.mouseDownPos = CAMERA.getCursorPosition();
             this.mouseIsDown = true;
             
-            HUD.playClickAnimation();
+            LAST_MOUSE_CLICKED_OBJECT = MOUSE_OVER_OBJECT;
 
             if(MOUSE_OVER_OBJECT != null)
             {
                 if(SELECTED_OBJECT == MOUSE_OVER_OBJECT)
+                {
+                    HUD.playClickAnimation();
                     this.deselectObject();
+                }
                 else if(MOUSE_OVER_OBJECT != null)
-                    this.selectObject(MOUSE_OVER_OBJECT);
+                {
+
+                    if(MOUSE_OVER_OBJECT.selectable)
+                    {
+                        this.selectObject(MOUSE_OVER_OBJECT);
+                        HUD.playClickAnimation();
+                    }
+
+                    if(MOUSE_OVER_OBJECT.onClick != null)
+                        MOUSE_OVER_OBJECT.onClick();
+                }
+            }
+            else
+            {
+                HUD.playClickAnimation();
             }
         }
         else if(e.data.buttons == 2)
@@ -131,7 +162,34 @@ export class Input
     {
         MOUSE_OVER_OBJECT = null;
 
-        for(var i = 0; i < OBJECTS.length; i++)
+        // prio hud objects
+        for(var i = HUD_OBJECTS.length-1; i >= 0; i--)
+        {
+            var object = HUD_OBJECTS[i];
+            if(object.interactable)
+            {
+                // no need for any weird maths or conversions for HUD
+                var box = object.getInteractableRect();
+                var cursorPos = CAMERA.getCursorPosition();
+
+                if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
+                    cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
+                {
+                    object.wasHovered = true;
+                    this.hoverObject(object);
+                    return;
+                }
+                else
+                {
+                    if(object.wasHovered)
+                    {
+                        this.unhoverObject(object);
+                    }
+                }
+            }
+        }
+
+        for(var i = OBJECTS.length-1; i >= 0; i--)
         {
             var object = OBJECTS[i];
 
@@ -146,6 +204,7 @@ export class Input
                 {
                     object.wasHovered = true;
                     this.hoverObject(object);
+                    return;
                 }
                 else
                 {
@@ -160,7 +219,7 @@ export class Input
 
     onMouseMove()
     {
-        if(this.mouseIsDown)
+        if(this.mouseIsDown && LAST_MOUSE_CLICKED_OBJECT == null)
         {
             var currMouse = CAMERA.getCursorPosition();
                 

@@ -24,31 +24,6 @@ export const LAYERS =
     PLAYER: 2,
 }
 
-export function ConnectPlayer(name, pos)
-{
-    var player = new Player(name, pos);
-    player.init();
-    PLAYERS.set(name, player);
-    SpawnObject(player);
-
-    return player;
-}
-
-export function GetPlayer(name)
-{
-    return PLAYERS.get(name);
-}
-
-export function DisconnectPlayer(name)
-{
-    var player = PLAYERS.get(name);
-    if(player == null)
-        return;
-
-    PLAYERS.delete(name);
-    DeleteObject(player);
-}
-
 function BuildChunkTexturePath(mapId, cacheVersion, zoomLevel, x, y, z)
 {
     return `maps${mapId}_${cacheVersion}/${zoomLevel}/${z}_${x}_${y}.png`;
@@ -156,10 +131,10 @@ export class World
     {
         this.map = new WorldMap();
         this.chunkData = null;
-        this.loadChunkData();
+        //this.loadChunkData();
     }
 
-    loadChunkData()
+    /* loadChunkData()
     {
         var chunkDataURL = "./chunkpos.json";
         $.ajax({
@@ -169,10 +144,13 @@ export class World
             success: (data) => {this.chunkData = data;},
             async: false
         });
-    }
+    } */
 
     init(mapID)
     {
+        this.chunkData = JSON_MAP_DATA;
+        console.log(this.chunkData);
+
         var mapChunkData = this.chunkData.chunkPos[mapID];
         this.map.name = mapChunkData.name;
         this.map.id = mapID;
@@ -196,6 +174,7 @@ export class World
             var path = BuildChunkTexturePath(mapID, GIMP_TRACKER_CACHE_VERSION, MAP_ZOOM_LEVEL, chunks[j].x, chunks[j].y, chunks[j].z);
             texturePaths.push(path);
         }
+
         APP.loader.baseUrl = 'img/';
         APP.loader.add(texturePaths);
         APP.loader.baseUrl = '';

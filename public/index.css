@@ -3,6 +3,11 @@
     src: url('font/RuneScape-Bold-12.ttf') format('truetype')
 }
 
+@font-face { 
+    font-family: 'OSRS Font Plain'; 
+    src: url('font/RuneScape-Plain-11.ttf') format('truetype')
+}
+
 html, body {
     width: 100%;
     height: 100%;
