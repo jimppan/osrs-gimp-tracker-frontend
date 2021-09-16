@@ -8,7 +8,7 @@ const HUD_TEXT = new PIXI.TextStyle({
     dropShadow : true,
     dropShadowAlpha: 1,
     dropShadowAngle:0.6,
-    dropShadowDistance: 4,
+    dropShadowDistance: 16,
 })
 
 export class HoverTooltip extends HudObject
@@ -20,7 +20,7 @@ export class HoverTooltip extends HudObject
 
         this.graphic.position.x = 2;
         this.graphic.position.y = 2;
-        this.graphic.resolution = 4;
+        this.graphic.resolution = 16;
         this.graphic.anchor.set(0, 0);
     }
 

@@ -13,3 +13,11 @@ font.load().then(function () {
 }).catch(function () {
   console.log('OSRS Font Plain failed to load.');
 });
+
+font = new FontFaceObserver('OSRS Font Plain 2');
+
+font.load().then(function () {
+    console.log('OSRS Font Plain 2 has loaded.');
+  }).catch(function () {
+    console.log('OSRS Font Plain 2 failed to load.');
+  });

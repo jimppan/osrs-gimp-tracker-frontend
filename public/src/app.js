@@ -44,6 +44,7 @@ stage.addChild(devContainer);
 var ticker = new PIXI.Ticker();
 var loader = new PIXI.Loader();
 
+var isAssetsLoaded = false;
 
 
 APP = {
@@ -62,6 +63,8 @@ APP = {
     loader: loader,
     ticker: ticker,
     view: canvas,
+
+    isAssetsLoaded:isAssetsLoaded,
 }
 
 PIXI.settings.RESOLUTION = window.devicePixelRatio;
@@ -135,6 +138,7 @@ $.ajax({
 // once we loaded resources, start the app
 function loaderComplete(loader, resources)
 {
+    APP.isAssetsLoaded = true;
     // once we finished preloading 
     console.log("Loaded assets.");
 

@@ -63,6 +63,21 @@ export class Camera
         this.needsUpdate = true;
     }
 
+    clampToView(rect)
+    {
+        var ret = {x:rect.x, y:rect.y};
+        if(rect.x + rect.width > window.innerWidth)
+            ret.x = window.innerWidth - rect.width;
+        else if(rect.x < 0)
+            ret.x = 0;
+
+        if(rect.y + rect.height > window.innerHeight)
+            ret.y = window.innerHeight - rect.height;
+        else if(rect.y < 0)
+            ret.y = 0;
+        return ret;
+    }
+
     getCursorPosition()
     {
         var x = APP.renderer.plugins.interaction.mouse.global.x;

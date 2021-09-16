@@ -249,6 +249,11 @@ export class StageObject extends GameObject
             this.graphic.scale.y = 1 / CAMERA.zoom.y;
         }
     }
+
+    onAssetsLoaded()
+    {
+
+    }
 }
 
 // object in the world
@@ -380,13 +385,12 @@ export function DeleteObject(object)
     {
         var index = DEV_OBJECTS.indexOf(object);
         if(index > -1)
-        DEV_OBJECTS.splice(index, 1);
+            DEV_OBJECTS.splice(index, 1);
 
-        DEV_OBJECTS.push(object);
         if(object.graphic == null)
             return;
 
-        APP.devContainer.delete(object.graphic);
+        APP.devContainer.removeChild(object.graphic);
         return;
     }
 
@@ -396,11 +400,10 @@ export function DeleteObject(object)
         if(index > -1)
             HUD_OBJECTS.splice(index, 1);
 
-        HUD_OBJECTS.push(object);
         if(object.graphic == null)
             return;
 
-        APP.hudContainer.delete(object.graphic);
+        APP.hudContainer.removeChild(object.graphic);
         return;
     }
 

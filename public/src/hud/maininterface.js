@@ -46,7 +46,7 @@ const INTERFACE_BASE_OFFSETS =
     {x:0,y:0},
     {x:0, y:-298},
     {x:0, y:0},
-    {x:-212, y:-37},
+    {x:-213, y:-37},
     {x:-3, y:-37},
     {x:-120, y:-317}
 ]
@@ -83,10 +83,26 @@ export class MainInterface extends Interface
         this.tabs = new Array(INTERFACE_TAB.MAX);
         this.buttons = new Array(INTERFACE_TAB.MAX);
         this.base = new Array(INTERFACE_BASE.MAX);
+
+        for(var i = 0; i < INTERFACE_BASE.MAX; i++)
+            this.base[i] = new HudObject("MainInterfaceBase");
+
+        for(var i = 0; i < INTERFACE_TAB.MAX; i++)
+            this.buttons[i] = new MainInterfaceButton(INTERFACE_TAB_TITLES[i], this, i);
+
+        this.tabs[INTERFACE_TAB.INVENTORY] = new InventoryInterface("InventoryInterface");
+        this.tabs[INTERFACE_TAB.SKILLS]    = new SkillsInterface("SkillsInterface");
+        this.tabs[INTERFACE_TAB.EQUIPMENT] = new EquipmentInterface("EquipmentInterface");
+        this.tabs[INTERFACE_TAB.SETTINGS]  = new SettingsInterface("SettingsInterface");
+
+        
     }
 
     init()
     {
+        for(var i = 0; i < INTERFACE_TAB.MAX; i++)
+            this.tabs[i].init();
+
         APP.loader.baseUrl = 'img/ui/';
 
         for(var i = 0; i < INTERFACE_BASE_TEXTURES.length; i++)
@@ -108,19 +124,6 @@ export class MainInterface extends Interface
 
     onAssetsLoaded()
     {
-        this.base[INTERFACE_BASE.BOTTOM] 
-
-        for(var i = 0; i < INTERFACE_BASE.MAX; i++)
-            this.base[i] = new HudObject("MainInterfaceBase");
-
-        for(var i = 0; i < INTERFACE_TAB.MAX; i++)
-            this.buttons[i] = new MainInterfaceButton(INTERFACE_TAB_TITLES[i], this, i);
-
-        this.tabs[INTERFACE_TAB.INVENTORY] = new InventoryInterface("InventoryInterface");
-        this.tabs[INTERFACE_TAB.SKILLS]    = new SkillsInterface("SkillsInterface");
-        this.tabs[INTERFACE_TAB.EQUIPMENT] = new EquipmentInterface("EquipmentInterface");
-        this.tabs[INTERFACE_TAB.SETTINGS]  = new SettingsInterface("SettingsInterface");
-    
         for(var i = 0; i < INTERFACE_BASE_TEXTURES.length; i++)
         {
             if(INTERFACE_BASE_TEXTURES[i] == '')
@@ -152,7 +155,10 @@ export class MainInterface extends Interface
         this.base[INTERFACE_BASE.BACKROUND].graphic.alpha = 0.3;
 
         for(var i = 0; i < INTERFACE_TAB.MAX; i++)
-            this.tabs[i].setParent(this);
+        {
+            this.tabs[i].onAssetsLoaded();
+            this.tabs[i].setParent(this); 
+        }
 
         this.base[INTERFACE_BASE.SELECTED_TAB].setAnchor(0.5, 0.5);
 
@@ -173,6 +179,7 @@ export class MainInterface extends Interface
 
         this.tabs[interfaceTab].setVisibility(true);
         console.log("OPEN NEW INTERFACE: ", interfaceTab)
+
         var pos = this.gamePosition;
         this.base[INTERFACE_BASE.SELECTED_TAB].setPosition(pos.x + INTERFACE_BUTTON_OFFSETS[interfaceTab].x, pos.y + INTERFACE_BUTTON_OFFSETS[interfaceTab].y);
 

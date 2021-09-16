@@ -8,7 +8,7 @@ export function SetDeveloperMode(value)
         for(var i = 0; i < HUD_OBJECTS.length; i++)
         {
             var object = HUD_OBJECTS[i];
-            if(!object.interactable)
+            if(!object.interactable || !object.isVisible())
                 continue;
 
             var rect = object.getInteractableRect();
@@ -19,7 +19,7 @@ export function SetDeveloperMode(value)
 
             hudObject.graphic.clear();
             hudObject.graphic.beginFill(0xffff00);
-            hudObject.graphic.alpha = 0.2;
+            hudObject.graphic.alpha = 0.3;
 
             hudObject.graphic.drawRect(rect.x, rect.y, rect.width, rect.height);
             hudObject.graphic.endFill();
@@ -29,9 +29,7 @@ export function SetDeveloperMode(value)
     }
     else
     {
-        for(var i = 0; i < DEV_OBJECTS; i++)
-        {
+        for(var i = DEV_OBJECTS.length-1; i >= 0; i--)
             DeleteObject(DEV_OBJECTS[i]);
-        }
     }
 }

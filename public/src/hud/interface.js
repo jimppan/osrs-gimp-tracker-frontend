@@ -6,4 +6,14 @@ export class Interface extends HudObject
     {
         super(name);
     }
+
+    init()
+    {
+        
+    }
+
+    onAssetsLoaded()
+    {
+        
+    }
 }

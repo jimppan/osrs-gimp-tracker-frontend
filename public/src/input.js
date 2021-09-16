@@ -163,6 +163,8 @@ export class Input
 
     update()
     {
+        HUD.mouseTooltip.update();
+        
         // prio hud objects
         for(var i = HUD_OBJECTS.length-1; i >= 0; i--)
         {
@@ -212,7 +214,7 @@ export class Input
                         this.unhoverObject(object);
                 }
             }
-        } 
+        }
     }
 
     onMouseMove()

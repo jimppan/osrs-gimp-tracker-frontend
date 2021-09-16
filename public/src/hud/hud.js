@@ -1,6 +1,7 @@
 import { StageObject, SpawnObject } from "../object.js";
 import { HoverTooltip } from "./hovertooltip.js";
 import { MainInterface } from "./maininterface.js"
+import { MouseTooltip } from "./mousetooltip.js";
 
 const POINTER_CLICK_EMPTY_PATH = 
 [
@@ -27,8 +28,10 @@ export class Hud
     {
         this.mainInterface = new MainInterface("MainInterface");
         this.hoverTooltip = new HoverTooltip("HoverTooltip");
+        this.mouseTooltip = new MouseTooltip("MouseTooltip");
 
         SpawnObject(this.hoverTooltip);
+        SpawnObject(this.mouseTooltip);
     }
 
     init()
