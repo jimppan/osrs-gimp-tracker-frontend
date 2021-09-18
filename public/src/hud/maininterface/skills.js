@@ -31,7 +31,7 @@ const SKILLS_OFFSETS =
     {x:2, y:7}, // total
 ]
 
-const SKILLS_ICON_TEXTURES = 
+export const SKILLS_ICON_TEXTURES = 
 [
     '197-0.png',
     '199-0.png',
@@ -116,7 +116,7 @@ const SKILLS_ICON_TEXT = new PIXI.TextStyle({
     dropShadowDistance: 16,
 })
 
-const SKILLS_OFFSET = {x:-184, y:-281};
+const SKILLS_OFFSET = {x:-184, y:281};
 
 export class InterfaceSkillSlot extends HudObject
 {
@@ -143,7 +143,7 @@ export class InterfaceSkillSlot extends HudObject
 
     getInteractableRect()
     {
-        return {x: this.backgroundLeft.graphic.position.x, y:this.backgroundLeft.graphic.position.y - 18, width: 63, height: 30}
+        return {x: this.backgroundLeft.graphic.position.x, y:this.backgroundLeft.graphic.position.y - 14, width: 63, height: 30}
     }
 
     isVisible()
@@ -158,10 +158,8 @@ export class InterfaceSkillSlot extends HudObject
             this.backgroundLeft.graphic  = new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.TOTAL_LEFT]].texture);
             this.backgroundRight.graphic = new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.TOTAL_RIGHT]].texture);
 
-            
             this.text1.graphic = new PIXI.Text(`Total level:`, SKILLS_ICON_TEXT);
             this.text2.graphic = new PIXI.Text(`0`, SKILLS_ICON_TEXT);
-
         }
         else
         {
@@ -174,7 +172,7 @@ export class InterfaceSkillSlot extends HudObject
 
             this.skillIcon.graphic.visible = false;
             this.skillIcon.graphic.anchor.set(0.5, 0.5);
-            this.skillIcon.setPosition(-15, 1);
+            this.skillIcon.setPosition(-15, -1);
             this.skillIcon.setParent(this);
             this.skillIcon.graphic.zIndex = 1;
         }
@@ -198,13 +196,13 @@ export class InterfaceSkillSlot extends HudObject
 
         if(this.skillId == SKILLS.TOTAL)
         {
-            this.text1.setPosition(9, 4);
-            this.text2.setPosition(9, 14);  
+            this.text1.setPosition(9, -4);
+            this.text2.setPosition(9, -14);  
         }
         else
         {
-            this.text1.setPosition(16, 2);
-            this.text2.setPosition(28, 14);
+            this.text1.setPosition(16, -2);
+            this.text2.setPosition(28, -14);
         }
 
         this.backgroundLeft.setParent(this);
@@ -216,6 +214,9 @@ export class InterfaceSkillSlot extends HudObject
         this.backgroundRight.graphic.zIndex = 0;
         this.text1.graphic.zIndex = 1;
         this.text2.graphic.zIndex = 1;
+
+        this.text1.graphic.scale.y = -1;
+        this.text2.graphic.scale.y = -1;
     }
 }
 
@@ -244,7 +245,7 @@ export class SkillsInterface extends Interface
         {
             this.skillSlots[i].onAssetsLoaded();
             this.skillSlots[i].setParent(this);
-            this.skillSlots[i].setPosition(SKILLS_OFFSET.x + (63 * SKILLS_OFFSETS[i].x), SKILLS_OFFSET.y + (32 * SKILLS_OFFSETS[i].y));
+            this.skillSlots[i].setPosition(SKILLS_OFFSET.x + (63 * SKILLS_OFFSETS[i].x), SKILLS_OFFSET.y - (32 * SKILLS_OFFSETS[i].y));
         }
     }
 

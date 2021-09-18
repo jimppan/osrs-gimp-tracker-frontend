@@ -30,9 +30,9 @@ export function createOverlay(object)
     overlay.graphic.endFill();
 
     box.x /= TILE_SIZE;
-    box.y = WORLD.invertWorldPosY(box.y) / TILE_SIZE;
+    box.y /= TILE_SIZE;
 
-    overlay.setPosition(box.x, box.y);
+    overlay.setTilePosition(box.x, box.y);
     overlay.setParent(object);
 
     OVERLAYS.set(object, overlay);

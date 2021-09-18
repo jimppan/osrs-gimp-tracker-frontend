@@ -2,6 +2,8 @@ import { Hud } from "./hud/hud.js";
 import { HudObject, StageObject } from "./object.js";
 import { createOverlay, deleteOverlay, getOverlay } from "./overlays.js";
 import { SetDeveloperMode } from "./developer.js";
+import { SKILLS } from "./player.js";
+import { TILE_SIZE } from "./world.js";
 
 export class Input
 {
@@ -31,14 +33,14 @@ export class Input
         const oldScale = CAMERA.zoom.x;
         const mousePointTo = {
         x: CAMERA.getCursorPosition().x / oldScale - CAMERA.position.x / oldScale,
-        y: CAMERA.getCursorPosition().y / oldScale - CAMERA.position.y / oldScale
+        y: CAMERA.getCursorPosition().y / oldScale + CAMERA.position.y / oldScale
         };
 
         const newScale = deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
-        console.log(newScale);
+
         CAMERA.setZoom(newScale, newScale);
-        CAMERA.setPosition(-(mousePointTo.x - CAMERA.getCursorPosition().x / newScale) * newScale, -(mousePointTo.y - CAMERA.getCursorPosition().y / newScale) * newScale);
-    }
+        CAMERA.setPosition(-(mousePointTo.x - CAMERA.getCursorPosition().x / newScale) * newScale, (mousePointTo.y - CAMERA.getCursorPosition().y / newScale) * newScale);
+    }  
 
     unhoverObject(object)
     {
@@ -51,7 +53,6 @@ export class Input
 
         object.wasHovered = false;
         MOUSE_OVER_OBJECT = null;
-        HUD.hoverTooltip.update();
     }
 
     hoverObject(object)
@@ -65,7 +66,6 @@ export class Input
         }
         object.wasHovered = true;
         MOUSE_OVER_OBJECT = object;
-        HUD.hoverTooltip.update();
     }
 
     selectObject(object)
@@ -147,6 +147,21 @@ export class Input
         else if(e.data.buttons == 2)
         {
             // right click
+            console.log("CURSOR WORLD POS")
+            console.log(CAMERA.getCursorWorldPosition());
+            console.log("CURSOR POS")
+            console.log(CAMERA.getCursorPosition());
+
+            //console.log("INVERTED WORLD POS")
+            //console.log(CAMERA.getInvertedCursorWorldPosition());
+            var tilePos = {x: CAMERA.getCursorWorldPosition().x / TILE_SIZE, y: CAMERA.getCursorWorldPosition().y / TILE_SIZE}
+            //console.log(tilePos);
+       
+            HUD.xpdropper.addDrop(SKILLS.ATTACK, 500342);
+            HUD.xpdropper.addDrop(SKILLS.HITPOINTS, 500342);
+
+
+            HUD.xpdropper.displayDrops(CAMERA.getCursorWorldPosition());
 
         }
         else if(e.data.buttons == 4)
@@ -164,7 +179,8 @@ export class Input
     update()
     {
         HUD.mouseTooltip.update();
-        
+        HUD.hoverTooltip.update();
+
         // prio hud objects
         for(var i = HUD_OBJECTS.length-1; i >= 0; i--)
         {
@@ -173,7 +189,8 @@ export class Input
             {
                 // no need for any weird maths or conversions for HUD
                 var box = object.getInteractableRect();
-                var cursorPos = CAMERA.getCursorPosition();
+                //console.log(box);
+                var cursorPos = CAMERA.getInvertedCursorPosition();
 
                 if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
                     cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
@@ -202,7 +219,7 @@ export class Input
                 var cursorPos = CAMERA.getCursorWorldPosition();
 
                 if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
-                    cursorPos.y <= box.y && cursorPos.y > box.y + box.height)
+                    cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
                 {
                     if(!object.wasHovered)
                         this.hoverObject(object);
@@ -224,7 +241,7 @@ export class Input
             var currMouse = CAMERA.getCursorPosition();
                 
             var newX = CAMERA.position.x + (currMouse.x - this.mouseDownPos.x);
-            var newY = CAMERA.position.y + (currMouse.y - this.mouseDownPos.y);
+            var newY = CAMERA.position.y - (currMouse.y - this.mouseDownPos.y);
 
             CAMERA.setPosition(newX, newY);
 

@@ -2,6 +2,7 @@ import { StageObject, SpawnObject } from "../object.js";
 import { HoverTooltip } from "./hovertooltip.js";
 import { MainInterface } from "./maininterface.js"
 import { MouseTooltip } from "./mousetooltip.js";
+import { XPDropper } from "./xpdrop.js";
 
 const POINTER_CLICK_EMPTY_PATH = 
 [
@@ -29,14 +30,18 @@ export class Hud
         this.mainInterface = new MainInterface("MainInterface");
         this.hoverTooltip = new HoverTooltip("HoverTooltip");
         this.mouseTooltip = new MouseTooltip("MouseTooltip");
+        this.xpdropper = new XPDropper();
 
         SpawnObject(this.hoverTooltip);
         SpawnObject(this.mouseTooltip);
+
+        this.hoverTooltip.setPosition(0, window.innerHeight);
     }
 
     init()
     {
         this.mainInterface.init();
+        this.xpdropper.init();
 
         APP.loader.baseUrl = 'img/ui/';
         APP.loader.add(POINTER_CLICK_EMPTY_PATH);
@@ -66,7 +71,7 @@ export class Hud
         this.clickAnim.graphic.zIndex = 1;
 
         this.mainInterface.setVisibility(false);
-
+        this.mainInterface.setPosition(window.innerWidth, 0);
         SpawnObject(this.clickAnim);
         SpawnObject(this.mainInterface);
     }

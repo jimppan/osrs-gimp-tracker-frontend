@@ -40,7 +40,6 @@ export const SKILLS =
     TOTAL: 23,
 }
 
-
 export const SKILL_NAMES =
 [
     "Attack", "Defence","Strength","Hitpoints","Ranged","Prayer","Magic",
@@ -50,6 +49,21 @@ export const SKILL_NAMES =
     
     "Total", // total
 ]
+
+export const EQUIPMENT =
+{
+    AMMO: 0,
+    AMULET: 1,
+    BODY: 2,
+    BOOTS: 3, 
+    CAPE: 4,
+    GLOVES: 5,
+    HEAD: 6,
+    LEGS: 7,
+    RING: 8,
+    SHIELD: 9,
+    WEAPON: 10,
+}
 
 export const LEVELS = 
 [
@@ -116,30 +130,27 @@ export class Player extends WorldObject
 
         this.graphic = new PIXI.Graphics();
         this.graphic.beginFill(0x00ff00);
-        this.graphic.drawRect(0, 0, TILE_SIZE, -TILE_SIZE);
+        this.graphic.drawRect(0, 0, TILE_SIZE, TILE_SIZE);
         
         this.graphic.endFill();
 
-        this.width = TILE_SIZE;
-        this.height = -TILE_SIZE;
-
         this.graphic.zIndex = LAYERS.PLAYER;
         this.playerText.keepScale = true;
-        this.playerText.setPosition(this.gamePosition.x, this.gamePosition.y + 1);
+        this.playerText.setTilePosition(0, 1);
         this.playerText.interactable = true;
         this.addChild(this.playerText);
 
-        this.setPosition(this.gamePosition.x, this.gamePosition.y)
+        this.setTilePosition(0, 0)
     }
 
-    parsePacket(packet)
+    parsePacket(packet, wasConnect)
     {
         console.log(packet);
         if(packet.name != null)
             this.name = this.playerText.graphic.text = packet.name;
 
         if(packet.pos != null)
-            this.setPosition(packet.pos.x, packet.pos.y);
+            this.setTilePosition(packet.pos.x, packet.pos.y);
 
         if(packet.inventory != null)
         {
@@ -162,12 +173,21 @@ export class Player extends WorldObject
                 if(packet.skills[`${i}`] != null)
                 {
                     var skill = this.skills[i];
-                    skill.itemId = packet.skills[`${i}`].id;
-                    skill.experience = packet.skills[`${i}`].experience;
+                    var nextExperience = packet.skills[`${i}`].experience;
+
+                    if(!wasConnect)
+                    {
+                        // if it was an update by the client, lets start displaying xp drops
+                        HUD.xpdropper.addDrop(skill.skillId, nextExperience - skill.experience);
+                    }
+
+                    skill.skillId = packet.skills[`${i}`].id;
+                    skill.experience = nextExperience;
                 }
             }
+            HUD.xpdropper.displayDrops(this.getWorldPosition());
             HUD.mainInterface.update();
-        }
+        } 
     }
 }
 
@@ -185,7 +205,7 @@ export function ConnectPlayer(packet)
 
     var player = new Player();
     player.init();
-    player.parsePacket(packet);
+    player.parsePacket(packet, true);
     PLAYERS.set(packet.name, player);
 
     SpawnObject(player);

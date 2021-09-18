@@ -9,10 +9,10 @@ import { Player } from "../player.js";
 
 const INTERFACE_BUTTON_OFFSETS = 
 [
-    {x:-120, y:-317},
-    {x:-186, y:-317},
-    {x:-87, y:-317},
-    {x:-87, y:-19}
+    {x:-120, y:317},
+    {x:-186, y:317},
+    {x:-87, y:317},
+    {x:-87, y:19}
 ]
 
 const INTERFACE_TAB =
@@ -44,16 +44,16 @@ const INTERFACE_TAB_TITLES =
 const INTERFACE_BASE_OFFSETS = 
 [
     {x:0,y:0},
-    {x:0, y:-298},
+    {x:0, y:298},
     {x:0, y:0},
-    {x:-213, y:-37},
-    {x:-3, y:-37},
-    {x:-120, y:-317}
+    {x:-213, y:37},
+    {x:-3, y:37},
+    {x:-120, y:317}
 ]
 
 const INTERFACE_BASE =
 {
-    BACKROUND: 0,
+    BACKGROUND: 0,
     TOP: 1,
     BOTTOM: 2,
     LEFT_PILLAR: 3,
@@ -94,8 +94,6 @@ export class MainInterface extends Interface
         this.tabs[INTERFACE_TAB.SKILLS]    = new SkillsInterface("SkillsInterface");
         this.tabs[INTERFACE_TAB.EQUIPMENT] = new EquipmentInterface("EquipmentInterface");
         this.tabs[INTERFACE_TAB.SETTINGS]  = new SettingsInterface("SettingsInterface");
-
-        
     }
 
     init()
@@ -124,6 +122,15 @@ export class MainInterface extends Interface
 
     onAssetsLoaded()
     {
+        this.base[INTERFACE_BASE.BACKGROUND].graphic = new PIXI.Graphics();
+        this.base[INTERFACE_BASE.BACKGROUND].graphic.clear();
+        this.base[INTERFACE_BASE.BACKGROUND].graphic.beginFill(0x4d4d4d);
+        this.base[INTERFACE_BASE.BACKGROUND].graphic.alpha = 0.2;
+        this.base[INTERFACE_BASE.BACKGROUND].graphic.drawRect(0, 0, 200, 280);
+        this.base[INTERFACE_BASE.BACKGROUND].graphic.endFill();
+        this.base[INTERFACE_BASE.BACKGROUND].setParent(this);
+        this.base[INTERFACE_BASE.BACKGROUND].setPosition(-220, 30);
+
         for(var i = 0; i < INTERFACE_BASE_TEXTURES.length; i++)
         {
             if(INTERFACE_BASE_TEXTURES[i] == '')
@@ -132,10 +139,9 @@ export class MainInterface extends Interface
             this.base[i].graphic = new PIXI.Sprite(APP.loader.resources[INTERFACE_BASE_TEXTURES[i]].texture);
             this.base[i].setParent(this);
             this.base[i].setPosition(INTERFACE_BASE_OFFSETS[i].x, INTERFACE_BASE_OFFSETS[i].y);
+            this.base[i].graphic.anchor.set(0, 1);
         }
-
-        this.setAnchor(1, 1);
-        this.base[INTERFACE_BASE.BACKROUND].graphic = new PIXI.Graphics();
+        this.setAnchor(1, 0); // set base anchor to bottom right
 
         for(var i = 0; i < INTERFACE_TAB_TEXTURES.length; i++)
         {
@@ -149,10 +155,7 @@ export class MainInterface extends Interface
             this.buttons[i].interactable = true;
         }
 
-        this.base[INTERFACE_BASE.BACKROUND].graphic.beginFill(0x7F6F6F);
-        this.base[INTERFACE_BASE.BACKROUND].graphic.drawRect(-220, -305, 200, 300);
-        this.base[INTERFACE_BASE.BACKROUND].graphic.endFill();
-        this.base[INTERFACE_BASE.BACKROUND].graphic.alpha = 0.3;
+        //this.base[INTERFACE_BASE.BACKGROUND].graphic.scale = -1;
 
         for(var i = 0; i < INTERFACE_TAB.MAX; i++)
         {
@@ -161,9 +164,6 @@ export class MainInterface extends Interface
         }
 
         this.base[INTERFACE_BASE.SELECTED_TAB].setAnchor(0.5, 0.5);
-
-        this.setPosition(window.innerWidth, window.innerHeight);
-    
         this.openInterface(INTERFACE_TAB.INVENTORY);
     }
 
@@ -230,12 +230,16 @@ class MainInterfaceButton extends ImageButton
     // anchored by 0.5 0.5
     getInteractableRect()
     {
-        return {x: this.graphic.position.x - 16, y:this.graphic.position.y - 18, width: 32, height: 36}
+        
+        //return {x: this.graphic.getBounds().x - 16, y:this.graphic.getBounds().y - 18, width: 32, height: 36}
+        return {x: this.graphic.position.x - 16, y:this.graphic.position.y - 18, width: 32, height: 36};
     }
 
     onClick()
     {
-        console.log(this.getInteractableRect());
+        //console.log(this.getInteractableRect());
+        console.log(this.graphic.getBounds());
+        console.log({x: this.graphic.position.x - 16, y:this.graphic.position.y - 18, width: 32, height: 36});
         this.mainInterface.onInterfaceTabClicked(this.interfaceTab);
     }
 }

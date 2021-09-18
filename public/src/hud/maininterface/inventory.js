@@ -18,7 +18,7 @@ const ITEM_ICON_TEXT = new PIXI.TextStyle({
     dropShadowDistance: 16,
 })
 
-const INVENTORY_OFFSET = {x:-180, y:-275};
+const INVENTORY_OFFSET = {x:-180, y:275};
 
 export class InterfaceItemSlot extends HudObject
 {
@@ -42,7 +42,7 @@ export class InterfaceItemSlot extends HudObject
         this.icon.graphic.anchor.set(0.5, 0.5);
         this.text.graphic.anchor.set(0, 0.5);
 
-        this.text.setPosition(-18, -4);
+        this.text.setPosition(-18, 4);
         this.text.setParent(this.icon);
         this.icon.setParent(this);
         
@@ -93,11 +93,12 @@ export class InterfaceItemSlot extends HudObject
             }
 
             this.icon.graphic.texture = PIXI.Texture.from(`img/items/${itemIconId}.png`);
+            this.icon.graphic.texture.rotate = 8;
             this.text.graphic.text = `${this.quantity}`;
+            this.text.graphic.scale.y = -1;
             
             this.text.graphic.visible = this.quantity > 0 && comp.stackable && this.parent.isVisible();
             this.icon.graphic.visible = this.parent.isVisible();
-            console.log(this.quantity);
         }
     }
 }
@@ -117,7 +118,7 @@ export class InventoryInterface extends Interface
             var x = i % INVENTORY_ROWS;
             var y = Math.floor(i / INVENTORY_ROWS);
 
-            this.inventorySlots[i].setPosition(INVENTORY_OFFSET.x + (40 * x), INVENTORY_OFFSET.y + (36 * y));
+            this.inventorySlots[i].setPosition(INVENTORY_OFFSET.x + (40 * x), INVENTORY_OFFSET.y - (36 * y));
         }
     }
 

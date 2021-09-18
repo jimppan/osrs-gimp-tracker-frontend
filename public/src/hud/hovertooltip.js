@@ -1,4 +1,5 @@
-import { HudObject } from "../object.js";
+import { HudObject, StageObject, WorldObject } from "../object.js";
+import { TILE_SIZE } from "../world.js";
 
 const HUD_TEXT = new PIXI.TextStyle({
     fontFamily: 'OSRS Font',
@@ -20,6 +21,8 @@ export class HoverTooltip extends HudObject
 
         this.graphic.position.x = 2;
         this.graphic.position.y = 2;
+        this.graphic.scale.y = -1;
+
         this.graphic.resolution = 16;
         this.graphic.anchor.set(0, 0);
     }
@@ -31,13 +34,27 @@ export class HoverTooltip extends HudObject
 
     update()
     {
+        var text = ``;
+
         if(MOUSE_OVER_OBJECT != null)
         {
-            this.setText(MOUSE_OVER_OBJECT.name)
+            text = MOUSE_OVER_OBJECT.name;
+            if(MOUSE_OVER_OBJECT instanceof WorldObject)
+            {
+                var tile = MOUSE_OVER_OBJECT.getWorldPosition();
+                tile.x = Math.floor(tile.x / TILE_SIZE);
+                tile.y = Math.floor(tile.y / TILE_SIZE);
+
+                text += ` [${tile.x},${tile.y}]`;
+            }
         }
         else
         {
-            this.setText("")
+            var tile = CAMERA.getCursorWorldPosition();
+            tile.x = Math.floor(tile.x / TILE_SIZE);
+            tile.y = Math.floor(tile.y / TILE_SIZE);
+            text = `[${tile.x},${tile.y}]`;
         }
+        this.setText(text)
     }
 }

@@ -47,8 +47,7 @@ export class Chunk
     setSprite(mapId, zoomLevel, plane)
     {
         // invert Y position
-        var newY = (this.position.y - MAX_CHUNK_HEIGHT) * -1;
-        var spritePath = BuildChunkTexturePath(mapId, GIMP_TRACKER_CACHE_VERSION, zoomLevel, this.position.x, newY, plane);
+        var spritePath = BuildChunkTexturePath(mapId, GIMP_TRACKER_CACHE_VERSION, zoomLevel, this.position.x, this.position.y, plane);
         
         // this texture have not loaded, and we're waiting for it to load, add it to render queue
         if(APP.loader.resources[spritePath].texture == null)
@@ -131,20 +130,7 @@ export class World
     {
         this.map = new WorldMap();
         this.chunkData = null;
-        //this.loadChunkData();
     }
-
-    /* loadChunkData()
-    {
-        var chunkDataURL = "./chunkpos.json";
-        $.ajax({
-            type: 'GET',
-            url: chunkDataURL,
-            dataType: 'json',
-            success: (data) => {this.chunkData = data;},
-            async: false
-        });
-    } */
 
     init(mapID)
     {
@@ -168,7 +154,7 @@ export class World
             var chunk = new Chunk();
 
             // revert y chunks
-            chunk.init(chunks[j].x, (chunks[j].y - MAX_CHUNK_HEIGHT) *-1);
+            chunk.init(chunks[j].x, chunks[j].y);
             this.map.addChunk(chunk);
 
             var path = BuildChunkTexturePath(mapID, GIMP_TRACKER_CACHE_VERSION, MAP_ZOOM_LEVEL, chunks[j].x, chunks[j].y, chunks[j].z);
@@ -201,7 +187,7 @@ export class World
     }
 
     // perform voodoo to convert pixi space to osrs space
-    invertWorldPosY(y)
+    /* invertWorldPosY(y)
     {
         return -y + (MAX_CHUNK_HEIGHT * getChunkHeight()) + (CHUNK_TILE_HEIGHT * TILE_SIZE);
     }
@@ -209,7 +195,7 @@ export class World
     invertTilePosY(y)
     {
         return -y + (MAX_CHUNK_HEIGHT * CHUNK_TILE_HEIGHT) + CHUNK_TILE_HEIGHT - 1;
-    }
+    } */
 
     clearMap()
     {

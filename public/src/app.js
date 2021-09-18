@@ -23,7 +23,6 @@ var renderer = new PIXI.Renderer({
 })
 
 var stage = new PIXI.Container();
-
 var worldContainer = new PIXI.Container();
 
 var mapContainer = new PIXI.Container();
@@ -45,11 +44,10 @@ var ticker = new PIXI.Ticker();
 var loader = new PIXI.Loader();
 
 var isAssetsLoaded = false;
+var elapsedTime = 0;
 
 
 APP = {
-    stage: stage,
-
     worldContainer: worldContainer, // z = 0
 
     mapContainer: mapContainer, // z = 1
@@ -64,6 +62,7 @@ APP = {
     ticker: ticker,
     view: canvas,
 
+    elapsedTime:elapsedTime,
     isAssetsLoaded:isAssetsLoaded,
 }
 
@@ -81,16 +80,15 @@ hudContainer.sortableChildren = true;
 WORLD = new World();
 CAMERA = new Camera();
 
-// move X and Y in opposite direction because its the camera
-// camera will alight top left, so add window height / width divided by 2 to center it
-// add 64 to Y cuz im lazy to invert the coordinates for OSRS position
-// multiply by 4 since 1 tile is 4 pixels
-CAMERA.setPosition(50 * -256 + (window.innerWidth / 2), (50 * -256 + (window.innerHeight / 2)) - 64 * 4);
+CAMERA.setPosition(50 * -256 + (window.innerWidth / 2), 52 * -256);
 INPUT = new Input();
 RENDERQUEUE = new RenderQueue();
 HUD = new Hud();
 
-
+hudContainer.position.y = -window.innerHeight;
+devContainer.position.y = -window.innerHeight;
+stage.scale.y = -1;
+//worldContainer.scale.set(-1);
 // init functions call loader.load
 APP.loader.use(onTextureLoaded);
 APP.loader.reset();
@@ -141,11 +139,14 @@ function loaderComplete(loader, resources)
     APP.isAssetsLoaded = true;
     // once we finished preloading 
     console.log("Loaded assets.");
-
+    
     HUD.onAssetsLoaded();
-
+    
     // render loop
     ticker.add((delta) => {
+
+        APP.elapsedTime += ticker.elapsedMS;
+
         INPUT.update()
         CAMERA.update();
     
@@ -171,6 +172,7 @@ function onTextureLoaded(resource, next)
         return;
     }
 
+    resource.texture.rotate = 8;
     var chunk = RENDERQUEUE.get(resource.name);
     if(chunk == null)
     {

@@ -12,7 +12,8 @@ export function SetDeveloperMode(value)
                 continue;
 
             var rect = object.getInteractableRect();
-            
+            console.log(object.name)
+            console.log(rect);
             var hudObject = new DevObject("DevMode");
             
             hudObject.graphic = new PIXI.Graphics();

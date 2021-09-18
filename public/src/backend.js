@@ -47,7 +47,7 @@ export function ConnectToBackend()
             else
             {
                 // update state
-                player.parsePacket(packet)
+                player.parsePacket(packet, false)
             }
         });
     
