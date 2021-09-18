@@ -1,4 +1,4 @@
-import { HudObject } from "../../object.js";
+import { HudObject, HudText } from "../../object.js";
 import { Interface } from "../interface.js";
 import { LEVELS, Player, SKILLS, SKILL_NAMES } from "../../player.js";
 
@@ -131,8 +131,8 @@ export class InterfaceSkillSlot extends HudObject
 
         this.backgroundLeft  = new HudObject("InterfaceSkillBG1");
         this.backgroundRight = new HudObject("InterfaceSkillBG2");
-        this.text1     = new HudObject("InterfaceSkillText1");
-        this.text2     = new HudObject("InterfaceSkillText2");
+        this.text1           = new HudText("InterfaceSkillText1", '1', SKILLS_ICON_TEXT, 16);
+        this.text2           = new HudText("InterfaceSkillText2", '1', SKILLS_ICON_TEXT, 16);
 
         if(skillId == SKILLS.TOTAL)
             return;
@@ -143,7 +143,7 @@ export class InterfaceSkillSlot extends HudObject
 
     getInteractableRect()
     {
-        return {x: this.backgroundLeft.graphic.position.x, y:this.backgroundLeft.graphic.position.y - 14, width: 63, height: 30}
+        return {x: this.backgroundLeft.getWorldPosition().x, y:this.backgroundLeft.getWorldPosition().y - 14, width: 63, height: 30}
     }
 
     isVisible()
@@ -155,41 +155,35 @@ export class InterfaceSkillSlot extends HudObject
     {
         if(this.skillId == SKILLS.TOTAL)
         {
-            this.backgroundLeft.graphic  = new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.TOTAL_LEFT]].texture);
-            this.backgroundRight.graphic = new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.TOTAL_RIGHT]].texture);
+            this.backgroundLeft.setGraphic(new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.TOTAL_LEFT]].texture));
+            this.backgroundRight.setGraphic(new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.TOTAL_RIGHT]].texture));
 
-            this.text1.graphic = new PIXI.Text(`Total level:`, SKILLS_ICON_TEXT);
-            this.text2.graphic = new PIXI.Text(`0`, SKILLS_ICON_TEXT);
+            this.text1.setText(`Total level:`);
+            this.text2.setText(`0`);
         }
         else
         {
-            this.backgroundLeft.graphic  = new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.BACKGROUND_LEFT]].texture);
-            this.backgroundRight.graphic = new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.BACKGROUND_RIGHT]].texture);
-            this.skillIcon.graphic       = new PIXI.Sprite(APP.loader.resources[SKILLS_ICON_TEXTURES[this.skillId]].texture);
+            this.backgroundLeft.setGraphic(new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.BACKGROUND_LEFT]].texture));
+            this.backgroundRight.setGraphic(new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.BACKGROUND_RIGHT]].texture));
+            this.skillIcon.setGraphic(new PIXI.Sprite(APP.loader.resources[SKILLS_ICON_TEXTURES[this.skillId]].texture));
 
-            this.text1.graphic = new PIXI.Text(`1`, SKILLS_ICON_TEXT);
-            this.text2.graphic = new PIXI.Text(`1`, SKILLS_ICON_TEXT);
-
-            this.skillIcon.graphic.visible = false;
-            this.skillIcon.graphic.anchor.set(0.5, 0.5);
+            this.skillIcon.setVisibility(false);
+            this.skillIcon.setAnchor(0.5, 0.5);
             this.skillIcon.setPosition(-15, -1);
             this.skillIcon.setParent(this);
-            this.skillIcon.graphic.zIndex = 1;
+            this.skillIcon.setZIndex(1);
         }
 
-        this.text1.graphic.anchor.set(0.5, 0.5);
-        this.text2.graphic.anchor.set(0.5, 0.5);
-        
-        this.text1.graphic.resolution = 16;
-        this.text2.graphic.resolution = 16;
+        this.text1.setAnchor(0.5, 0.5);
+        this.text2.setAnchor(0.5, 0.5);
 
-        this.backgroundLeft.graphic.visible = false;
-        this.backgroundRight.graphic.visible = false;
-        this.text1.graphic.visible = false;
-        this.text2.graphic.visible = false;
+        this.backgroundLeft.setVisibility(false);
+        this.backgroundRight.setVisibility(false);
+        this.text1.setVisibility(false);
+        this.text2.setVisibility(false);
 
-        this.backgroundLeft.graphic.anchor.set(0, 0.5);
-        this.backgroundRight.graphic.anchor.set(0, 0.5);
+        this.backgroundLeft.setAnchor(0, 0.5);
+        this.backgroundRight.setAnchor(0, 0.5);
 
         this.backgroundLeft.setPosition(-31, 0);
         this.backgroundRight.setPosition(0, 0);
@@ -210,13 +204,10 @@ export class InterfaceSkillSlot extends HudObject
         this.text1.setParent(this);
         this.text2.setParent(this);
         
-        this.backgroundLeft.graphic.zIndex = 0;
-        this.backgroundRight.graphic.zIndex = 0;
-        this.text1.graphic.zIndex = 1;
-        this.text2.graphic.zIndex = 1;
-
-        this.text1.graphic.scale.y = -1;
-        this.text2.graphic.scale.y = -1;
+        this.backgroundLeft.setZIndex(0);
+        this.backgroundRight.setZIndex(0);
+        this.text1.setZIndex(1);
+        this.text2.setZIndex(1);
     }
 }
 
@@ -263,7 +254,10 @@ export class SkillsInterface extends Interface
     {
         var slot = this.getSlot(skillId);
         slot.experience = experience;
-        slot.text1.graphic.text = slot.text2.graphic.text =`${GetLevelFromExperience(slot.experience)}`;
+
+        var xp = GetLevelFromExperience(slot.experience);
+        slot.text1.setText(`${xp}`);
+        slot.text2.setText(`${xp}`);
     }
 
     getTotal()
@@ -289,6 +283,6 @@ export class SkillsInterface extends Interface
         {
             this.setExperience(i, SELECTED_OBJECT.skills[i].experience);
         }
-        this.getSlot(SKILLS.TOTAL).text2.graphic.text = `${this.getTotal()}`;
+        this.getSlot(SKILLS.TOTAL).text2.setText(`${this.getTotal()}`);
     }
 }

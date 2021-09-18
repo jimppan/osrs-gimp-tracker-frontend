@@ -10,18 +10,17 @@ export class StageObject
         this.children = [];              // array of StageObjects
         this.parent = null;              // StageObject parent
         this.keepScale = false;          // should this object keep its scale upon zooming
-        this.offset = {x: 0, y: 0};      // used for parents/children
 
         this.graphic = null;
-        //this.stage = null;
 
         this.interactable = false;       // can we interact with this object as a user
         this.wasHovered = false;         // was cursor on this object
         this.createOverlay = false;      // create overlay on this object upon cursor entering this object
         this.selectable = false;         // can we select this object
+        this.position = {}
 
-        this.scale = {x:1, y:1}          // scale of this object
         this.position = {x:0, y:0};      // position of this object
+       // this.scale = {x:1, y:1}          // scale of this object
     }
 
     // relative to parent
@@ -59,20 +58,6 @@ export class StageObject
             children[i].parent = null;
             this.children.splice(index, 1);
         }
-    }
-
-    getLocalWorldPosition() 
-    {
-        if(parent == null || this.graphic == null)
-            return {x: 0, y:0};
-
-
-        return {x:this.parent.graphic.position.x + this.offset.x * (1 / CAMERA.zoom.x), y:this.parent.graphic.position.y + this.offset.y * (1 / CAMERA.zoom.y)}
-    }
-
-    getLocalPosition()
-    {
-
     }
 
     onClick()
@@ -115,21 +100,19 @@ export class StageObject
     // automatically calculates bounds of an object, including all its children
     getInteractableRect()
     {
-        var rootParent = this.getRootParent();
-
-        var pos = rootParent.graphic.position;
-        var bl = rootParent.getBottomLeft(pos);
+        var pos = this.getWorldPosition();
+        var bl = this.getBottomLeft(pos);
 
         var pos2 = {};
-        pos2.x = rootParent.graphic.position.x;
-        pos2.y = rootParent.graphic.position.y;
+        pos2.x = this.getWorldPosition().x;
+        pos2.y = this.getWorldPosition().y;
         
         var zoom = this.keepScale?1/CAMERA.zoom.x:1.0;
 
-        pos2.x += rootParent.getWorldBounds().width;
-        pos2.y += rootParent.getWorldBounds().height;
+        pos2.x += this.getWorldBounds().width;
+        pos2.y += this.getWorldBounds().height;
 
-        var tr = rootParent.getTopRight(pos2);
+        var tr = this.getTopRight(pos2);
 
         return new PIXI.Rectangle(bl.x, bl.y, tr.x - bl.x, tr.y - bl.y)
     }
@@ -158,11 +141,11 @@ export class StageObject
             if(!this.children[i].interactable)
                 continue;
 
-            if(this.children[i].graphic.position.x < ret.x)
-                ret.x = this.children[i].graphic.position.x;
+            if(this.children[i].getWorldPosition().x < ret.x)
+                ret.x = this.children[i].getWorldPosition().x;
 
-            if(this.children[i].graphic.position.y < ret.y) // y is inverted, >=
-                ret.y = this.children[i].graphic.position.y;
+            if(this.children[i].getWorldPosition().y < ret.y)
+                ret.y = this.children[i].getWorldPosition().y;
         }
 
         // keep looking deep for interactable children
@@ -187,11 +170,11 @@ export class StageObject
             if(!this.children[i].interactable)
                 continue;
                 
-            if(this.children[i].graphic.position.x + this.children[i].getWorldBounds().width > ret.x)
-                ret.x = this.children[i].graphic.position.x + this.children[i].getWorldBounds().width;
+            if(this.children[i].getWorldPosition().x + this.children[i].getWorldBounds().width > ret.x)
+                ret.x = this.children[i].getWorldPosition().x + this.children[i].getWorldBounds().width;
 
-            if(this.children[i].graphic.position.y + this.children[i].getWorldBounds().height > ret.y) // y is inverted, <=
-                ret.y = this.children[i].graphic.position.y + this.children[i].getWorldBounds().height;
+            if(this.children[i].getWorldPosition().y + this.children[i].getWorldBounds().height > ret.y) // y is inverted, <=
+                ret.y = this.children[i].getWorldPosition().y + this.children[i].getWorldBounds().height;
         }
 
         for(var i = 0; i < this.children.length; i++)
@@ -203,6 +186,8 @@ export class StageObject
     setGraphic(graphic)
     {
         this.graphic = graphic;
+        this.graphic.position.x = this.position.x;
+        this.graphic.position.y = this.position.y;
     }
 
     setWorldPosition(x, y)
@@ -212,7 +197,13 @@ export class StageObject
         diff.y = y - diff.y;
 
         for(var i = 0; i < this.children.length; i++)
-            this.children[i].setWorldPosition(this.children[i].graphic.position.x + diff.x, this.children[i].graphic.position.y + diff.y);
+            this.children[i].setWorldPosition(this.children[i].getWorldPosition().x + diff.x, this.children[i].getWorldPosition().y + diff.y);
+
+        this.position.x = x;
+        this.position.y = y;
+
+        if(this.graphic == null)
+            return;
 
         this.graphic.position.x = x;
         this.graphic.position.y = y;
@@ -220,10 +211,7 @@ export class StageObject
 
     getWorldPosition() 
     {
-        if(this.graphic == null)
-            return {x: 0, y:0};
-
-        return {x:this.graphic.position.x, y:this.graphic.position.y};
+        return {x:this.position.x, y:this.position.y};
     }
 
     setTilePosition(x, y)
@@ -235,7 +223,7 @@ export class StageObject
     // gets osrs tile coordinates (inverts Y)
     getTilePosition()
     {
-        var pos = this.getPosition();
+        var pos = this.getWorldPosition();
         return {x:pos.x / TILE_SIZE, y:pos.y / TILE_SIZE}
     }
 
@@ -253,10 +241,15 @@ export class StageObject
         var newPos = CAMERA.screenToWorldPos(localBounds.x, localBounds.y);
         worldBounds.x = newPos.x;
         worldBounds.y = newPos.y;
-        worldBounds.width = localBounds.width * (1 / CAMERA.zoom.x) * this.scale.x;
-        worldBounds.height = localBounds.height * (1 / CAMERA.zoom.y) * this.scale.y;
+        worldBounds.width = localBounds.width * (1 / CAMERA.zoom.x);
+        worldBounds.height = localBounds.height * (1 / CAMERA.zoom.y);
 
         return worldBounds;
+    }
+
+    setZIndex(val)
+    {
+        this.graphic.zIndex = val;
     }
 
     onAssetsLoaded()
@@ -286,24 +279,7 @@ export class HudObject extends StageObject
 
     setPosition(x, y)
     {
-        var diff = this.getWorldPosition()
-        diff.x = x - diff.x;
-        diff.y = y - diff.y;
-
-        for(var i = 0; i < this.children.length; i++)
-            this.children[i].setPosition(this.children[i].getWorldPosition().x + diff.x, this.children[i].getWorldPosition().y + diff.y);
-
-        if(this.graphic != null)
-        {
-            this.graphic.position.x = x;
-            this.graphic.position.y = y;
-        }
-        else
-        {
-            // most likely a hud object, use gamePosition as screenpos
-            this.gamePosition.x = x;
-            this.gamePosition.y = y;
-        }
+        this.setWorldPosition(x, y);
     }
 
     getInteractableRect()
@@ -311,6 +287,23 @@ export class HudObject extends StageObject
         // invert bounds by default
         var bounds = this.graphic.getBounds();
         return {x:bounds.x, y:(bounds.y - window.innerHeight) * -1 - bounds.height, width:bounds.width, height:bounds.height};
+    }
+}
+
+export class HudText extends HudObject
+{
+    constructor(name, text, textStyle, resolution)
+    {
+        super(name);
+        this.setGraphic(new PIXI.Text(text, textStyle));
+        this.graphic.scale.y = -1;
+        this.graphic.resolution = resolution;
+        this.graphic.zIndex = 1;
+    }
+
+    setText(text)
+    {
+        this.graphic.text = text;
     }
 }
 

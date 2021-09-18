@@ -1,35 +1,13 @@
-import { HudObject, StageObject, WorldObject } from "../object.js";
+import { HudText, WorldObject } from "../object.js";
 import { TILE_SIZE } from "../world.js";
 
-const HUD_TEXT = new PIXI.TextStyle({
-    fontFamily: 'OSRS Font',
-    fontSize:'16px',
-    fill: ['#ffffff'],
-    //strokeThickness:1,
-    dropShadow : true,
-    dropShadowAlpha: 1,
-    dropShadowAngle:0.6,
-    dropShadowDistance: 16,
-})
-
-export class HoverTooltip extends HudObject
+export class HoverTooltip extends HudText
 {
-    constructor(name)
+    constructor(name, text, textStyle, resolution)
     {
-        super(name);
-        this.graphic = new PIXI.Text("", HUD_TEXT);
-
-        this.graphic.position.x = 2;
-        this.graphic.position.y = 2;
-        this.graphic.scale.y = -1;
-
+        super(name, text, textStyle, resolution);
         this.graphic.resolution = 16;
         this.graphic.anchor.set(0, 0);
-    }
-
-    setText(text)
-    {
-        this.graphic.text = text;
     }
 
     update()

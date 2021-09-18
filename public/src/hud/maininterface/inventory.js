@@ -1,5 +1,5 @@
 import { GetItemComposition } from "../../itemdatabase.js";
-import { HudObject } from "../../object.js";
+import { HudObject, HudText } from "../../object.js";
 import { Player } from "../../player.js";
 import { Interface } from "../interface.js";
 
@@ -29,24 +29,21 @@ export class InterfaceItemSlot extends HudObject
         this.itemId = itemId;
         this.quantity = 0;
         this.icon = new HudObject("InterfaceItemSlotIcon");
-        this.text = new HudObject("InterfaceItemSlotText");
+        this.text = new HudText("InterfaceItemSlotText", `${quantity}`, ITEM_ICON_TEXT, 16);
 
-        this.icon.graphic = new PIXI.Sprite();
-        this.text.graphic = new PIXI.Text(`${quantity}`, ITEM_ICON_TEXT);
-        this.text.graphic.resolution = 16;
+        this.icon.setGraphic(new PIXI.Sprite());
+
         this.icon.interactable = true;
 
-        this.icon.graphic.visible = false;
-        this.text.graphic.visible = false;
-        
-        this.icon.graphic.anchor.set(0.5, 0.5);
-        this.text.graphic.anchor.set(0, 0.5);
+        this.icon.setVisibility(false);
+        this.text.setVisibility(false);
+
+        this.icon.setAnchor(0.5, 0.5);
+        this.text.setAnchor(0, 0.5);
 
         this.text.setPosition(-18, 4);
         this.text.setParent(this.icon);
         this.icon.setParent(this);
-        
-        this.text.graphic.zIndex = 1;
     }
 
     setVisibility(value)
@@ -64,8 +61,8 @@ export class InterfaceItemSlot extends HudObject
             if(this.icon != null)
             {
                 this.icon.graphic.texture = null;
-                this.icon.graphic.visible = false;
-                this.text.graphic.visible = false;
+                this.icon.setVisibility(false);
+                this.text.setVisibility(false);
             }
         }
         else
@@ -94,11 +91,10 @@ export class InterfaceItemSlot extends HudObject
 
             this.icon.graphic.texture = PIXI.Texture.from(`img/items/${itemIconId}.png`);
             this.icon.graphic.texture.rotate = 8;
-            this.text.graphic.text = `${this.quantity}`;
-            this.text.graphic.scale.y = -1;
+            this.text.setText(`${this.quantity}`);
             
-            this.text.graphic.visible = this.quantity > 0 && comp.stackable && this.parent.isVisible();
-            this.icon.graphic.visible = this.parent.isVisible();
+            this.text.setVisibility(this.quantity > 0 && comp.stackable && this.parent.isVisible());
+            this.icon.setVisibility(this.parent.isVisible());
         }
     }
 }

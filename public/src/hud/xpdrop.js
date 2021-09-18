@@ -90,8 +90,8 @@ export class XPDrop extends StageObject
             this.graphic.scale.x = (1 / x);
             this.graphic.scale.y = (this.graphic.scale.y > 0?(1 / y):(-1 / y));
 
-            this.setWorldPosition(this.graphic.position.x, this.amountTravelled + (this.spawnPos.y - ((-1 / y) * (XP_DROP_OFFSET * this.spawnIndex))));
-            this.xpdropLabel.setWorldPosition(this.graphic.position.x + (1 / x) * 6, this.graphic.position.y + (1 / y) * -8);
+            this.setWorldPosition(this.getWorldPosition().x, this.amountTravelled + (this.spawnPos.y - ((-1 / y) * (XP_DROP_OFFSET * this.spawnIndex))));
+            this.xpdropLabel.setWorldPosition(this.getWorldPosition().x + (1 / x) * 6, this.getWorldPosition().y + (1 / y) * -8);
         }
     }
 }
@@ -161,7 +161,7 @@ export class XPDropper
             if(this.activeDrops[i].timeToKill <= -1)
                 continue;
 
-            var prevPos = this.activeDrops[i].graphic.position;
+            var prevPos = this.activeDrops[i].getWorldPosition();
             
             var delta = XP_DROP_TRAVEL_AMOUNT * APP.ticker.elapsedMS * (1 / CAMERA.zoom.y);
             this.activeDrops[i].amountTravelled += delta;

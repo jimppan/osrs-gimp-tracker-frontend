@@ -1,5 +1,5 @@
-import { HudObject, SpawnObject, StageObject} from "../object.js";
-import { ImageButton, ToggleButton } from "./button.js"
+import { HudObject } from "../object.js";
+import { ImageButton } from "./button.js"
 import { InventoryInterface } from "./maininterface/inventory.js";
 import { SkillsInterface } from "./maininterface/skills.js";
 import { EquipmentInterface } from "./maininterface/equipment.js";
@@ -180,7 +180,7 @@ export class MainInterface extends Interface
         this.tabs[interfaceTab].setVisibility(true);
         console.log("OPEN NEW INTERFACE: ", interfaceTab)
 
-        var pos = this.gamePosition;
+        var pos = this.position;
         this.base[INTERFACE_BASE.SELECTED_TAB].setPosition(pos.x + INTERFACE_BUTTON_OFFSETS[interfaceTab].x, pos.y + INTERFACE_BUTTON_OFFSETS[interfaceTab].y);
 
         this.currentTab = interfaceTab;
@@ -232,14 +232,14 @@ class MainInterfaceButton extends ImageButton
     {
         
         //return {x: this.graphic.getBounds().x - 16, y:this.graphic.getBounds().y - 18, width: 32, height: 36}
-        return {x: this.graphic.position.x - 16, y:this.graphic.position.y - 18, width: 32, height: 36};
+        return {x: this.getWorldPosition().x - 16, y:this.getWorldPosition().y - 18, width: 32, height: 36};
     }
 
     onClick()
     {
         //console.log(this.getInteractableRect());
         console.log(this.graphic.getBounds());
-        console.log({x: this.graphic.position.x - 16, y:this.graphic.position.y - 18, width: 32, height: 36});
+        console.log({x: this.getWorldPosition().x - 16, y:this.getWorldPosition().y - 18, width: 32, height: 36});
         this.mainInterface.onInterfaceTabClicked(this.interfaceTab);
     }
 }

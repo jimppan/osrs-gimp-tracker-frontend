@@ -2,6 +2,7 @@ import { TILE_SIZE, LAYERS} from "./world.js";
 import { WorldObject, WorldText, SpawnObject, DeleteObject} from "./object.js";
 import { INVALID_ITEM, INVENTORY_SIZE } from "./hud/maininterface/inventory.js";
 import { InterfaceSkillSlot } from "./hud/maininterface/skills.js";
+import { Camera } from "./camera.js";
 
 const PLAYER_TEXT_STYLE = new PIXI.TextStyle({
     fontFamily: 'OSRS Font',
@@ -13,56 +14,67 @@ const PLAYER_TEXT_STYLE = new PIXI.TextStyle({
 
 export const SKILLS =
 {
-    ATTACK: 0,
-    DEFENCE: 1,
-    STRENGTH: 2,
-    HITPOINTS: 3,
-    RANGED: 4,
-    PRAYER: 5,
-    MAGIC: 6,
-    COOKING: 7,
-    WOODCUTTING: 8,
-    FLETCHING: 9,
-    FISHING: 10,
-    FIREMAKING: 11,
-    CRAFTING: 12,
-    SMITHING: 13,
-    MINING: 14,
-    HERBLORE: 15,
-    AGILITY: 16,
-    THIEVING: 17,
-    SLAYER: 18,
-    FARMING: 19,
-    RUNECRAFT: 20,
-    HUNTER: 21,
+    ATTACK:       0,
+    DEFENCE:      1,
+    STRENGTH:     2,
+    HITPOINTS:    3,
+    RANGED:       4,
+    PRAYER:       5,
+    MAGIC:        6,
+    COOKING:      7,
+    WOODCUTTING:  8,
+    FLETCHING:    9,
+    FISHING:      10,
+    FIREMAKING:   11,
+    CRAFTING:     12,
+    SMITHING:     13,
+    MINING:       14,
+    HERBLORE:     15,
+    AGILITY:      16,
+    THIEVING:     17,
+    SLAYER:       18,
+    FARMING:      19,
+    RUNECRAFT:    20,
+    HUNTER:       21,
     CONSTRUCTION: 22,
 
-    TOTAL: 23,
+    TOTAL:        23,
 }
 
 export const SKILL_NAMES =
 [
-    "Attack", "Defence","Strength","Hitpoints","Ranged","Prayer","Magic",
-    "Cooking", "Woodcutting", "Fletching",  "Fishing", "Firemaking",
-    "Crafting", "Smithing", "Mining", "Herblore", "Agility", "Thieving", 
-    "Slayer", "Farming", "Runecrafting", "Hunter", "Construction", 
+    "Attack",   "Defence",  "Strength",     "Hitpoints", "Ranged",      "Prayer",
+    "Magic",    "Cooking",  "Woodcutting",  "Fletching", "Fishing",     "Firemaking",
+    "Crafting", "Smithing", "Mining",       "Herblore",  "Agility",     "Thieving", 
+    "Slayer",   "Farming",  "Runecrafting", "Hunter",    "Construction", 
     
     "Total", // total
 ]
 
+export const EQUIPMENT_NAMES =
+[
+    "Head", "Cape", "Amulet", "Weapon", "Body", "Shield", "Unknown1",
+    "Legs", "Unknown2", "Gloves", "Boots", "Unknown3", "Ring", "Ammo"
+]
+
 export const EQUIPMENT =
 {
-    AMMO: 0,
-    AMULET: 1,
-    BODY: 2,
-    BOOTS: 3, 
-    CAPE: 4,
-    GLOVES: 5,
-    HEAD: 6,
-    LEGS: 7,
-    RING: 8,
-    SHIELD: 9,
-    WEAPON: 10,
+    HEAD:     0,
+    CAPE:     1,
+    AMULET:   2,
+    WEAPON:   3,
+    BODY:     4,
+    SHIELD:   5,
+    UNKNOWN1: 6, // idk
+    LEGS:     7,
+    UNKNOWN2: 8, // idk
+    GLOVES:   9,
+    BOOTS:    10,
+    UNKNOWN3: 11, // idk
+    RING:     12,
+    AMMO:     13,
+
+    MAX:      14,
 }
 
 export const LEVELS = 
@@ -117,6 +129,10 @@ export class Player extends WorldObject
         this.skills = new Array(SKILLS.TOTAL);
         for(var i = 0; i < SKILLS.TOTAL; i++)
             this.skills[i] = new SkillSlot()
+
+        this.equipment = new Array(EQUIPMENT.MAX);
+        for(var i = 0; i < EQUIPMENT.MAX; i++)
+            this.equipment[i] = new InventorySlot(INVALID_ITEM, 0)
     }
 
     onClick()
@@ -138,6 +154,8 @@ export class Player extends WorldObject
         this.playerText.keepScale = true;
         this.playerText.setTilePosition(0, 1);
         this.playerText.interactable = true;
+        this.playerText.graphic.scale.x = (1 / CAMERA.zoom.x);
+        this.playerText.graphic.scale.y = (-1 / CAMERA.zoom.y);
         this.addChild(this.playerText);
 
         this.setTilePosition(0, 0)
@@ -145,6 +163,8 @@ export class Player extends WorldObject
 
     parsePacket(packet, wasConnect)
     {
+        var updateInterface = false;
+
         console.log(packet);
         if(packet.name != null)
             this.name = this.playerText.graphic.text = packet.name;
@@ -163,7 +183,7 @@ export class Player extends WorldObject
                     item.quantity = packet.inventory[`${i}`].quantity;
                 }
             }
-            HUD.mainInterface.update();
+            updateInterface = true;
         }
 
         if(packet.skills != null)
@@ -186,8 +206,25 @@ export class Player extends WorldObject
                 }
             }
             HUD.xpdropper.displayDrops(this.getWorldPosition());
+            updateInterface = true;
+        }
+
+        if(packet.equipment != null)
+        {
+            for(var i = 0; i < EQUIPMENT.MAX; i++)
+            {
+                if(packet.equipment[`${i}`] != null)
+                {
+                    var item = this.equipment[i];
+                    item.itemId = packet.equipment[`${i}`].id;
+                    item.quantity = packet.equipment[`${i}`].quantity;
+                }
+            }
+            updateInterface = true;
+        }
+
+        if(updateInterface)
             HUD.mainInterface.update();
-        } 
     }
 }
 

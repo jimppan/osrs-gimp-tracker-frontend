@@ -20,6 +20,17 @@ const POINTER_CLICK_OBJECT_PATH =
     '299-7.png',
 ]
 
+const HOVER_TOOL_TIP_TEXT_STYLE = new PIXI.TextStyle({
+    fontFamily: 'OSRS Font',
+    fontSize:'16px',
+    fill: ['#ffffff'],
+    //strokeThickness:1,
+    dropShadow : true,
+    dropShadowAlpha: 1,
+    dropShadowAngle:0.6,
+    dropShadowDistance: 16,
+})
+
 var POINTER_CLICK_EMPTY_TEXTURES = [];
 var POINTER_CLICK_OBJECT_TEXTURES = [];
 
@@ -28,7 +39,7 @@ export class Hud
     constructor()
     {
         this.mainInterface = new MainInterface("MainInterface");
-        this.hoverTooltip = new HoverTooltip("HoverTooltip");
+        this.hoverTooltip = new HoverTooltip("HoverTooltip", '', HOVER_TOOL_TIP_TEXT_STYLE, 16);
         this.mouseTooltip = new MouseTooltip("MouseTooltip");
         this.xpdropper = new XPDropper();
 
@@ -61,7 +72,7 @@ export class Hud
         }
 
         this.clickAnim = new StageObject("ClickAnimation");
-        this.clickAnim.graphic = new PIXI.AnimatedSprite(POINTER_CLICK_EMPTY_TEXTURES);
+        this.clickAnim.setGraphic(new PIXI.AnimatedSprite(POINTER_CLICK_EMPTY_TEXTURES));
 
         this.clickAnim.graphic.loop = false;
         this.clickAnim.graphic.animationSpeed = 0.15;
@@ -89,8 +100,7 @@ export class Hud
             this.clickAnim.graphic.textures = POINTER_CLICK_EMPTY_TEXTURES;
 
         var cursorPos = CAMERA.getCursorWorldPosition();
-        this.clickAnim.graphic.position.x = cursorPos.x;
-        this.clickAnim.graphic.position.y = cursorPos.y;
+        this.clickAnim.setWorldPosition(cursorPos.x, cursorPos.y);
         this.clickAnim.graphic.visible = true;
 
         this.clickAnim.graphic.gotoAndPlay(0);

@@ -28,11 +28,8 @@ export function createOverlay(object)
     var box = object.getInteractableRect();
     overlay.graphic.drawRect(0, 0, box.width, box.height);
     overlay.graphic.endFill();
-
-    box.x /= TILE_SIZE;
-    box.y /= TILE_SIZE;
-
-    overlay.setTilePosition(box.x, box.y);
+    
+    overlay.setWorldPosition(box.x, box.y);
     overlay.setParent(object);
 
     OVERLAYS.set(object, overlay);
