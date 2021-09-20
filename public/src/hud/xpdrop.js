@@ -1,5 +1,5 @@
 import { numberWithCommas } from "../helpers.js";
-import { StageObject, SpawnObject, DeleteObject} from "../object.js";
+import { StageObject, SpawnObject, DeleteObject, HudText, HudObject} from "../object.js";
 import { CHUNK_TILE_HEIGHT } from "../world.js";
 import { SKILLS_ICON_TEXTURES } from "./maininterface/skills.js";
 
@@ -45,54 +45,24 @@ export const XP_DROP_TEXTURES =
     '3208-0.png',
 ]
 
-export class XPDrop extends StageObject
+export class XPDrop extends HudObject
 {
     constructor(name, skillId, experience)
     {
         super(name);
 
-        // magic for keeping position and zoom
-        this.spawnPos = {x:0, y:0}
-        this.spawnIndex = 0;
-        this.amountTravelled = 0;
-
         this.skillId = skillId;
         this.experience = experience;
         this.graphic = new PIXI.Sprite(APP.loader.resources[XP_DROP_TEXTURES[this.skillId]].texture);
         this.timeToKill = -1;
-        this.keepScale = true;
         this.graphic.zIndex = 1;
         this.graphic.anchor.set(1,0.5);
 
-        this.xpdropLabel = new StageObject("XPDropLabel");
-        this.xpdropLabel.keepScale = true;
-        
-        this.xpdropLabel.graphic = new PIXI.Text(`${numberWithCommas(experience)}`, XPDROP_TEXT); 
-        this.xpdropLabel.graphic.resolution = 16;
+        this.xpdropLabel = new HudText("XPDropLabel", `${numberWithCommas(experience)}`, XPDROP_TEXT, 16);
+
         this.xpdropLabel.graphic.zIndex = 1;
-        
-        this.xpdropLabel.graphic.scale.x = (1 / CAMERA.zoom.x);
-        this.xpdropLabel.graphic.scale.y = (-1 / CAMERA.zoom.y);
-
-        this.xpdropLabel.graphic.anchor.set(0,0.5);
-        this.xpdropLabel.setWorldPosition((1 / CAMERA.zoom.x) * 6, (1 / CAMERA.zoom.y) * -8);
-
-        this.xpdropLabel.setParent(this);
-
-        this.graphic.scale.x = (1 / CAMERA.zoom.x);
-        this.graphic.scale.y = (1 / CAMERA.zoom.y);
-    }
-
-    onZoom(x, y)
-    {
-        if(this.keepScale)
-        {
-            this.graphic.scale.x = (1 / x);
-            this.graphic.scale.y = (this.graphic.scale.y > 0?(1 / y):(-1 / y));
-
-            this.setWorldPosition(this.getWorldPosition().x, this.amountTravelled + (this.spawnPos.y - ((-1 / y) * (XP_DROP_OFFSET * this.spawnIndex))));
-            this.xpdropLabel.setWorldPosition(this.getWorldPosition().x + (1 / x) * 6, this.getWorldPosition().y + (1 / y) * -8);
-        }
+        this.xpdropLabel.graphic.anchor.set(0,0);
+        this.xpdropLabel.attachTo(this, false, 2, 6);
     }
 }
 
@@ -126,14 +96,14 @@ export class XPDropper
         this.activeDrops = [];
     }
 
-    displayDrops(position)
+    displayDrops(object)
     {
+        var position = object.getWorldPosition();
         for(var i = 0; i < this.dropQueue.length; i++)
         {
-            this.dropQueue[i].amountTravelled = 0;
-            this.dropQueue[i].spawnIndex = i;
-            this.dropQueue[i].spawnPos = {x:position.x, y:position.y};
-            this.dropQueue[i].setWorldPosition(position.x, position.y - (-1 / CAMERA.zoom.y) * (XP_DROP_OFFSET * i));
+            this.dropQueue[i].attachTo(object, false, 0, XP_DROP_OFFSET * i)
+
+            //this.dropQueue[i].setPosition(position.x, position.y - (XP_DROP_OFFSET * i));
             this.dropQueue[i].timeToKill = APP.elapsedTime + XP_DROP_LIFE;
             
             SpawnObject(this.dropQueue[i]);
@@ -161,11 +131,11 @@ export class XPDropper
             if(this.activeDrops[i].timeToKill <= -1)
                 continue;
 
-            var prevPos = this.activeDrops[i].getWorldPosition();
+            var prevPos = this.activeDrops[i].getPosition();
             
-            var delta = XP_DROP_TRAVEL_AMOUNT * APP.ticker.elapsedMS * (1 / CAMERA.zoom.y);
-            this.activeDrops[i].amountTravelled += delta;
-            this.activeDrops[i].setWorldPosition(prevPos.x, prevPos.y + delta)
+            var delta = XP_DROP_TRAVEL_AMOUNT * APP.ticker.elapsedMS;
+
+            this.activeDrops[i].offset.y += delta;
             
             if(APP.elapsedTime >= this.activeDrops[i].timeToKill)
                 this.removeDrop(this.activeDrops[i]);

@@ -154,11 +154,11 @@ export class Input
             var worldPos = CAMERA.screenToWorldPos(cursorPos.x, cursorPos.y);
             console.log(worldPos);
        
-            HUD.xpdropper.addDrop(SKILLS.ATTACK, 500342);
-            HUD.xpdropper.addDrop(SKILLS.HITPOINTS, 500342);
+           // HUD.xpdropper.addDrop(SKILLS.ATTACK, 500342);
+           // HUD.xpdropper.addDrop(SKILLS.HITPOINTS, 500342);
 
 
-            HUD.xpdropper.displayDrops(CAMERA.getCursorWorldPosition());
+           // HUD.xpdropper.displayDrops(CAMERA.getInvertedCursorPosition());
 
         }
         else if(e.data.buttons == 4)

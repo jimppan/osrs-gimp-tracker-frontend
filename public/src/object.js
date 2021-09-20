@@ -514,6 +514,9 @@ export function SpawnObject(object)
     for(var i = 0; i < object.children.length; i++)
         SpawnObject(object.children[i]);
 
+    for(var i = 0; i < object.hudObjects.length; i++)
+        SpawnObject(object.hudObjects[i]);
+        
     if(object instanceof DevObject)
     {
         DEV_OBJECTS.push(object);
@@ -558,6 +561,9 @@ export function DeleteObject(object)
 {
     for(var i = 0; i < object.children.length; i++)
         DeleteObject(object.children[i]);
+
+    for(var i = 0; i < object.hudObjects.length; i++)
+        DeleteObject(object.hudObjects[i]);
 
     if(object instanceof DevObject)
     {
