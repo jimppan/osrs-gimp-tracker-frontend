@@ -53,7 +53,6 @@ export class Camera
         {
             var object = OBJECTS[i];
             object.onZoom(x, y);
-            updateOverlay(object);
         }
 
         this.needsUpdate = true;
@@ -100,15 +99,19 @@ export class Camera
 
     screenToWorldPos(x, y)
     {
-        const oldScale = this.zoom.x;
-        const point = {
-            x: x / oldScale - this.position.x / oldScale,
-            y: y / oldScale + this.position.y / oldScale,
-            };
+        var newX = x / this.zoom.x - this.position.x / this.zoom.x;
+        var newY = y / this.zoom.y + this.position.y / this.zoom.y;
 
-        return {x: point.x, y: -point.y};
-        //return  point;
+        return {x: newX, y: -newY};
     }
+
+    worldToScreenPos(x, y)
+    {
+        var newX = (x + this.position.x / this.zoom.x) * this.zoom.x;
+        var newY = -((y + this.position.y / this.zoom.y) * this.zoom.y);
+
+        return {x: newX, y: (newY - window.innerHeight) * -1}; 
+    } 
 
     isWorldPositionInView(x, y)
     {

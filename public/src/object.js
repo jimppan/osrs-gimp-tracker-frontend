@@ -8,6 +8,7 @@ export class StageObject
         this.name = name;                // name of this object
         this.gamePosition = {x:0, y:0};  // position ingame (if it has one)
         this.children = [];              // array of StageObjects
+        this.hudObjects = [];            // array of HudObjects
         this.parent = null;              // StageObject parent
         this.keepScale = false;          // should this object keep its scale upon zooming
 
@@ -97,6 +98,104 @@ export class StageObject
             this.graphic.anchor.set(x, y);
     }
 
+    getRootParent()
+    {
+        var parent = this;
+        while(parent.parent != null)
+            parent = parent.parent;
+
+        return parent;
+    }
+
+    setGraphic(graphic)
+    {
+        this.graphic = graphic;
+        this.graphic.position.x = this.position.x;
+        this.graphic.position.y = this.position.y;
+    }
+
+    setWorldPosition(x, y)
+    {
+        var diff = this.getWorldPosition()
+        diff.x = x - diff.x;
+        diff.y = y - diff.y;
+
+        for(var i = 0; i < this.children.length; i++)
+        {
+            var child = this.children[i];
+            var childPos = child.getWorldPosition();
+            
+            this.children[i].setWorldPosition(childPos.x + diff.x, childPos.y + diff.y);
+        }
+
+        this.position.x = x;
+        this.position.y = y;
+
+        if(this.graphic == null)
+            return;
+
+        this.graphic.position.x = x;
+        this.graphic.position.y = y;
+    }
+
+    getScreenPosition() 
+    {
+        return CAMERA.worldToScreenPos(this.position.x, this.position.y);
+    }
+
+    getWorldPosition() 
+    {
+        return {x:this.position.x, y:this.position.y};
+    }
+
+    // gets local position relative to parent, where 0, 0 is parents X & Y
+    getLocalPosition() 
+    {
+        if(this.parent == null)
+            return this.getWorldPosition();
+
+        var parentPos = this.parent.getWorldPosition();
+        return {x:parentPos.x - this.position.x, y:parentPos.y - this.position.y};
+    }
+
+    setTilePosition(x, y)
+    {
+        var translation = {x:x*TILE_SIZE, y:y * TILE_SIZE}
+        this.setWorldPosition(translation.x, translation.y);
+    }
+
+    // gets osrs tile coordinates (inverts Y)
+    getTilePosition()
+    {
+        var pos = this.getWorldPosition();
+        return {x:pos.x / TILE_SIZE, y:pos.y / TILE_SIZE}
+    }
+
+    // bounds on screen, position and width/height
+    getScreenBounds()
+    {
+        return this.graphic.getBounds();
+    }
+
+    getWorldBounds()
+    {
+        var localBounds = this.getScreenBounds();
+        var worldBounds = {};
+        
+        var newPos = CAMERA.screenToWorldPos(localBounds.x, localBounds.y);
+        worldBounds.x = newPos.x;
+        worldBounds.y = newPos.y;
+        worldBounds.width = localBounds.width * (1 / CAMERA.zoom.x);
+        worldBounds.height = localBounds.height * (1 / CAMERA.zoom.y);
+
+        return worldBounds;
+    }
+
+    setZIndex(val)
+    {
+        this.graphic.zIndex = val;
+    }
+
     // automatically calculates bounds of an object, including all its children
     getInteractableRect()
     {
@@ -106,8 +205,6 @@ export class StageObject
         var pos2 = {};
         pos2.x = this.getWorldPosition().x;
         pos2.y = this.getWorldPosition().y;
-        
-        var zoom = this.keepScale?1/CAMERA.zoom.x:1.0;
 
         pos2.x += this.getWorldBounds().width;
         pos2.y += this.getWorldBounds().height;
@@ -115,15 +212,6 @@ export class StageObject
         var tr = this.getTopRight(pos2);
 
         return new PIXI.Rectangle(bl.x, bl.y, tr.x - bl.x, tr.y - bl.y)
-    }
-
-    getRootParent()
-    {
-        var parent = this;
-        while(parent.parent != null)
-            parent = parent.parent;
-
-        return parent;
     }
 
     getBottomLeft(checkAgainstBL)
@@ -166,90 +254,25 @@ export class StageObject
 
         for(var i = 0; i < this.children.length; i++)
         {
+            var child = this.children[i];
             // ignore children that are not interactable
-            if(!this.children[i].interactable)
+            if(!child.interactable)
                 continue;
-                
-            if(this.children[i].getWorldPosition().x + this.children[i].getWorldBounds().width > ret.x)
-                ret.x = this.children[i].getWorldPosition().x + this.children[i].getWorldBounds().width;
+            
+            var xPos = child.getWorldPosition().x + child.getWorldBounds().width;
+            var yPos = child.getWorldPosition().y + child.getWorldBounds().height;
 
-            if(this.children[i].getWorldPosition().y + this.children[i].getWorldBounds().height > ret.y) // y is inverted, <=
-                ret.y = this.children[i].getWorldPosition().y + this.children[i].getWorldBounds().height;
+            if(xPos > ret.x)
+                ret.x = xPos;
+
+            if(yPos > ret.y) // y is inverted, <=
+                ret.y = yPos;
         }
 
         for(var i = 0; i < this.children.length; i++)
             ret = this.children[i].getTopRight(ret);
 
         return ret;
-    }
-
-    setGraphic(graphic)
-    {
-        this.graphic = graphic;
-        this.graphic.position.x = this.position.x;
-        this.graphic.position.y = this.position.y;
-    }
-
-    setWorldPosition(x, y)
-    {
-        var diff = this.getWorldPosition()
-        diff.x = x - diff.x;
-        diff.y = y - diff.y;
-
-        for(var i = 0; i < this.children.length; i++)
-            this.children[i].setWorldPosition(this.children[i].getWorldPosition().x + diff.x, this.children[i].getWorldPosition().y + diff.y);
-
-        this.position.x = x;
-        this.position.y = y;
-
-        if(this.graphic == null)
-            return;
-
-        this.graphic.position.x = x;
-        this.graphic.position.y = y;
-    }
-
-    getWorldPosition() 
-    {
-        return {x:this.position.x, y:this.position.y};
-    }
-
-    setTilePosition(x, y)
-    {
-        var translation = {x:x*TILE_SIZE, y:y * TILE_SIZE}
-        this.setWorldPosition(translation.x, translation.y);
-    }
-
-    // gets osrs tile coordinates (inverts Y)
-    getTilePosition()
-    {
-        var pos = this.getWorldPosition();
-        return {x:pos.x / TILE_SIZE, y:pos.y / TILE_SIZE}
-    }
-
-    // bounds on screen, position and width/height
-    getScreenBounds()
-    {
-        return this.graphic.getBounds();
-    }
-
-    getWorldBounds()
-    {
-        var localBounds = this.getScreenBounds();
-        var worldBounds = {};
-        
-        var newPos = CAMERA.screenToWorldPos(localBounds.x, localBounds.y);
-        worldBounds.x = newPos.x;
-        worldBounds.y = newPos.y;
-        worldBounds.width = localBounds.width * (1 / CAMERA.zoom.x);
-        worldBounds.height = localBounds.height * (1 / CAMERA.zoom.y);
-
-        return worldBounds;
-    }
-
-    setZIndex(val)
-    {
-        this.graphic.zIndex = val;
     }
 
     onAssetsLoaded()
@@ -264,9 +287,113 @@ export class WorldObject extends StageObject
     constructor(name)
     {
         super(name);
+        
 
+    }
 
-    } 
+    // automatically calculates bounds of an object, including all its children
+    getInteractableRect()
+    {
+        return super.getInteractableRect();
+    }
+
+    getBottomLeft(checkAgainstBL)
+    {
+        var bottomLeft = checkAgainstBL;
+
+        // make easy copy
+        var ret = {};
+        ret.x = bottomLeft.x;
+        ret.y = bottomLeft.y;
+
+        for(var i = 0; i < this.children.length; i++)
+        {
+            var child = this.children[i];
+            // ignore children that are not interactable
+            if(!child.interactable)
+                continue;
+
+            if(child.getWorldPosition().x < ret.x)
+                ret.x = child.getWorldPosition().x;
+
+            if(child.getWorldPosition().y < ret.y)
+                ret.y = child.getWorldPosition().y;
+        }
+
+        // check hudobjects too
+        for(var i = 0; i < this.hudObjects.length; i++)
+        {
+            var hudObject = this.hudObjects[i];
+            if(!hudObject.interactable)
+                continue;
+
+            var hudPos = hudObject.getInvertedYPosition();
+            var worldPos = CAMERA.screenToWorldPos(hudPos.x, hudPos.y);
+            if(worldPos.x < ret.x)
+                ret.x = worldPos.x;
+
+            if(worldPos.y < ret.y)
+                ret.y = worldPos.y;
+        }
+
+        // keep looking deep for interactable children
+        for(var i = 0; i < this.children.length; i++)
+            ret = this.children[i].getBottomLeft(ret);
+
+        return ret;
+    }
+
+    getTopRight(checkAgainstTR)
+    {
+        var topRight = checkAgainstTR;
+
+        // make easy copy
+        var ret = {};
+        ret.x = topRight.x;
+        ret.y = topRight.y;
+
+        for(var i = 0; i < this.children.length; i++)
+        {
+            var child = this.children[i];
+            // ignore children that are not interactable
+            if(!child.interactable)
+                continue;
+            var xPos = child.getWorldPosition().x + child.getWorldBounds().width;
+            var yPos = child.getWorldPosition().y + child.getWorldBounds().height;
+            
+            if(xPos > ret.x)
+                ret.x = xPos;
+
+            if(yPos > ret.y)
+                ret.y = yPos;
+        }
+
+        // check hudobjects too
+        for(var i = 0; i < this.hudObjects.length; i++)
+        {
+            var hudObject = this.hudObjects[i];
+            if(!hudObject.interactable)
+                continue;
+
+            var hudBounds = hudObject.getInteractableRect();
+            var pos = hudObject.getInvertedYPosition();
+            var worldPos = CAMERA.screenToWorldPos(pos.x, pos.y);
+
+            var xPos = worldPos.x + (hudBounds.width * (1 / CAMERA.zoom.x));
+            var yPos = worldPos.y + (hudBounds.height * (1 / CAMERA.zoom.y));
+
+            if(xPos > ret.x)
+                ret.x = xPos;
+
+            if(yPos > ret.y)
+                ret.y = yPos;
+        }
+
+        for(var i = 0; i < this.children.length; i++)
+            ret = this.children[i].getTopRight(ret);
+
+        return ret;
+    }
 }
 
 // object in the world
@@ -275,6 +402,10 @@ export class HudObject extends StageObject
     constructor(name)
     {
         super(name);
+
+        this.offset = {x:0, y:0};
+        this.scaleOffset = false;
+        this.attachedTo = null;
     } 
 
     setPosition(x, y)
@@ -282,12 +413,54 @@ export class HudObject extends StageObject
         this.setWorldPosition(x, y);
     }
 
-    getInteractableRect()
+    getPosition()
+    {
+        return this.getWorldPosition();
+    }
+
+    getScreenPosition() 
+    {
+        return this.getPosition();;
+    }
+
+    getInvertedYPosition()
+    {
+        var pos = this.getWorldPosition();
+        return {x: pos.x, y:(pos.y - window.innerHeight) * -1};
+    }
+
+    attachTo(object, scaleOffset, offsetX, offsetY)
+    {
+        this.attachedTo = object;
+        this.scaleOffset = scaleOffset;
+        this.offset.x = offsetX;
+        this.offset.y = offsetY;
+
+        object.hudObjects.push(this);
+    }
+
+    detachFrom(object)
+    {
+        this.attachedTo = null;
+
+        var index = object.hudObjects.indexOf(object);
+        if(index > -1)
+            object.hudObjects.splice(index, 1);
+    }
+
+    /* getInteractableRect()
     {
         // invert bounds by default
         var bounds = this.graphic.getBounds();
         return {x:bounds.x, y:(bounds.y - window.innerHeight) * -1 - bounds.height, width:bounds.width, height:bounds.height};
-    }
+    } */
+
+    getInteractableRect()
+    {
+        // invert bounds by default
+        var bounds = this.graphic.getBounds();
+        return {x:bounds.x, y:bounds.y, width:bounds.width, height:bounds.height};
+    } 
 }
 
 export class HudText extends HudObject
@@ -324,7 +497,7 @@ export class WorldText extends StageObject
         this.setGraphic(new PIXI.Text(textString, textStyle))
         this.graphic.resolution = 64;
         this.graphic.anchor.set(0, 1); // set anchor bottom left to scale properly with object children and what not
-        this.graphic.scale.y = -1
+        this.graphic.scale.y = -1;
     }
 }
 

@@ -1,16 +1,7 @@
 import { TILE_SIZE, LAYERS} from "./world.js";
-import { WorldObject, WorldText, SpawnObject, DeleteObject} from "./object.js";
+import { WorldText, SpawnObject, DeleteObject, HudText} from "./object.js";
 import { INVALID_ITEM, INVENTORY_SIZE } from "./hud/maininterface/inventory.js";
-import { InterfaceSkillSlot } from "./hud/maininterface/skills.js";
-import { Camera } from "./camera.js";
-
-const PLAYER_TEXT_STYLE = new PIXI.TextStyle({
-    fontFamily: 'OSRS Font',
-    fontSize:'16px',
-    fill: ['#00ff00'],
-    strokeThickness:2,
-    dropShadow : false,
-})
+import { Actor } from "./actor/actor.js";
 
 export const SKILLS =
 {
@@ -93,6 +84,15 @@ export const LEVELS =
 
 ]
 
+const WORLD_TEXT_STYLE = new PIXI.TextStyle({
+    fontFamily: 'OSRS Font Plain',
+    fontSize:'16px',
+    fill: ['#00ccff'],
+    strokeThickness:2,
+    dropShadow : false,
+    trim:true
+})
+
 export class InventorySlot
 {
     constructor(itemId, quantity)
@@ -111,16 +111,17 @@ export class SkillSlot
     }
 }
 
-export class Player extends WorldObject
+export class Player extends Actor
 {
-    constructor(name)
+    constructor(name, color, position)
     {
-        super(name);
+        super(name, color, position);
 
-        this.playerText = new WorldText("PlayerText", name, PLAYER_TEXT_STYLE);
-        this.gamePosition = {x:0,y:0};
-        this.createOverlay = true;
-        this.selectable = true;
+        this.worldLabel = new HudText("PlayerTextWorld", '', WORLD_TEXT_STYLE, 4);
+        this.worldLabel.attachTo(this.label, false, 0, 12);
+        this.worldLabel.setAnchor(0, 1);
+        this.worldLabel.interactable = true;
+        SpawnObject(this.worldLabel);
 
         this.inventory = new Array(INVENTORY_SIZE);
         for(var i = 0; i < INVENTORY_SIZE; i++)
@@ -137,37 +138,19 @@ export class Player extends WorldObject
 
     onClick()
     {
-        //HUD.mainInterface.update();
+    
     }
 
-    init()
-    {
-        this.interactable = true;
-
-        this.graphic = new PIXI.Graphics();
-        this.graphic.beginFill(0x00ff00);
-        this.graphic.drawRect(0, 0, TILE_SIZE, TILE_SIZE);
-        
-        this.graphic.endFill();
-
-        this.graphic.zIndex = LAYERS.PLAYER;
-        this.playerText.keepScale = true;
-        this.playerText.setTilePosition(0, 1);
-        this.playerText.interactable = true;
-        this.playerText.graphic.scale.x = (1 / CAMERA.zoom.x);
-        this.playerText.graphic.scale.y = (-1 / CAMERA.zoom.y);
-        this.addChild(this.playerText);
-
-        this.setTilePosition(0, 0)
-    }
-
-    parsePacket(packet, wasConnect)
+    parsePacket(packet, firstPacket)
     {
         var updateInterface = false;
 
         console.log(packet);
         if(packet.name != null)
-            this.name = this.playerText.graphic.text = packet.name;
+            this.name = this.label.graphic.text = packet.name;
+
+        if(packet.world != null)
+            this.world = this.worldLabel.graphic.text = `W${packet.world}`;
 
         if(packet.pos != null)
             this.setTilePosition(packet.pos.x, packet.pos.y);
@@ -195,7 +178,7 @@ export class Player extends WorldObject
                     var skill = this.skills[i];
                     var nextExperience = packet.skills[`${i}`].experience;
 
-                    if(!wasConnect)
+                    if(!firstPacket)
                     {
                         // if it was an update by the client, lets start displaying xp drops
                         HUD.xpdropper.addDrop(skill.skillId, nextExperience - skill.experience);
@@ -224,7 +207,7 @@ export class Player extends WorldObject
         }
 
         if(updateInterface)
-            HUD.mainInterface.update();
+            HUD.updateInterface();
     }
 }
 
@@ -240,8 +223,7 @@ export function ConnectPlayer(packet)
 
     console.log("Player connected: ", packet.name);
 
-    var player = new Player();
-    player.init();
+    var player = new Player(packet.name, 0x00ff00, {x:0, y:0});
     player.parsePacket(packet, true);
     PLAYERS.set(packet.name, player);
 

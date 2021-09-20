@@ -59,7 +59,6 @@ export class Input
     {
         if(object.createOverlay)
         {
-
             var overlay = getOverlay(object);
             if(overlay == null)
                 createOverlay(object);
@@ -81,7 +80,7 @@ export class Input
         }
 
         SELECTED_OBJECT = MOUSE_OVER_OBJECT;
-        HUD.update();
+        HUD.updateInterface();
     }
 
     deselectObject()
@@ -97,7 +96,7 @@ export class Input
         }
 
         SELECTED_OBJECT = null;
-        HUD.update();
+        HUD.updateInterface();
     }
 
     onKeyPress(e)
@@ -147,15 +146,13 @@ export class Input
         else if(e.data.buttons == 2)
         {
             // right click
-            console.log("CURSOR WORLD POS")
-            console.log(CAMERA.getCursorWorldPosition());
+            var cursorPos = CAMERA.getCursorPosition();
             console.log("CURSOR POS")
-            console.log(CAMERA.getCursorPosition());
+            console.log(cursorPos);
 
-            //console.log("INVERTED WORLD POS")
-            //console.log(CAMERA.getInvertedCursorWorldPosition());
-            var tilePos = {x: CAMERA.getCursorWorldPosition().x / TILE_SIZE, y: CAMERA.getCursorWorldPosition().y / TILE_SIZE}
-            //console.log(tilePos);
+            console.log("CURSOR SCREEN TO WORLD")
+            var worldPos = CAMERA.screenToWorldPos(cursorPos.x, cursorPos.y);
+            console.log(worldPos);
        
             HUD.xpdropper.addDrop(SKILLS.ATTACK, 500342);
             HUD.xpdropper.addDrop(SKILLS.HITPOINTS, 500342);
@@ -174,64 +171,6 @@ export class Input
     onMouseUp(e)
     {
         this.mouseIsDown = false;
-    }
-
-    update()
-    {
-        HUD.mouseTooltip.update();
-        HUD.hoverTooltip.update();
-
-        // prio hud objects
-        for(var i = HUD_OBJECTS.length-1; i >= 0; i--)
-        {
-            var object = HUD_OBJECTS[i];
-            if(object.interactable && object.isVisible())
-            {
-                // no need for any weird maths or conversions for HUD
-                var box = object.getInteractableRect();
-                //console.log(box);
-                var cursorPos = CAMERA.getInvertedCursorPosition();
-
-                if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
-                    cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
-                {
-                    if(!object.wasHovered)
-                        this.hoverObject(object);
-                    return;
-                }
-                else
-                {
-                    if(object.wasHovered)
-                        this.unhoverObject(object);
-
-                }
-            }
-        }
-
-        for(var i = OBJECTS.length-1; i >= 0; i--)
-        {
-            var object = OBJECTS[i];
-
-            // this is a root and its interactable
-            if(object.interactable && object.parent == null && object.isVisible())
-            {
-                var box = object.getInteractableRect();
-                var cursorPos = CAMERA.getCursorWorldPosition();
-
-                if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
-                    cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
-                {
-                    if(!object.wasHovered)
-                        this.hoverObject(object);
-                    return;
-                }
-                else
-                {
-                    if(object.wasHovered)
-                        this.unhoverObject(object);
-                }
-            }
-        }
     }
 
     onMouseMove()

@@ -1,4 +1,5 @@
 import { StageObject, SpawnObject } from "../object.js";
+import { updateOverlay } from "../overlays.js";
 import { HoverTooltip } from "./hovertooltip.js";
 import { MainInterface } from "./maininterface.js"
 import { MouseTooltip } from "./mousetooltip.js";
@@ -87,9 +88,79 @@ export class Hud
         SpawnObject(this.mainInterface);
     }
 
-    update()
+    updateInterface()
     {
         this.mainInterface.update();
+    }
+
+    update()
+    {
+        HUD.mouseTooltip.update();
+        HUD.hoverTooltip.update();
+
+        // prio hud objects
+        for(var i = HUD_OBJECTS.length-1; i >= 0; i--)
+        {
+            var object = HUD_OBJECTS[i];
+            if(object.attachedTo != null)
+            {
+                var attachedToPos = object.attachedTo.getScreenPosition();
+
+                var scale = 1;
+                if(object.scaleOffset)
+                    scale = CAMERA.zoom.x;
+
+                attachedToPos.x += object.offset.x * scale;
+                attachedToPos.y += object.offset.y * scale;
+
+                object.setPosition(attachedToPos.x, attachedToPos.y);
+            }
+            else if(object.interactable && object.isVisible())
+            {
+                // no need for any weird maths or conversions for HUD
+                var box = object.getInteractableRect();
+
+                var cursorPos = CAMERA.getInvertedCursorPosition();
+
+                if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
+                    cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
+                {
+                    if(!object.wasHovered)
+                        INPUT.hoverObject(object);
+                    return;
+                }
+                else
+                {
+                    if(object.wasHovered)
+                        INPUT.unhoverObject(object);
+               }
+            }
+        }
+
+        for(var i = OBJECTS.length-1; i >= 0; i--)
+        {
+            var object = OBJECTS[i];
+            updateOverlay(object);
+            // this is a root and its interactable
+            if(object.interactable && object.parent == null && object.isVisible())
+            {
+                var box = object.getInteractableRect();
+                var cursorPos = CAMERA.getCursorWorldPosition();
+
+                if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
+                    cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
+                {
+                    if(!object.wasHovered)
+                        INPUT.hoverObject(object);
+                    return;
+                }
+                else
+                {
+                    if(object.wasHovered)
+                        INPUT.unhoverObject(object);
+                }
+            }
+        }
     }
 
     playClickAnimation()

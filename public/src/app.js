@@ -147,8 +147,8 @@ function loaderComplete(loader, resources)
 
         APP.elapsedTime += ticker.elapsedMS;
 
-        INPUT.update()
         CAMERA.update();
+        HUD.update();
     
         devContainer.visible = DEVELOPER_MODE;
     

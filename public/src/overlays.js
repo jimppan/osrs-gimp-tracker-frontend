@@ -13,6 +13,7 @@ export function updateOverlay(object)
     overlay.graphic.alpha = 0.3;
 
     var box = object.getInteractableRect();
+
     overlay.graphic.drawRect(0, 0, box.width, box.height);
     overlay.graphic.endFill();
 }
@@ -26,6 +27,7 @@ export function createOverlay(object)
     overlay.graphic.alpha = 0.3;
 
     var box = object.getInteractableRect();
+
     overlay.graphic.drawRect(0, 0, box.width, box.height);
     overlay.graphic.endFill();
     
