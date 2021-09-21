@@ -1,13 +1,13 @@
 import {} from "./font.js"
 
-import { Camera} from './camera.js'
 import { World } from "./world.js";
 import { Input } from "./input.js";
-import { RenderQueue } from "./renderqueue.js"
+import { Camera} from './camera.js'
 import { AddItemComposition } from "./itemdatabase.js";
 import { Hud } from "./hud/hud.js"
 
 import { ConnectToBackend } from "./backend.js" // idk whats going on but if I load font after I connect socket, fonts wont load
+import { ResourceManager } from "./resource/resourcemanager.js";
 
 
 const canvas = document.getElementById('osrscanvas');
@@ -43,6 +43,8 @@ stage.addChild(devContainer);
 var ticker = new PIXI.Ticker();
 var loader = new PIXI.Loader();
 
+var resourceManager = new ResourceManager(loader);
+
 var isAssetsLoaded = false;
 var elapsedTime = 0;
 
@@ -57,6 +59,7 @@ APP = {
     hudContainer: hudContainer, // z = 4
     devContainer: devContainer, // z = 5
 
+    resourceManager: resourceManager,
     renderer: renderer,
     loader: loader,
     ticker: ticker,
@@ -80,31 +83,26 @@ hudContainer.sortableChildren = true;
 WORLD = new World();
 CAMERA = new Camera();
 
-CAMERA.setPosition(50 * -256 + (window.innerWidth / 2), 52 * -256);
+CAMERA.setTargetPosition(50 * 256, 50 * 256);
+
 INPUT = new Input();
-RENDERQUEUE = new RenderQueue();
 HUD = new Hud();
 
 hudContainer.position.y = -window.innerHeight;
 devContainer.position.y = -window.innerHeight;
 stage.scale.y = -1;
-//worldContainer.scale.set(-1);
-// init functions call loader.load
-APP.loader.use(onTextureLoaded);
-APP.loader.reset();
 
-
-var chunkposJsonURL = "./chunkpos.json";
+var regionposJsonURL = "./regionpos.json";
 var itemcompJsonURL = "./itemcomp.json";
 
 // load json data first, needed to preload textures
 $.ajax({
     type: 'GET',
-    url: chunkposJsonURL,
+    url: regionposJsonURL,
     dataType: 'json',
-    success: (chunkpos) => 
+    success: (regionpos) => 
     {
-        JSON_MAP_DATA = chunkpos;
+        JSON_MAP_DATA = regionpos;
         $.ajax({
             type: 'GET',
             url: itemcompJsonURL,
@@ -116,16 +114,14 @@ $.ajax({
                     var item = itemcomp.items[i];
                     AddItemComposition(item.id, item.name, item.stackable, item.tradable);
                 }
-
-                APP.loader.reset();
-
+                
                 // init
                 INPUT.init();
-                WORLD.init(0);
+                WORLD.init();
                 HUD.init();
-
+                
                 // preload textures
-                APP.loader.load(loaderComplete);
+                APP.resourceManager.load(assetsLoaded);
             },
             async: false
         });
@@ -134,16 +130,17 @@ $.ajax({
 });
 
 // once we loaded resources, start the app
-function loaderComplete(loader, resources)
+function assetsLoaded()
 {
     APP.isAssetsLoaded = true;
     // once we finished preloading 
     console.log("Loaded assets.");
-    
+
     HUD.onAssetsLoaded();
-    
+
     // render loop
-    ticker.add((delta) => {
+    ticker.add((delta) => 
+    {
 
         APP.elapsedTime += ticker.elapsedMS;
 
@@ -159,26 +156,4 @@ function loaderComplete(loader, resources)
     ticker.start();
     
     document.body.appendChild(APP.view);
-}
-
-// late loading textures
-function onTextureLoaded(resource, next)
-{
-    //e.name = resource name
-    //e.error is null if success
-    if(resource.error)
-    {
-        next();
-        return;
-    }
-
-    resource.texture.rotate = 8;
-    var chunk = RENDERQUEUE.get(resource.name);
-    if(chunk == null)
-    {
-        next();
-        return;
-    }
-
-    chunk.sprite.texture = resource.texture;
 }

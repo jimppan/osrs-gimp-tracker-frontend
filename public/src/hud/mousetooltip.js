@@ -1,6 +1,6 @@
 import { numberWithCommas } from "../helpers.js";
 import { HudObject, HudText } from "../object.js";
-import { SKILL_NAMES } from "../player.js";
+import { SKILLS, SKILL_NAMES } from "../player.js";
 import { InterfaceSkillSlot, GetGoalExperience, GetRemainingExperienceToGoal } from "./maininterface/skills.js";
 
 const TOOLTIP_TEXT_LEFT = new PIXI.TextStyle({
@@ -46,20 +46,30 @@ export class MouseTooltip extends HudObject
         {
             if(MOUSE_OVER_OBJECT instanceof InterfaceSkillSlot)
             {
-                this.leftText.setText(`${SKILL_NAMES[MOUSE_OVER_OBJECT.skillId]} XP:\nNext level at:\nRemaining XP:`);
+                
 
                 var currentXP = MOUSE_OVER_OBJECT.experience;
                 var goalXP = GetGoalExperience(currentXP);
                 var remainingXP = GetRemainingExperienceToGoal(currentXP);
 
-                this.rightText.setText(`${numberWithCommas(currentXP)}\n${numberWithCommas(goalXP)}\n${numberWithCommas(remainingXP)}`);
+                if(MOUSE_OVER_OBJECT.skillId == SKILLS.TOTAL)
+                {
+                    this.leftText.setText(`${SKILL_NAMES[MOUSE_OVER_OBJECT.skillId]} XP: `);
+                    this.rightText.setText(`${numberWithCommas(currentXP)}`);
+                }
+                else
+                {
+                    this.leftText.setText(`${SKILL_NAMES[MOUSE_OVER_OBJECT.skillId]} XP: \nNext level at: \nRemaining XP: `);
+                    this.rightText.setText(`${numberWithCommas(currentXP)}\n${numberWithCommas(goalXP)}\n${numberWithCommas(remainingXP)}`);
+                }
+                
 
                 var pos = CAMERA.getInvertedCursorPosition();
                 var bounds = this.getScreenBounds();
                 var newPos = CAMERA.clampToView({x:pos.x, y:pos.y, width:bounds.width, height:bounds.height});
 
                 this.setPosition(newPos.x, newPos.y + bounds.height);
-                this.rightText.setPosition(this.leftText.getScreenBounds().x + this.leftText.getScreenBounds().width, this.rightText.getWorldPosition().y);
+                this.rightText.setPosition(this.leftText.getScreenBounds().x + this.leftText.getScreenBounds().width, this.rightText.getPosition().y);
 
                 this.graphic.clear();
                 this.graphic.beginFill(0xffffe6);

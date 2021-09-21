@@ -1,5 +1,6 @@
 import { StageObject, SpawnObject } from "../object.js";
 import { updateOverlay } from "../overlays.js";
+import { Player } from "../player.js";
 import { HoverTooltip } from "./hovertooltip.js";
 import { MainInterface } from "./maininterface.js"
 import { MouseTooltip } from "./mousetooltip.js";
@@ -55,10 +56,8 @@ export class Hud
         this.mainInterface.init();
         this.xpdropper.init();
 
-        APP.loader.baseUrl = 'img/ui/';
-        APP.loader.add(POINTER_CLICK_EMPTY_PATH);
-        APP.loader.add(POINTER_CLICK_OBJECT_PATH);
-        APP.loader.baseUrl = '';
+        APP.resourceManager.add('img/ui/', POINTER_CLICK_EMPTY_PATH);
+        APP.resourceManager.add('img/ui/', POINTER_CLICK_OBJECT_PATH);
     }
 
     onAssetsLoaded()
@@ -68,8 +67,8 @@ export class Hud
         // set animation texture arrays
         for(var i = 0; i < POINTER_CLICK_EMPTY_PATH.length; i++)
         {
-            POINTER_CLICK_EMPTY_TEXTURES.push(APP.loader.resources[POINTER_CLICK_EMPTY_PATH[i]].texture);
-            POINTER_CLICK_OBJECT_TEXTURES.push(APP.loader.resources[POINTER_CLICK_OBJECT_PATH[i]].texture);
+            POINTER_CLICK_EMPTY_TEXTURES.push(APP.resourceManager.getTexture(POINTER_CLICK_EMPTY_PATH[i]));
+            POINTER_CLICK_OBJECT_TEXTURES.push(APP.resourceManager.getTexture(POINTER_CLICK_OBJECT_PATH[i]));
         }
 
         this.clickAnim = new StageObject("ClickAnimation");
@@ -113,12 +112,25 @@ export class Hud
                 attachedToPos.x += object.offset.x * scale;
                 attachedToPos.y += object.offset.y * scale;
 
+                // if its a player, clamp the labels os they're always visible
+                if(object.attachedTo instanceof Player)
+                {
+                    var box = object.getScreenRect(false);
+                    //console.log(box);
+                    box = CAMERA.clampToView({x:attachedToPos.x, y:attachedToPos.y, width:box.width, height:box.height});
+                   // console.log(box);
+                    //console.log(attachedToPos);
+                    attachedToPos.x = box.x;
+                    attachedToPos.y = box.y;
+                }
+                
+
                 object.setPosition(attachedToPos.x, attachedToPos.y);
             }
             else if(object.interactable && object.isVisible())
             {
                 // no need for any weird maths or conversions for HUD
-                var box = object.getInteractableRect();
+                var box = object.getScreenRect(true);
 
                 var cursorPos = CAMERA.getInvertedCursorPosition();
 
@@ -144,8 +156,8 @@ export class Hud
             // this is a root and its interactable
             if(object.interactable && object.parent == null && object.isVisible())
             {
-                var box = object.getInteractableRect();
-                var cursorPos = CAMERA.getCursorWorldPosition();
+                var box = object.getScreenRect(true);
+                var cursorPos = CAMERA.getInvertedCursorPosition();
 
                 if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
                     cursorPos.y > box.y && cursorPos.y <= box.y + box.height)

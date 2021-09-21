@@ -33,7 +33,7 @@ export class Actor extends WorldObject
         this.label.interactable = true;
         SpawnObject(this.label);
 
-        this.setTilePosition(position.x, position.y)
+        this.setTilePosition(position.x, position.y, 0)
     }
 
     onClick()
@@ -52,6 +52,6 @@ export class Actor extends WorldObject
             this.name = this.label.graphic.text = packet.name;
 
         if(packet.pos != null)
-            this.setTilePosition(packet.pos.x, packet.pos.y);
+            this.setTilePosition(packet.pos.x, packet.pos.y, packet.pos.z);
     }
 }

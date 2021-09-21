@@ -101,23 +101,16 @@ export class MainInterface extends Interface
         for(var i = 0; i < INTERFACE_TAB.MAX; i++)
             this.tabs[i].init();
 
-        APP.loader.baseUrl = 'img/ui/';
-
         for(var i = 0; i < INTERFACE_BASE_TEXTURES.length; i++)
         {
             if(INTERFACE_BASE_TEXTURES[i] == '')
                 continue;
-            APP.loader.add(INTERFACE_BASE_TEXTURES[i]);
+
+            APP.resourceManager.add('img/ui/', INTERFACE_BASE_TEXTURES[i]);
         }
 
         for(var i = 0; i < INTERFACE_TAB_TEXTURES.length; i++)
-        {
-            //if(INTERFACE_TAB_TEXTURES[i] == '')
-             //   continue;
-            APP.loader.add(INTERFACE_TAB_TEXTURES[i]);
-        }
-
-        APP.loader.baseUrl = '';
+            APP.resourceManager.add('img/ui/', INTERFACE_TAB_TEXTURES[i]);
     }
 
     onAssetsLoaded()
@@ -136,7 +129,7 @@ export class MainInterface extends Interface
             if(INTERFACE_BASE_TEXTURES[i] == '')
                 continue;
 
-            this.base[i].graphic = new PIXI.Sprite(APP.loader.resources[INTERFACE_BASE_TEXTURES[i]].texture);
+            this.base[i].graphic = new PIXI.Sprite(APP.resourceManager.getTexture(INTERFACE_BASE_TEXTURES[i]));
             this.base[i].setParent(this);
             this.base[i].setPosition(INTERFACE_BASE_OFFSETS[i].x, INTERFACE_BASE_OFFSETS[i].y);
             this.base[i].graphic.anchor.set(0, 1);
@@ -148,7 +141,7 @@ export class MainInterface extends Interface
             if(INTERFACE_TAB_TEXTURES[i] == '')
                 continue;
 
-            this.buttons[i].graphic = new PIXI.Sprite(APP.loader.resources[INTERFACE_TAB_TEXTURES[i]].texture);
+            this.buttons[i].graphic = new PIXI.Sprite(APP.resourceManager.getTexture(INTERFACE_TAB_TEXTURES[i]));
             this.buttons[i].setParent(this);
             this.buttons[i].setAnchor(0.5, 0.5);
             this.buttons[i].setPosition(INTERFACE_BUTTON_OFFSETS[i].x, INTERFACE_BUTTON_OFFSETS[i].y);
@@ -228,18 +221,16 @@ class MainInterfaceButton extends ImageButton
     }
 
     // anchored by 0.5 0.5
-    getInteractableRect()
+    getScreenRect()
     {
         
         //return {x: this.graphic.getBounds().x - 16, y:this.graphic.getBounds().y - 18, width: 32, height: 36}
-        return {x: this.getWorldPosition().x - 16, y:this.getWorldPosition().y - 18, width: 32, height: 36};
+        return {x: this.getPosition().x - 16, y:this.getPosition().y - 18, width: 32, height: 36};
     }
 
     onClick()
     {
-        //console.log(this.getInteractableRect());
-        console.log(this.graphic.getBounds());
-        console.log({x: this.getWorldPosition().x - 16, y:this.getWorldPosition().y - 18, width: 32, height: 36});
+        console.log({x: this.getPosition().x - 16, y:this.getPosition().y - 18, width: 32, height: 36});
         this.mainInterface.onInterfaceTabClicked(this.interfaceTab);
     }
 }

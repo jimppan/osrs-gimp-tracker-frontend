@@ -21,6 +21,8 @@ export class StageObject
         this.position = {}
 
         this.position = {x:0, y:0};      // position of this object
+        this.plane = 0;
+        
        // this.scale = {x:1, y:1}          // scale of this object
     }
 
@@ -44,8 +46,6 @@ export class StageObject
     {
         if(this.children.indexOf(child) > -1)
             return;
-
-        
 
         child.parent = this;
         this.children.push(child);
@@ -158,8 +158,9 @@ export class StageObject
         return {x:parentPos.x - this.position.x, y:parentPos.y - this.position.y};
     }
 
-    setTilePosition(x, y)
+    setTilePosition(x, y, plane)
     {
+        this.plane = plane;
         var translation = {x:x*TILE_SIZE, y:y * TILE_SIZE}
         this.setWorldPosition(translation.x, translation.y);
     }
@@ -174,7 +175,8 @@ export class StageObject
     // bounds on screen, position and width/height
     getScreenBounds()
     {
-        return this.graphic.getBounds();
+        var x = this.graphic.getBounds();
+        return {x:x.x, y:(x.y-window.innerHeight)*-1-x.height, width:x.width, height:x.height};
     }
 
     getWorldBounds()
@@ -196,25 +198,26 @@ export class StageObject
         this.graphic.zIndex = val;
     }
 
-    // automatically calculates bounds of an object, including all its children
-    getInteractableRect()
+    // automatically calculates bounds of an object, including all its children (screen)
+    getScreenRect(interactables)
     {
-        var pos = this.getWorldPosition();
-        var bl = this.getBottomLeft(pos);
+        var bounds = this.getScreenBounds();
 
-        var pos2 = {};
-        pos2.x = this.getWorldPosition().x;
-        pos2.y = this.getWorldPosition().y;
+        var bl = this.getBottomLeftScreen({x:bounds.x, y:bounds.y}, interactables);
 
-        pos2.x += this.getWorldBounds().width;
-        pos2.y += this.getWorldBounds().height;
+        // clamp to screen pos
+        if(bl.x < 0) bl.x = 0;
+        if(bl.y < 0) bl.y = 0;
 
-        var tr = this.getTopRight(pos2);
+        var tr = this.getTopRightScreen({x:bounds.x + bounds.width, y:bounds.y + bounds.height}, interactables);
+
+        if(tr.x > window.innerWidth) tr.x = window.innerWidth;
+        if(tr.y > window.innerHeight) tr.y = window.innerHeight;
 
         return new PIXI.Rectangle(bl.x, bl.y, tr.x - bl.x, tr.y - bl.y)
     }
 
-    getBottomLeft(checkAgainstBL)
+    getBottomLeftScreen(checkAgainstBL, interactables)
     {
         var bottomLeft = checkAgainstBL;
 
@@ -225,25 +228,41 @@ export class StageObject
 
         for(var i = 0; i < this.children.length; i++)
         {
-            // ignore children that are not interactable
-            if(!this.children[i].interactable)
+            var child = this.children[i];
+            // ignore children that are not interactable if param set
+            if(!child.interactable && interactables)
                 continue;
 
-            if(this.children[i].getWorldPosition().x < ret.x)
-                ret.x = this.children[i].getWorldPosition().x;
+            if(child.getScreenBounds().x < ret.x)
+                ret.x = child.getScreenBounds().x;
 
-            if(this.children[i].getWorldPosition().y < ret.y)
-                ret.y = this.children[i].getWorldPosition().y;
+            if(child.getScreenBounds().y < ret.y)
+                ret.y = child.getScreenBounds().y;
+        }
+
+        // check hudobjects too
+        for(var i = 0; i < this.hudObjects.length; i++)
+        {
+            var hudObject = this.hudObjects[i];
+            if(!hudObject.interactable && interactables)
+                continue;
+
+            var hudPos = hudObject.getScreenBounds();
+            if(hudPos.x < ret.x)
+                ret.x = hudPos.x;
+
+            if(hudPos.y < ret.y)
+                ret.y = hudPos.y;
         }
 
         // keep looking deep for interactable children
         for(var i = 0; i < this.children.length; i++)
-            ret = this.children[i].getBottomLeft(ret);
+            ret = this.children[i].getBottomLeftScreen(ret, interactables);
 
         return ret;
     }
 
-    getTopRight(checkAgainstTR)
+    getTopRightScreen(checkAgainstTR, interactables)
     {
         var topRight = checkAgainstTR;
 
@@ -255,22 +274,155 @@ export class StageObject
         for(var i = 0; i < this.children.length; i++)
         {
             var child = this.children[i];
-            // ignore children that are not interactable
-            if(!child.interactable)
+
+            // ignore children that are not interactable if param set
+            if(!child.interactable && interactables)
                 continue;
+
+            var bounds = child.getScreenBounds();
+
+            var xPos = child.getScreenBounds().x + bounds.width;
+            var yPos = child.getScreenBounds().y + bounds.height;
             
-            var xPos = child.getWorldPosition().x + child.getWorldBounds().width;
-            var yPos = child.getWorldPosition().y + child.getWorldBounds().height;
+            if(xPos > ret.x)
+                ret.x = xPos;
+
+            if(yPos > ret.y)
+                ret.y = yPos;
+        }
+
+        // check hudobjects too
+        for(var i = 0; i < this.hudObjects.length; i++)
+        {
+            var hudObject = this.hudObjects[i];
+            if(!hudObject.interactable && interactables)
+                continue;
+
+            var hudBounds = hudObject.getScreenRect(interactables);
+            var pos = hudObject.getPosition();
+
+            var xPos = pos.x + hudBounds.width;
+            var yPos = pos.y + hudBounds.height;
 
             if(xPos > ret.x)
                 ret.x = xPos;
 
-            if(yPos > ret.y) // y is inverted, <=
+            if(yPos > ret.y)
                 ret.y = yPos;
         }
 
         for(var i = 0; i < this.children.length; i++)
-            ret = this.children[i].getTopRight(ret);
+            ret = this.children[i].getTopRightScreen(ret, interactables);
+
+        return ret;
+    }
+
+    // automatically calculates bounds of an object, including all its children (world)
+    getWorldRect(interactables)
+    {
+        var bounds = this.getWorldBounds();
+        
+        var bl = this.getBottomLeftWorld({x:bounds.x, y:bounds.y}, interactables);
+        var tr = this.getTopRightWorld({x:bounds.x + bounds.width, y:bounds.y + bounds.height}, interactables);
+
+        return new PIXI.Rectangle(bl.x, bl.y, tr.x - bl.x, tr.y - bl.y)
+    }
+
+    getBottomLeftWorld(checkAgainstBL, interactables)
+    {
+        var bottomLeft = checkAgainstBL;
+
+        // make easy copy
+        var ret = {};
+        ret.x = bottomLeft.x;
+        ret.y = bottomLeft.y;
+
+        for(var i = 0; i < this.children.length; i++)
+        {
+            var child = this.children[i];
+            // ignore children that are not interactable if param set
+            if(!child.interactable && interactables)
+                continue;
+
+            if(child.getWorldBounds().x < ret.x)
+                ret.x = child.getWorldBounds().x;
+
+            if(child.getWorldBounds().y < ret.y)
+                ret.y = child.getWorldBounds().y;
+        }
+
+        // check hudobjects too
+        for(var i = 0; i < this.hudObjects.length; i++)
+        {
+            var hudObject = this.hudObjects[i];
+            if(!hudObject.interactable && interactables)
+                continue;
+
+            var worldBounds = hudObject.getWorldBounds();
+            if(worldBounds.x < ret.x)
+                ret.x = worldBounds.x;
+
+            if(worldBounds.y < ret.y)
+                ret.y = worldBounds.y;
+        }
+
+        // keep looking deep for interactable children
+        for(var i = 0; i < this.children.length; i++)
+            ret = this.children[i].getBottomLeftWorld(ret, interactables, screen);
+
+        return ret;
+    }
+
+    getTopRightWorld(checkAgainstTR, interactables, screen)
+    {
+        var topRight = checkAgainstTR;
+
+        // make easy copy
+        var ret = {};
+        ret.x = topRight.x;
+        ret.y = topRight.y;
+
+        for(var i = 0; i < this.children.length; i++)
+        {
+            var child = this.children[i];
+
+            // ignore children that are not interactable if param set
+            if(!child.interactable && interactables)
+                continue;
+
+           // var bounds = screen?child.getScreenBounds():child.getWorldBounds();
+            var bounds = child.getWorldBounds();
+
+            var xPos = bounds.x + bounds.width;
+            var yPos = bounds.y + bounds.height;
+            
+            if(xPos > ret.x)
+                ret.x = xPos;
+
+            if(yPos > ret.y)
+                ret.y = yPos;
+        }
+
+        // check hudobjects too
+        for(var i = 0; i < this.hudObjects.length; i++)
+        {
+            var hudObject = this.hudObjects[i];
+            if(!hudObject.interactable && interactables)
+                continue;
+
+            var bounds = child.getWorldBounds();
+            var xPos = bounds.x + bounds.width;
+            var yPos = bounds.y + bounds.height;
+
+            if(xPos > ret.x)
+                ret.x = xPos;
+
+            if(yPos > ret.y)
+                ret.y = yPos;
+        }
+
+        for(var i = 0; i < this.children.length; i++)
+            ret = this.children[i].getTopRightWorld(ret, interactables, screen);
 
         return ret;
     }
@@ -290,110 +442,6 @@ export class WorldObject extends StageObject
         
 
     }
-
-    // automatically calculates bounds of an object, including all its children
-    getInteractableRect()
-    {
-        return super.getInteractableRect();
-    }
-
-    getBottomLeft(checkAgainstBL)
-    {
-        var bottomLeft = checkAgainstBL;
-
-        // make easy copy
-        var ret = {};
-        ret.x = bottomLeft.x;
-        ret.y = bottomLeft.y;
-
-        for(var i = 0; i < this.children.length; i++)
-        {
-            var child = this.children[i];
-            // ignore children that are not interactable
-            if(!child.interactable)
-                continue;
-
-            if(child.getWorldPosition().x < ret.x)
-                ret.x = child.getWorldPosition().x;
-
-            if(child.getWorldPosition().y < ret.y)
-                ret.y = child.getWorldPosition().y;
-        }
-
-        // check hudobjects too
-        for(var i = 0; i < this.hudObjects.length; i++)
-        {
-            var hudObject = this.hudObjects[i];
-            if(!hudObject.interactable)
-                continue;
-
-            var hudPos = hudObject.getInvertedYPosition();
-            var worldPos = CAMERA.screenToWorldPos(hudPos.x, hudPos.y);
-            if(worldPos.x < ret.x)
-                ret.x = worldPos.x;
-
-            if(worldPos.y < ret.y)
-                ret.y = worldPos.y;
-        }
-
-        // keep looking deep for interactable children
-        for(var i = 0; i < this.children.length; i++)
-            ret = this.children[i].getBottomLeft(ret);
-
-        return ret;
-    }
-
-    getTopRight(checkAgainstTR)
-    {
-        var topRight = checkAgainstTR;
-
-        // make easy copy
-        var ret = {};
-        ret.x = topRight.x;
-        ret.y = topRight.y;
-
-        for(var i = 0; i < this.children.length; i++)
-        {
-            var child = this.children[i];
-            // ignore children that are not interactable
-            if(!child.interactable)
-                continue;
-            var xPos = child.getWorldPosition().x + child.getWorldBounds().width;
-            var yPos = child.getWorldPosition().y + child.getWorldBounds().height;
-            
-            if(xPos > ret.x)
-                ret.x = xPos;
-
-            if(yPos > ret.y)
-                ret.y = yPos;
-        }
-
-        // check hudobjects too
-        for(var i = 0; i < this.hudObjects.length; i++)
-        {
-            var hudObject = this.hudObjects[i];
-            if(!hudObject.interactable)
-                continue;
-
-            var hudBounds = hudObject.getInteractableRect();
-            var pos = hudObject.getInvertedYPosition();
-            var worldPos = CAMERA.screenToWorldPos(pos.x, pos.y);
-
-            var xPos = worldPos.x + (hudBounds.width * (1 / CAMERA.zoom.x));
-            var yPos = worldPos.y + (hudBounds.height * (1 / CAMERA.zoom.y));
-
-            if(xPos > ret.x)
-                ret.x = xPos;
-
-            if(yPos > ret.y)
-                ret.y = yPos;
-        }
-
-        for(var i = 0; i < this.children.length; i++)
-            ret = this.children[i].getTopRight(ret);
-
-        return ret;
-    }
 }
 
 // object in the world
@@ -406,26 +454,64 @@ export class HudObject extends StageObject
         this.offset = {x:0, y:0};
         this.scaleOffset = false;
         this.attachedTo = null;
-    } 
+    }
 
     setPosition(x, y)
     {
-        this.setWorldPosition(x, y);
+        var diff = this.getPosition()
+        diff.x = x - diff.x;
+        diff.y = y - diff.y;
+
+        for(var i = 0; i < this.children.length; i++)
+        {
+            var child = this.children[i];
+            var childPos = child.getPosition();
+            
+            this.children[i].setPosition(childPos.x + diff.x, childPos.y + diff.y);
+        }
+
+        this.position.x = x;
+        this.position.y = y;
+
+        if(this.graphic == null)
+            return;
+
+        this.graphic.position.x = x;
+        this.graphic.position.y = y;
     }
 
     getPosition()
     {
-        return this.getWorldPosition();
+        return super.getWorldPosition();
+    }
+
+    getWorldPosition() 
+    {
+        return CAMERA.screenToWorldPos(this.position.x, this.position.y);
+    }
+
+    getWorldBounds()
+    {
+        var localBounds = this.getScreenBounds();
+        var worldBounds = {};
+        
+        var newPos = CAMERA.screenToWorldPos(localBounds.x, localBounds.y);
+        worldBounds.x = newPos.x;
+        worldBounds.y = newPos.y;
+        worldBounds.width = localBounds.width;
+        worldBounds.height = localBounds.height;
+
+        return worldBounds;
     }
 
     getScreenPosition() 
     {
-        return this.getPosition();;
+        return this.getPosition();
     }
 
     getInvertedYPosition()
     {
-        var pos = this.getWorldPosition();
+        var pos = this.getPosition();
         return {x: pos.x, y:(pos.y - window.innerHeight) * -1};
     }
 
@@ -447,20 +533,6 @@ export class HudObject extends StageObject
         if(index > -1)
             object.hudObjects.splice(index, 1);
     }
-
-    /* getInteractableRect()
-    {
-        // invert bounds by default
-        var bounds = this.graphic.getBounds();
-        return {x:bounds.x, y:(bounds.y - window.innerHeight) * -1 - bounds.height, width:bounds.width, height:bounds.height};
-    } */
-
-    getInteractableRect()
-    {
-        // invert bounds by default
-        var bounds = this.graphic.getBounds();
-        return {x:bounds.x, y:bounds.y, width:bounds.width, height:bounds.height};
-    } 
 }
 
 export class HudText extends HudObject
@@ -501,7 +573,7 @@ export class WorldText extends StageObject
     }
 }
 
-export class Overlay extends StageObject
+export class Overlay extends HudObject
 {
     constructor(name, textString, textStyle)
     {
@@ -516,7 +588,7 @@ export function SpawnObject(object)
 
     for(var i = 0; i < object.hudObjects.length; i++)
         SpawnObject(object.hudObjects[i]);
-        
+
     if(object instanceof DevObject)
     {
         DEV_OBJECTS.push(object);
@@ -546,8 +618,6 @@ export function SpawnObject(object)
     }
 
     if(object instanceof WorldText)
-        APP.overlayContainer.addChild(object.graphic);
-    else if(object instanceof Overlay)
         APP.overlayContainer.addChild(object.graphic);
     else if(object instanceof WorldObject)
         APP.objectContainer.addChild(object.graphic);
@@ -606,8 +676,6 @@ export function DeleteObject(object)
     }
 
     if(object instanceof WorldText)
-        APP.overlayContainer.removeChild(object.graphic);
-    else if(object instanceof Overlay)
         APP.overlayContainer.removeChild(object.graphic);
     else if(object instanceof WorldObject)
         APP.objectContainer.removeChild(object.graphic);

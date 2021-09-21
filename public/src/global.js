@@ -24,5 +24,6 @@ var OVERLAYS = new Map(); // stuff like world text, overlays
 var MOUSE_OVER_OBJECT = null;
 var LAST_MOUSE_CLICKED_OBJECT = null;
 var SELECTED_OBJECT = null;
+var CAMERA_FOLLOW_OBJECT = null;
 
 var DEVELOPER_MODE = false;

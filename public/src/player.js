@@ -153,7 +153,7 @@ export class Player extends Actor
             this.world = this.worldLabel.graphic.text = `W${packet.world}`;
 
         if(packet.pos != null)
-            this.setTilePosition(packet.pos.x, packet.pos.y);
+            this.setTilePosition(packet.pos.x, packet.pos.y, packet.pos.plane);
 
         if(packet.inventory != null)
         {

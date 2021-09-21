@@ -3,7 +3,7 @@ import { HudObject, StageObject } from "./object.js";
 import { createOverlay, deleteOverlay, getOverlay } from "./overlays.js";
 import { SetDeveloperMode } from "./developer.js";
 import { SKILLS } from "./player.js";
-import { TILE_SIZE } from "./world.js";
+import { TILE_SIZE, World } from "./world.js";
 
 export class Input
 {
@@ -27,20 +27,17 @@ export class Input
           });
     }
 
+
     onMouseWheel(deltaY)
     {
         const scaleBy = 2;
-        const oldScale = CAMERA.zoom.x;
-        const mousePointTo = {
-        x: CAMERA.getCursorPosition().x / oldScale - CAMERA.position.x / oldScale,
-        y: CAMERA.getCursorPosition().y / oldScale + CAMERA.position.y / oldScale
-        };
 
-        const newScale = deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
+        var worldPos = CAMERA.getCursorWorldPosition();
+        const newScale = deltaY < 0 ? CAMERA.zoom.x * scaleBy : CAMERA.zoom.x / scaleBy;
 
         CAMERA.setZoom(newScale, newScale);
-        CAMERA.setPosition(-(mousePointTo.x - CAMERA.getCursorPosition().x / newScale) * newScale, (mousePointTo.y - CAMERA.getCursorPosition().y / newScale) * newScale);
-    }  
+        CAMERA.setPosition(-(worldPos.x - CAMERA.getCursorPosition().x / newScale) * newScale, (-worldPos.y - CAMERA.getCursorPosition().y / newScale) * newScale);
+    }
 
     unhoverObject(object)
     {
@@ -80,6 +77,7 @@ export class Input
         }
 
         SELECTED_OBJECT = MOUSE_OVER_OBJECT;
+        CAMERA.setFollowObject(SELECTED_OBJECT);
         HUD.updateInterface();
     }
 
@@ -96,15 +94,38 @@ export class Input
         }
 
         SELECTED_OBJECT = null;
+        CAMERA.setFollowObject(null);
         HUD.updateInterface();
     }
 
     onKeyPress(e)
     {
-        if(e.keyCode == 27)
+        switch(e.keyCode)
         {
-            // escape
-            this.deselectObject();
+            case 27: // escape
+                this.deselectObject();
+                break;
+            case 32: // space
+                CAMERA.followCurrentObject();
+                break;
+            case 81: // q
+                //APP.mapContainer.alpha = 0.2;
+                /* for(var x = 0; x < 70; x++)
+                {
+                    for(var y = 0; y < 200; y++)
+                    {   
+                        WORLD.map
+                    }
+                } */
+                break;
+            case 49: // 1
+            case 50: // 2
+            case 51: // 3
+            case 52: // 4
+                CAMERA.interruptedCameraPathing = true;
+                var plane = e.keyCode - 49;
+                WORLD.setPlane(plane);
+                break;
         }
         console.log(e.keyCode);
     }
@@ -116,7 +137,8 @@ export class Input
             // left click
             this.mouseDownPos = CAMERA.getCursorPosition();
             this.mouseIsDown = true;
-            
+
+            CAMERA.interruptedCameraPathing = true;
             LAST_MOUSE_CLICKED_OBJECT = MOUSE_OVER_OBJECT;
 
             if(MOUSE_OVER_OBJECT != null)
@@ -153,6 +175,16 @@ export class Input
             console.log("CURSOR SCREEN TO WORLD")
             var worldPos = CAMERA.screenToWorldPos(cursorPos.x, cursorPos.y);
             console.log(worldPos);
+
+            console.log("CAMER POS");
+            console.log(CAMERA.getCameraWorldPosition());
+
+            console.log(CAMERA.screenToWorldPos(0, 0));
+
+            if(CAMERA.isWorldPositionInView(worldPos.x, worldPos.y))
+                console.log(" IS IN VIEW");
+            else  
+                console.log("IS NOT IN IVEWWFD")
        
            // HUD.xpdropper.addDrop(SKILLS.ATTACK, 500342);
            // HUD.xpdropper.addDrop(SKILLS.HITPOINTS, 500342);

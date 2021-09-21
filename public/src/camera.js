@@ -1,16 +1,17 @@
-import { getChunkWidth, getChunkHeight } from "./world.js";
-import { updateOverlay } from "./overlays.js";
-import { XPDrop } from "./hud/xpdrop.js";
+import { WorldObject } from "./object.js";
+import { getRegionWidth, getRegionHeight } from "./world.js";
 
 export class Camera
 {
     constructor()
     {
+        this.targetPosition = {x:0.0, y:0.0}
         this.position = {x:0.0, y:0.0};
         this.zoom = {x:1.0, y:1.0};
 
         this.tickCounter = 0;
         this.needsUpdate = false;
+        this.interruptedCameraPathing = false;
     }
 
     update()
@@ -26,15 +27,92 @@ export class Camera
                 this.needsUpdate = false;
             }
         }
+
+        // update camera movement
+        if(!this.interruptedCameraPathing)
+        {
+            // TODO: if we get close enough to target, stop following
+
+            // lerp to target pos
+            var targetPositionOffset = {x:this.targetPosition.x, y:this.targetPosition.y};
+
+            targetPositionOffset.x -= (window.innerWidth / 2) / CAMERA.zoom.x;
+            targetPositionOffset.y += (window.innerHeight / 2) / CAMERA.zoom.y;
+    
+            var cameraWorldPos = this.getCameraWorldPosition();
+    
+            var diff = {x:0, y:0};
+            diff.x = (targetPositionOffset.x - cameraWorldPos.x);
+            diff.y = (targetPositionOffset.y - cameraWorldPos.y);
+    
+            if(this.isWorldPositionInView(this.targetPosition.x, this.targetPosition.y))
+            {
+                // if the point is in view, we can keep lerping, else just TP the camera
+                cameraWorldPos.x += diff.x * 0.05;
+                cameraWorldPos.y += diff.y * 0.05;
+            }
+            else
+            {
+                cameraWorldPos.x = targetPositionOffset.x;
+                cameraWorldPos.y = targetPositionOffset.y;
+            }
+    
+            cameraWorldPos.x *= this.zoom.x;
+            cameraWorldPos.y *= this.zoom.y;
+    
+            this.setPosition(-cameraWorldPos.x, -cameraWorldPos.y);
+
+            if(CAMERA_FOLLOW_OBJECT != null && CAMERA_FOLLOW_OBJECT instanceof WorldObject)
+            {
+                if(CAMERA_FOLLOW_OBJECT.plane != WORLD.currentPlane)
+                    WORLD.setPlane(CAMERA_FOLLOW_OBJECT.plane);
+
+                var worldPos = CAMERA_FOLLOW_OBJECT.getWorldPosition();
+                this.setTargetPosition(worldPos.x, worldPos.y);
+            }
+        }
+    }
+
+    /* getCameraWorldPosition()
+    {
+        return {x:(-this.position.x) + (window.innerWidth / 2), y:(-this.position.y) - (window.innerHeight / 2)};
+    } */
+
+    getCameraWorldPosition()
+    {
+        return {x:(-this.position.x / this.zoom.x), y:(-this.position.y) / this.zoom.y};
+    }
+
+    followCurrentObject()
+    {
+        this.interruptedCameraPathing = CAMERA_FOLLOW_OBJECT == null;
+    }
+
+    setFollowObject(object)
+    {
+        // if the object is on another plane, swap the plane to his plane
+        if(object != null && object.plane != WORLD.currentPlane)
+            WORLD.setPlane(object.plane);
+
+        CAMERA_FOLLOW_OBJECT = object;
+        this.interruptedCameraPathing = object == null;
+    }
+
+    setTargetPosition(x, y)
+    {
+        this.interruptedCameraPathing = false;
+        this.targetPosition = {x:x, y:y};
     }
 
     setPosition(x, y)
     {
-        x = Math.round(x);
-        y = Math.round(y);
+        var newPos = {x:x, y:y};
+        
+        newPos.x = Math.round(newPos.x);
+        newPos.y = Math.round(newPos.y);
 
-        this.position.x = x;
-        this.position.y = y;
+        this.position.x = newPos.x;
+        this.position.y = newPos.y;
 
         APP.worldContainer.position.x = this.position.x;
         APP.worldContainer.position.y = this.position.y;
@@ -121,7 +199,7 @@ export class Camera
         if(x < topLeft.x || x > bottomRight.x)
             return false;
         
-        if(y > topLeft.y || y < bottomRight.y)
+        if(y < bottomRight.y || y > topLeft.y)
             return false;
 
         return true;
@@ -149,25 +227,25 @@ export class Camera
         return true;
     }
 
-    // gets an array of chunks that are currently in the view
+    // gets an array of regions that are currently in the view
     // starting from top left to bottom right
-    getChunksInView()
+    getRegionsInView()
     {
         var bottomLeftPos = this.screenToWorldPos(0, window.innerHeight);
-        var bottomLeftChunk = WORLD.getChunkPositionFromWorldPosition(bottomLeftPos.x, bottomLeftPos.y);
+        var bottomLeftRegion = WORLD.getRegionPositionFromWorldPosition(bottomLeftPos.x, bottomLeftPos.y);
 
-        var xChunkMax = Math.floor(((bottomLeftChunk.x + window.innerWidth) / getChunkWidth()) / this.zoom.x) + 2;
-        var yChunkMax = Math.floor(((bottomLeftChunk.y + window.innerHeight) / getChunkHeight()) / this.zoom.y) + 2;
+        var xRegionMax = Math.floor(((bottomLeftRegion.x + window.innerWidth) / getRegionWidth()) / this.zoom.x) + 2;
+        var yRegionMax = Math.floor(((bottomLeftRegion.y + window.innerHeight) / getRegionHeight()) / this.zoom.y) + 2;
 
-        var chunkPosList = [];
-        for(var x = bottomLeftChunk.x; x < bottomLeftChunk.x + xChunkMax; x++)
+        var regionPosList = [];
+        for(var x = bottomLeftRegion.x; x < bottomLeftRegion.x + xRegionMax; x++)
         {
-            for(var y = bottomLeftChunk.y; y < bottomLeftChunk.y + yChunkMax; y++)
+            for(var y = bottomLeftRegion.y; y < bottomLeftRegion.y + yRegionMax; y++)
             {
-                chunkPosList.push({x:x, y:y});
+                regionPosList.push({x:x, y:y});
             }
         }
         //console.log(count);
-        return chunkPosList;
+        return regionPosList;
     }
 }

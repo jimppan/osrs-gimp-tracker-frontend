@@ -79,8 +79,8 @@ export class InterfaceEquipmentSlot extends HudObject
 
     onAssetsLoaded()
     {
-        this.background.setGraphic(new PIXI.Sprite(APP.loader.resources[EQUIPMENT_BASE_TEXTURES[EQUIPMENT_BASE.BACKGROUND]].texture));
-        this.foreground.setGraphic(new PIXI.Sprite(APP.loader.resources[EQUIPMENT_ICON_TEXTURES[this.equipmentId]].texture));
+        this.background.setGraphic(new PIXI.Sprite(APP.resourceManager.getTexture(EQUIPMENT_BASE_TEXTURES[EQUIPMENT_BASE.BACKGROUND])));
+        this.foreground.setGraphic(new PIXI.Sprite(APP.resourceManager.getTexture(EQUIPMENT_ICON_TEXTURES[this.equipmentId])));
         this.itemIcon.setGraphic(new PIXI.Sprite());
 
         this.background.setZIndex(1);
@@ -139,16 +139,13 @@ export class EquipmentInterface extends Interface
 
     init()
     {
-        APP.loader.baseUrl = 'img/ui/';
-
         for(var i = 0; i < EQUIPMENT_ICON_TEXTURES.length; i++)
         {
             if(EQUIPMENT_ICON_TEXTURES[i] == '')
                 continue;
-            APP.loader.add(EQUIPMENT_ICON_TEXTURES[i]);
+            APP.resourceManager.add('img/ui/', EQUIPMENT_ICON_TEXTURES[i]);
         }
-        APP.loader.add(EQUIPMENT_BASE_TEXTURES);
-        APP.loader.baseUrl = '';
+        APP.resourceManager.add('img/ui/', EQUIPMENT_BASE_TEXTURES);
     }
 
     isValidSlot(slot)

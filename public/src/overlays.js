@@ -1,4 +1,4 @@
-import { Overlay, SpawnObject, DeleteObject } from "./object.js";import { TILE_SIZE } from "./world.js";
+import { Overlay, SpawnObject, DeleteObject } from "./object.js";
 
 
 // used if the camera zoom changes or if the object position/scale changes
@@ -11,8 +11,8 @@ export function updateOverlay(object)
     overlay.graphic.clear();
     overlay.graphic.beginFill(0xffff00);
     overlay.graphic.alpha = 0.3;
-
-    var box = object.getInteractableRect();
+    
+    var box = object.getScreenRect(true);
 
     overlay.graphic.drawRect(0, 0, box.width, box.height);
     overlay.graphic.endFill();
@@ -26,13 +26,16 @@ export function createOverlay(object)
     overlay.graphic.beginFill(0xffff00);
     overlay.graphic.alpha = 0.3;
 
-    var box = object.getInteractableRect();
+    var box = object.getScreenRect(true);
 
+    console.log(box);
     overlay.graphic.drawRect(0, 0, box.width, box.height);
     overlay.graphic.endFill();
     
-    overlay.setWorldPosition(box.x, box.y);
-    overlay.setParent(object);
+    overlay.setPosition(box.x, box.y);
+    overlay.attachTo(object, false, 0, 0);
+    //overlay.setParent(object);
+    overlay.interactable = false;
 
     OVERLAYS.set(object, overlay);
     SpawnObject(overlay);

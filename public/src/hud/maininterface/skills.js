@@ -141,9 +141,9 @@ export class InterfaceSkillSlot extends HudObject
         
     }
 
-    getInteractableRect()
+    getScreenRect()
     {
-        return {x: this.backgroundLeft.getWorldPosition().x, y:this.backgroundLeft.getWorldPosition().y - 14, width: 63, height: 30}
+        return {x: this.backgroundLeft.getPosition().x, y:this.backgroundLeft.getPosition().y - 14, width: 63, height: 30}
     }
 
     isVisible()
@@ -155,17 +155,17 @@ export class InterfaceSkillSlot extends HudObject
     {
         if(this.skillId == SKILLS.TOTAL)
         {
-            this.backgroundLeft.setGraphic(new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.TOTAL_LEFT]].texture));
-            this.backgroundRight.setGraphic(new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.TOTAL_RIGHT]].texture));
+            this.backgroundLeft.setGraphic(new PIXI.Sprite(APP.resourceManager.getTexture(SKILLS_BASE_TEXTURES[SKILLS_BASE.TOTAL_LEFT])));
+            this.backgroundRight.setGraphic(new PIXI.Sprite(APP.resourceManager.getTexture(SKILLS_BASE_TEXTURES[SKILLS_BASE.TOTAL_RIGHT])));
 
             this.text1.setText(`Total level:`);
             this.text2.setText(`0`);
         }
         else
         {
-            this.backgroundLeft.setGraphic(new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.BACKGROUND_LEFT]].texture));
-            this.backgroundRight.setGraphic(new PIXI.Sprite(APP.loader.resources[SKILLS_BASE_TEXTURES[SKILLS_BASE.BACKGROUND_RIGHT]].texture));
-            this.skillIcon.setGraphic(new PIXI.Sprite(APP.loader.resources[SKILLS_ICON_TEXTURES[this.skillId]].texture));
+            this.backgroundLeft.setGraphic(new PIXI.Sprite(APP.resourceManager.getTexture(SKILLS_BASE_TEXTURES[SKILLS_BASE.BACKGROUND_LEFT])));
+            this.backgroundRight.setGraphic(new PIXI.Sprite(APP.resourceManager.getTexture(SKILLS_BASE_TEXTURES[SKILLS_BASE.BACKGROUND_RIGHT])));
+            this.skillIcon.setGraphic(new PIXI.Sprite(APP.resourceManager.getTexture(SKILLS_ICON_TEXTURES[this.skillId])));
 
             this.skillIcon.setVisibility(false);
             this.skillIcon.setAnchor(0.5, 0.5);
@@ -224,10 +224,8 @@ export class SkillsInterface extends Interface
 
     init()
     {
-        APP.loader.baseUrl = 'img/ui/';
-        APP.loader.add(SKILLS_ICON_TEXTURES);
-        APP.loader.add(SKILLS_BASE_TEXTURES);
-        APP.loader.baseUrl = '';
+        APP.resourceManager.add('img/ui/', SKILLS_ICON_TEXTURES);
+        APP.resourceManager.add('img/ui/', SKILLS_BASE_TEXTURES);
     }
 
     onAssetsLoaded()
@@ -271,6 +269,17 @@ export class SkillsInterface extends Interface
         return count;
     }
 
+    getTotalExperience()
+    {
+        var count = 0;
+        for(var i = 0; i < SKILLS.TOTAL; i++)
+        {
+            var skillInterfaceSlot = this.getSlot(i);
+            count += skillInterfaceSlot.experience;
+        }
+        return count;
+    }
+
     update()
     {
         if(SELECTED_OBJECT == null)
@@ -280,9 +289,9 @@ export class SkillsInterface extends Interface
             return;
 
         for(var i = 0; i < SKILLS.TOTAL; i++)
-        {
             this.setExperience(i, SELECTED_OBJECT.skills[i].experience);
-        }
+
+        this.getSlot(SKILLS.TOTAL).experience = this.getTotalExperience();
         this.getSlot(SKILLS.TOTAL).text2.setText(`${this.getTotal()}`);
     }
 }

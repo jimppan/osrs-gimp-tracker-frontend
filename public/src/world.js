@@ -1,118 +1,161 @@
-import { RenderQueue } from './renderqueue.js'
-import { Player } from './player.js'
-import { StageObject, WorldObject, WorldText, SpawnObject, DeleteObject } from './object.js';
-
 export var MAP_ID = 0;
 export var MAP_ZOOM_LEVEL = 2;
 
-export function getChunkWidth() {return Math.pow(2, 6+MAP_ZOOM_LEVEL);} // in pixels, 256 by default zoom LVL 2
-export function getChunkHeight() {return Math.pow(2, 6+MAP_ZOOM_LEVEL);} // in pixels, 256 by default zoom LVL 2
+export function getRegionWidth() {return Math.pow(2, 6+MAP_ZOOM_LEVEL);} // in pixels, 256 by default zoom LVL 2
+export function getRegionHeight() {return Math.pow(2, 6+MAP_ZOOM_LEVEL);} // in pixels, 256 by default zoom LVL 2
 
-export const CHUNK_TILE_WIDTH = Math.pow(2, 6);  // 64 tiles
-export const CHUNK_TILE_HEIGHT = Math.pow(2, 6); // 64 tiles
+export const REGION_TILE_WIDTH = Math.pow(2, 6);  // 64 tiles
+export const REGION_TILE_HEIGHT = Math.pow(2, 6); // 64 tiles
 
-export const TILE_SIZE = getChunkWidth() / CHUNK_TILE_WIDTH; //
+export const TILE_SIZE = getRegionWidth() / REGION_TILE_WIDTH; //
 export const START_TILE = {x:3221, y:3218}; // starting pos for camera (lumbridge)
 
-export const MAX_CHUNK_WIDTH = 100;
-export const MAX_CHUNK_HEIGHT = 100;
+export const MAX_REGION_WIDTH = 70;
+export const MAX_REGION_HEIGHT = 200;
+
+export const MAX_PLANE = 4; // 0 - 3 levels
 
 export const LAYERS = 
 {
-    MAP: 0,
-    OBJECT: 1,
-    PLAYER: 2,
+    MAP: [0, 1, 2, 3],
+    OBJECT: 4,
+    PLAYER: 5,
 }
 
-function BuildChunkTexturePath(mapId, cacheVersion, zoomLevel, x, y, z)
+
+function BuildRegionTexturePath(x, y, z)
 {
-    return `maps${mapId}_${cacheVersion}/${zoomLevel}/${z}_${x}_${y}.png`;
+    return `img/map/${z}_${x}_${y}.png`;
 }
 
-// a 64x64 tile chunk of a map
-export class Chunk
+// plane (Z level of a region)
+export class Plane
 {
-    constructor()
+    constructor(region, planeId)
     {
-        this.position = {x:0, y:0}; // chunk pos, not world pos
+        this.planeId = planeId;
         this.sprite = new PIXI.Sprite();
-        this.isRendered = false;
+        this.textureLoaded = false;
+
+        this.region = region;
     }
 
-    init(chunkX, chunkY)
+    setSprite()
     {
-        this.setPosition(chunkX, chunkY);
-    }
-
-    setSprite(mapId, zoomLevel, plane)
-    {
+        this.textureLoaded = true;
         // invert Y position
-        var spritePath = BuildChunkTexturePath(mapId, GIMP_TRACKER_CACHE_VERSION, zoomLevel, this.position.x, this.position.y, plane);
-        
-        // this texture have not loaded, and we're waiting for it to load, add it to render queue
-        if(APP.loader.resources[spritePath].texture == null)
-            RENDERQUEUE.add(spritePath, this);
-        else
-            this.sprite.texture = APP.loader.resources[spritePath].texture; 
+        var spritePath = BuildRegionTexturePath(this.region.position.x, this.region.position.y, this.planeId);
+        APP.resourceManager.lateLoadTexture(spritePath, this.sprite);
 
-        // old way of rendering
-        //this.sprite.texture = PIXI.Sprite.from(spritePath).texture
+        this.sprite.zIndex = this.planeId;
+    }
 
-        this.sprite.zIndex = LAYERS.MAP;
+    setVisibility(val)
+    {
+        this.sprite.visible = val;
+    }
+}
 
-        this.sprite.x = this.position.x * getChunkWidth();
-        this.sprite.y = this.position.y * getChunkHeight();
+// a 64x64 tile region of a map
+export class Region
+{
+    constructor(world)
+    {
+        this.world = world;
+        this.planes = new Array(MAX_PLANE);
+        this.position = {x:0, y:0}; // region pos, not world pos
+    }
+    
+    addPlane(plane)
+    {
+        this.planes[plane.planeId] = plane;
+        plane.sprite.x = this.position.x * getRegionWidth();
+        plane.sprite.y = this.position.y * getRegionHeight();
+        APP.mapContainer.addChild(plane.sprite);
+    }
+
+    getPlane(plane)
+    {
+        return this.planes[plane];
+    }
+
+    setSprite(plane)
+    {
+        this.getPlane(plane).setSprite();
     }
 
     setPosition(x, y)
     {
         this.position.x = x;
         this.position.y = y;
-
-        if(this.sprite != null)
+        
+        for(var i = 0; i < MAX_PLANE; i++)
         {
-            this.sprite.x = x * getChunkWidth();
-            this.sprite.y = y * getChunkHeight();
+            var plane = this.getPlane(i);
+            if(plane == null)
+                continue;
+            plane.sprite.x = x * getRegionWidth();
+            plane.sprite.y = y * getRegionHeight();
         }
     }
 
-    setRendered(val)
+    setVisibility(val)
     {
-        this.isRendered = val;
+        for(var i = 0; i < MAX_PLANE; i++)
+        {
+            var plane = this.getPlane(i);
+            if(plane == null)
+                continue;
+
+            plane.setVisibility((i == 0 || this.world.currentPlane == i) && val);
+        }
     }
 }
 
-// an entire map, like runescape surface
-export class WorldMap
+
+export class World
 {
     constructor()
     {
         this.id = 0; // mapID
-        this.chunks = this.initializeMap(MAX_CHUNK_WIDTH, MAX_CHUNK_HEIGHT) // 2d array
-        this.name = 'NULL';
+        this.regions = this.initializeMap(MAX_REGION_WIDTH, MAX_REGION_HEIGHT) // 2d array
+        this.currentPlane = 0;
+        this.regionData = null;
     }
 
-    isChunkPosInRange(x, y)
+    isRegionPosInRange(x, y)
     {
-        return x > 0 && y > 0 && x < MAX_CHUNK_WIDTH && y < MAX_CHUNK_HEIGHT;
+        return x > 0 && y > 0 && x < MAX_REGION_WIDTH && y < MAX_REGION_HEIGHT;
     }
 
-    addChunk(chunk)
+    createRegion(x, y)
     {
-        this.chunks[chunk.position.x][chunk.position.y] = chunk;
+        var region = this.getRegion(x, y);
+        if(region != null)
+            return region;
+        
+        var region = new Region(this);
+        region.setPosition(x, y);
+        this.addRegion(region);
+        return region;
     }
 
-    removeChunk(chunk)
+    addRegion(region)
     {
-        this.chunks[chunk.position.x][chunk.position.y] = null;
+        this.regions[region.position.x][region.position.y] = region;
     }
 
-    getChunk(position)
+    removeRegion(region)
     {
-        if(!this.isChunkPosInRange(position.x, position.y))
+        this.regions[region.position.x][region.position.y] = null;
+    }
+
+    getRegion(x, y)
+    {
+        if(!this.isRegionPosInRange(x, y))
             return null;
 
-        return this.chunks[position.x][position.y];
+        return this.regions[x][y];
     }
 
     initializeMap(d1, d2)
@@ -122,60 +165,35 @@ export class WorldMap
             arr.push(new Array(d1));
         return arr;
     }
-}
 
-export class World
-{
-    constructor()
+    init()
     {
-        this.map = new WorldMap();
-        this.chunkData = null;
-    }
+        this.regionData = JSON_MAP_DATA;
 
-    init(mapID)
-    {
-        this.chunkData = JSON_MAP_DATA;
-        console.log(this.chunkData);
-
-        var mapChunkData = this.chunkData.chunkPos[mapID];
-        this.map.name = mapChunkData.name;
-        this.map.id = mapID;
-
-        var chunks = mapChunkData.chunks;
-        var texturePaths = [];
-
-        for(var j = 0; j < chunks.length; j++)
+        for(var j = 0; j < this.regionData.length; j++)
         {
-            // only create 1 layer of chunks
-            if(chunks[j].z != 0)
-                continue;
+            var x = this.regionData[j].x;
+            var y = this.regionData[j].y;
+            var plane = this.regionData[j].plane;
 
-            // create chunk slots for this map
-            var chunk = new Chunk();
-
-            // revert y chunks
-            chunk.init(chunks[j].x, chunks[j].y);
-            this.map.addChunk(chunk);
-
-            var path = BuildChunkTexturePath(mapID, GIMP_TRACKER_CACHE_VERSION, MAP_ZOOM_LEVEL, chunks[j].x, chunks[j].y, chunks[j].z);
-            texturePaths.push(path);
+            // create region slots for this map
+            var region = this.createRegion(x, y);
+            
+            var plane = new Plane(region, plane);
+            region.addPlane(plane);
         }
-
-        APP.loader.baseUrl = 'img/';
-        APP.loader.add(texturePaths);
-        APP.loader.baseUrl = '';
     }
 
     // 3200, 3200 to 50, 50 (50 * 64)
-    getChunkPositionFromWorldPosition(x, y)
+    getRegionPositionFromWorldPosition(x, y)
     {
-        return {x: Math.floor(x / getChunkWidth()), y: Math.floor(y / getChunkHeight())};
+        return {x: Math.floor(x / getRegionWidth()), y: Math.floor(y / getRegionHeight())};
     }
 
     // 50, 50 to 3200, 3200 (50 * 64)
-    getWorldPositionFromChunkPosition(x, y)
+    getWorldPositionFromRegionPosition(x, y)
     {
-        return {x: x * getChunkWidth(), y: y * getChunkHeight()};
+        return {x: x * getRegionWidth(), y: y * getRegionHeight()};
     }
 
     getTilePositionFromWorldPosition(x, y)
@@ -186,46 +204,74 @@ export class World
         return {x: newX, y: newY};
     }
 
-    // perform voodoo to convert pixi space to osrs space
-    /* invertWorldPosY(y)
-    {
-        return -y + (MAX_CHUNK_HEIGHT * getChunkHeight()) + (CHUNK_TILE_HEIGHT * TILE_SIZE);
-    }
-
-    invertTilePosY(y)
-    {
-        return -y + (MAX_CHUNK_HEIGHT * CHUNK_TILE_HEIGHT) + CHUNK_TILE_HEIGHT - 1;
-    } */
-
     clearMap()
     {
-        for(var x = 0; x < MAX_CHUNK_WIDTH; x++)
+        for(var x = 0; x < MAX_REGION_WIDTH; x++)
         {
-            for(var y = 0; y < MAX_CHUNK_HEIGHT; y++)
+            for(var y = 0; y < MAX_REGION_HEIGHT; y++)
             {
-                var chunk = this.map.chunks[x][y];
-                if(chunk == null)
+                var region = this.getRegion(x, y);
+                if(region == null)
                     continue;
                     
-                APP.mapContainer.removeChild(chunk.sprite);
-                chunk.setRendered(false);
+                region.setVisibility(false);
             }
         }
+    }
+
+    setPlane(planeId)
+    {
+        this.currentPlane = planeId;
+        console.log("SET PLANE: ", planeId);
+        for(var x = 0; x < MAX_REGION_WIDTH; x++)
+        {
+            for(var y = 0; y < MAX_REGION_HEIGHT; y++)
+            {
+                var region = this.getRegion(x, y);
+                if(region == null)
+                    continue;
+                
+                for(var z = 0; z < MAX_PLANE; z++)
+                {
+                    var plane = region.getPlane(z);
+                    if(plane == null)
+                        continue;
+
+                    if(z == planeId)
+                    {
+                        plane.sprite.alpha = 1.0;
+                    }
+                    else
+                    {
+                        plane.sprite.alpha = 0.3;
+                    }
+                }
+            }
+        }
+        this.updateMap();
     }
 
     updateMap()
     {
         this.clearMap();
-        var chunksInView = CAMERA.getChunksInView();
-        for(var i = 0; i < chunksInView.length; i++)
+        var regionsInView = CAMERA.getRegionsInView();
+        for(let i = 0; i < regionsInView.length; i++)
         {
-            var chunk = this.map.getChunk({x:chunksInView[i].x, y:chunksInView[i].y});
-            if(chunk == null)
+            var region = this.getRegion(regionsInView[i].x, regionsInView[i].y);
+            if(region == null)
                 continue;
 
-            chunk.setSprite(this.map.id, MAP_ZOOM_LEVEL, 0);
-            APP.mapContainer.addChild(chunk.sprite);
-            chunk.setRendered(true);
+            for(let j = 0; j < this.currentPlane+1; j++)
+            {
+                var plane = region.getPlane(j);
+                if(plane == null)
+                    continue;
+
+                if(!plane.textureLoaded)
+                    plane.setSprite();
+            }
+
+            region.setVisibility(true);
         } 
     }
 
@@ -236,14 +282,14 @@ export class World
         {
             for(var y = 0; y < 100; y++)
             {
-                var chunk = this.map.getChunk({x:x, y:y});
-                if(chunk == null)
+                var region = this.getRegion({x:x, y:y});
+                if(region == null)
                     continue;
 
-                chunk.setSprite(this.map.id, MAP_ZOOM_LEVEL, 0);
+                region.setSprite(0);
 
-                APP.mapContainer.addChild(chunk.sprite);
-                chunk.setRendered(true);
+                APP.mapContainer.addChild(region.sprite);
+                region.setVisibility(true);
             }
         }
     } */

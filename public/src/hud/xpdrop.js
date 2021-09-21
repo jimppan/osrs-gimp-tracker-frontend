@@ -1,7 +1,5 @@
 import { numberWithCommas } from "../helpers.js";
-import { StageObject, SpawnObject, DeleteObject, HudText, HudObject} from "../object.js";
-import { CHUNK_TILE_HEIGHT } from "../world.js";
-import { SKILLS_ICON_TEXTURES } from "./maininterface/skills.js";
+import { SpawnObject, DeleteObject, HudText, HudObject} from "../object.js";
 
 const XP_DROP_LIFE = 2000;
 const XP_DROP_OFFSET = 16; // when multiple drops spawn in same tick, how far off eachother should they be
@@ -53,7 +51,7 @@ export class XPDrop extends HudObject
 
         this.skillId = skillId;
         this.experience = experience;
-        this.graphic = new PIXI.Sprite(APP.loader.resources[XP_DROP_TEXTURES[this.skillId]].texture);
+        this.graphic = new PIXI.Sprite(APP.resourceManager.getTexture(XP_DROP_TEXTURES[this.skillId]));
         this.timeToKill = -1;
         this.graphic.zIndex = 1;
         this.graphic.anchor.set(1,0.5);
@@ -78,9 +76,7 @@ export class XPDropper
 
     init()
     {
-        APP.loader.baseUrl = 'img/world/';
-        APP.loader.add(XP_DROP_TEXTURES);
-        APP.loader.baseUrl = '';
+        APP.resourceManager.add('img/world/', XP_DROP_TEXTURES);
     }
 
     addDrop(skillId, experience)

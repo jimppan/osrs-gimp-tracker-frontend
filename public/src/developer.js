@@ -11,7 +11,7 @@ export function SetDeveloperMode(value)
             if(!object.interactable || !object.isVisible())
                 continue;
 
-            var rect = object.getInteractableRect();
+            var rect = object.getScreenRect(true);
             console.log(object.name)
             console.log(rect);
             var hudObject = new DevObject("DevMode");
