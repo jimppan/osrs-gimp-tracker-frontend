@@ -121,7 +121,6 @@ export class Player extends Actor
         this.worldLabel.attachTo(this.label, false, 0, 12);
         this.worldLabel.setAnchor(0, 1);
         this.worldLabel.interactable = true;
-        //SpawnObject(this.worldLabel);
 
         this.inventory = new Array(INVENTORY_SIZE);
         for(var i = 0; i < INVENTORY_SIZE; i++)

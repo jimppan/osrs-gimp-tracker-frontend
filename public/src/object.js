@@ -22,7 +22,7 @@ export class StageObject
 
         this.position = {x:0, y:0};      // position of this object
         this.plane = 0;
-        
+
        // this.scale = {x:1, y:1}          // scale of this object
     }
 
@@ -98,6 +98,15 @@ export class StageObject
             this.graphic.anchor.set(x, y);
     }
 
+    setAlpha(alpha)
+    {
+        for(var i = 0; i < this.children.length; i++)
+            this.children[i].setAlpha(alpha);
+
+        if(this.graphic != null && this.graphic.alpha != null)
+            this.graphic.alpha = alpha;
+    }
+
     getRootParent()
     {
         var parent = this;
@@ -158,9 +167,44 @@ export class StageObject
         return {x:parentPos.x - this.position.x, y:parentPos.y - this.position.y};
     }
 
+    setPlane(planeId)
+    {
+        for(var i = 0; i < this.children.length; i++)
+            this.children[i].setPlane(planeId);
+
+        for(var i = 0; i < this.hudObjects.length; i++)
+            this.hudObjects[i].setPlane(planeId);
+
+        if(this instanceof WorldObject && this.plane != planeId)
+            WORLD.changePlane(this, planeId);
+        
+        this.plane = planeId;
+
+        for(var i = 0; i < this.hudObjects.length; i++)
+        {
+            if(planeId < WORLD.currentPlane) 
+            {
+                // if the object is under our current plane, dont show anything
+                this.hudObjects[i].setVisibility(false);
+            }
+            else if(planeId == WORLD.currentPlane) 
+            {
+                // if the object is on same plane, show it all full alpha
+                this.hudObjects[i].setAlpha(1.0);
+                this.hudObjects[i].setVisibility(true);
+            }
+            else
+            {
+                // if the object is above us, show it but with alpha
+                this.hudObjects[i].setAlpha(0.5);
+                this.hudObjects[i].setVisibility(true);
+            }
+        }
+    }
+
     setTilePosition(x, y, plane)
     {
-        this.plane = plane;
+        this.setPlane(plane);
         var translation = {x:x*TILE_SIZE, y:y * TILE_SIZE}
         this.setWorldPosition(translation.x, translation.y);
     }
@@ -247,6 +291,9 @@ export class StageObject
             if(!hudObject.interactable && interactables)
                 continue;
 
+            if(!hudObject.isVisible())
+                continue;
+
             var hudPos = hudObject.getScreenBounds();
             if(hudPos.x < ret.x)
                 ret.x = hudPos.x;
@@ -296,6 +343,9 @@ export class StageObject
         {
             var hudObject = this.hudObjects[i];
             if(!hudObject.interactable && interactables)
+                continue;
+
+            if(!hudObject.isVisible())
                 continue;
 
             var hudBounds = hudObject.getScreenRect(interactables);
@@ -358,6 +408,9 @@ export class StageObject
             if(!hudObject.interactable && interactables)
                 continue;
 
+            if(!hudObject.isVisible())
+                continue;
+
             var worldBounds = hudObject.getWorldBounds();
             if(worldBounds.x < ret.x)
                 ret.x = worldBounds.x;
@@ -408,6 +461,9 @@ export class StageObject
         {
             var hudObject = this.hudObjects[i];
             if(!hudObject.interactable && interactables)
+                continue;
+
+            if(!hudObject.isVisible())
                 continue;
 
             var bounds = child.getWorldBounds();
@@ -533,6 +589,17 @@ export class HudObject extends StageObject
         if(index > -1)
             object.hudObjects.splice(index, 1);
     }
+
+    // gets the root of what these hud objects are attached to
+    // as we may chain attach things to eachother like texts, to keep them aligned properly
+    getAttachedRoot()
+    {
+        var parent = this;
+        while(parent.attachedTo != null)
+            parent = parent.attachedTo;
+
+        return parent;
+    }
 }
 
 export class HudText extends HudObject
@@ -618,13 +685,13 @@ export function SpawnObject(object)
     }
 
     if(object instanceof WorldText)
-        APP.overlayContainer.addChild(object.graphic);
+        WORLD.getPlaneContainer(object.plane).add(object);
     else if(object instanceof WorldObject)
-        APP.objectContainer.addChild(object.graphic);
+        WORLD.getPlaneContainer(object.plane).add(object);
     else if(object instanceof StageObject)
-        APP.overlayContainer.addChild(object.graphic);
+        WORLD.getPlaneContainer(object.plane).add(object);
     else
-        APP.objectContainer.addChild(object.graphic);
+        WORLD.getPlaneContainer(object.plane).add(object);
 }
 
 export function DeleteObject(object)
@@ -676,11 +743,11 @@ export function DeleteObject(object)
     }
 
     if(object instanceof WorldText)
-        APP.overlayContainer.removeChild(object.graphic);
+        WORLD.getPlaneContainer(object.plane).remove(object);
     else if(object instanceof WorldObject)
-        APP.objectContainer.removeChild(object.graphic);
+        WORLD.getPlaneContainer(object.plane).remove(object);
     else if(object instanceof StageObject)
-        APP.overlayContainer.removeChild(object.graphic);
+        WORLD.getPlaneContainer(object.plane).remove(object);
     else
-        APP.objectContainer.removeChild(object.graphic);
+        WORLD.getPlaneContainer(object.plane).remove(object);
 }

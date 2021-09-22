@@ -1,3 +1,5 @@
+import { StageObject, WorldObject } from "./object.js";
+
 export var MAP_ID = 0;
 export var MAP_ZOOM_LEVEL = 2;
 
@@ -71,7 +73,8 @@ export class Region
         this.planes[plane.planeId] = plane;
         plane.sprite.x = this.position.x * getRegionWidth();
         plane.sprite.y = this.position.y * getRegionHeight();
-        APP.mapContainer.addChild(plane.sprite);
+
+        this.world.getPlaneContainer(plane.planeId).add(plane)
     }
 
     getPlane(plane)
@@ -112,6 +115,47 @@ export class Region
     }
 }
 
+class PlaneContainer extends PIXI.Container
+{
+    constructor()
+    {
+        super();
+
+        this.map = new PIXI.Container();
+        this.objects = new PIXI.Container();
+
+        this.addChild(this.map);
+        this.addChild(this.objects);
+    }
+
+    add(object)
+    {
+        if(object instanceof Plane)
+        {
+            // if its a plane, add it ot map
+            this.map.addChild(object.sprite);
+        }
+        else if(object instanceof StageObject)
+        {
+            // add it to object container if its a world object
+            this.objects.addChild(object.graphic);
+        }
+    }
+
+    remove(object)
+    {
+        if(object instanceof Plane)
+        {
+            // if its a plane, add it ot map
+            this.map.removeChild(object.sprite);
+        }
+        else if(object instanceof StageObject)
+        {
+            // add it to object container if its a world object
+            this.objects.removeChild(object.graphic);
+        }
+    }
+}
 
 export class World
 {
@@ -121,6 +165,26 @@ export class World
         this.regions = this.initializeMap(MAX_REGION_WIDTH, MAX_REGION_HEIGHT) // 2d array
         this.currentPlane = 0;
         this.regionData = null;
+
+        this.planeContainers = Array(MAX_PLANE);
+
+        for(var i = 0; i < MAX_PLANE; i++)
+            this.planeContainers[i] = new PlaneContainer();
+    }
+
+    changePlane(object, plane)
+    {
+        var currPlane = this.getPlaneContainer(object.plane);
+        currPlane.remove(object);
+
+        object.plane = plane;
+        var nextPlane = this.getPlaneContainer(plane);
+        nextPlane.add(object);
+    }
+
+    getPlaneContainer(plane)
+    {
+        return this.planeContainers[plane];
     }
 
     isRegionPosInRange(x, y)
@@ -182,6 +246,8 @@ export class World
             var plane = new Plane(region, plane);
             region.addPlane(plane);
         }
+
+        this.setPlane(0);
     }
 
     // 3200, 3200 to 50, 50 (50 * 64)
@@ -222,32 +288,44 @@ export class World
     setPlane(planeId)
     {
         this.currentPlane = planeId;
-        console.log("SET PLANE: ", planeId);
-        for(var x = 0; x < MAX_REGION_WIDTH; x++)
+        
+        for(var i = 0; i < MAX_PLANE; i++)
         {
-            for(var y = 0; y < MAX_REGION_HEIGHT; y++)
-            {
-                var region = this.getRegion(x, y);
-                if(region == null)
-                    continue;
-                
-                for(var z = 0; z < MAX_PLANE; z++)
-                {
-                    var plane = region.getPlane(z);
-                    if(plane == null)
-                        continue;
+            var container = this.getPlaneContainer(i);
+            container.alpha = i == planeId?1.0:0.3;
+        }
 
-                    if(z == planeId)
+        // lets go through all hud objects that are attached to a player, and disable them
+        // as we do not wanna render hud objects on planes we're not currently viewing
+        for(var i = 0; i < HUD_OBJECTS.length; i++)
+        {
+            var root = HUD_OBJECTS[i].getAttachedRoot();
+            if(root != null && root instanceof WorldObject)
+            {
+                if(root.plane != null)
+                {
+                    
+                    if(root.plane < planeId) 
                     {
-                        plane.sprite.alpha = 1.0;
+                        // if the object is under our current plane, dont show anything
+                        HUD_OBJECTS[i].setVisibility(false);
+                    }
+                    else if(root.plane == planeId) 
+                    {
+                        // if the object is on same plane, show it all full alpha
+                        HUD_OBJECTS[i].setAlpha(1.0);
+                        HUD_OBJECTS[i].setVisibility(true);
                     }
                     else
                     {
-                        plane.sprite.alpha = 0.3;
+                        // if the object is above us, show it but with alpha
+                        HUD_OBJECTS[i].setAlpha(0.5);
+                        HUD_OBJECTS[i].setVisibility(true);
                     }
-                }
+                }    
             }
         }
+
         this.updateMap();
     }
 
@@ -261,14 +339,19 @@ export class World
             if(region == null)
                 continue;
 
-            for(let j = 0; j < this.currentPlane+1; j++)
+            // always load base plane sprites
+            var basePlane = region.getPlane(0);
+            var currentPlane = region.getPlane(this.currentPlane);
+            if(basePlane != null)
             {
-                var plane = region.getPlane(j);
-                if(plane == null)
-                    continue;
+                if(!basePlane.textureLoaded)
+                    basePlane.setSprite();
+            }
 
-                if(!plane.textureLoaded)
-                    plane.setSprite();
+            if(currentPlane != null)
+            {
+                if(!currentPlane.textureLoaded)
+                    currentPlane.setSprite();
             }
 
             region.setVisibility(true);

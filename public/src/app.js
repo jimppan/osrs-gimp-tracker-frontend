@@ -32,10 +32,6 @@ var overlayContainer = new PIXI.Container();
 var devContainer = new PIXI.Container();
 var hudContainer = new PIXI.Container();
 
-worldContainer.addChild(mapContainer);
-worldContainer.addChild(objectContainer);
-worldContainer.addChild(overlayContainer);
-
 stage.addChild(worldContainer);
 stage.addChild(hudContainer);
 stage.addChild(devContainer);
@@ -51,11 +47,6 @@ var elapsedTime = 0;
 
 APP = {
     worldContainer: worldContainer, // z = 0
-
-    mapContainer: mapContainer, // z = 1
-    objectContainer: objectContainer, // z = 2
-    overlayContainer: overlayContainer, // z = 3
-
     hudContainer: hudContainer, // z = 4
     devContainer: devContainer, // z = 5
 
@@ -81,8 +72,10 @@ hudContainer.sortableChildren = true;
 
 // OTHER VARS
 WORLD = new World();
+for(var i = 0; i < WORLD.planeContainers.length; i++)
+    worldContainer.addChild(WORLD.planeContainers[i]);
+    
 CAMERA = new Camera();
-
 CAMERA.setTargetPosition(50 * 256, 50 * 256);
 
 INPUT = new Input();

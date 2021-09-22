@@ -94,19 +94,22 @@ export class XPDropper
 
     displayDrops(object)
     {
-        var position = object.getWorldPosition();
-        for(var i = 0; i < this.dropQueue.length; i++)
+        // only display XP drops if the object is on same plane as the camera
+        if(WORLD.currentPlane == object.plane)
         {
-            this.dropQueue[i].attachTo(object, false, 0, XP_DROP_OFFSET * i)
-
-            //this.dropQueue[i].setPosition(position.x, position.y - (XP_DROP_OFFSET * i));
-            this.dropQueue[i].timeToKill = APP.elapsedTime + XP_DROP_LIFE;
-            
-            SpawnObject(this.dropQueue[i]);
-
-            this.activeDrops.push(this.dropQueue[i]);
+            for(var i = 0; i < this.dropQueue.length; i++)
+            {
+                this.dropQueue[i].attachTo(object, false, 0, XP_DROP_OFFSET * i)
+    
+                //this.dropQueue[i].setPosition(position.x, position.y - (XP_DROP_OFFSET * i));
+                this.dropQueue[i].timeToKill = APP.elapsedTime + XP_DROP_LIFE;
+                
+                SpawnObject(this.dropQueue[i]);
+    
+                this.activeDrops.push(this.dropQueue[i]);
+            }
         }
-
+        
         this.dropQueue = [];
     }
 
