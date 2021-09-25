@@ -122,7 +122,7 @@ export class Player extends Actor
         this.worldLabel.setAnchor(0, 1);
         this.worldLabel.interactable = true;
         this.worldLabel.clampToView = true;
-        this.worldLabel.setZIndex(HUD_LAYERS.WORLD);
+        this.worldLabel.setZIndex(HUD_LAYERS.WORLD_FOREGROUND);
 
         this.inventory = new Array(INVENTORY_SIZE);
         for(var i = 0; i < INVENTORY_SIZE; i++)

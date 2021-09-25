@@ -25,6 +25,7 @@ export function createOverlay(object)
 
     overlay.graphic.beginFill(0xffff00);
     overlay.graphic.alpha = 0.3;
+    overlay.setZIndex(HUD_LAYERS.WORLD_BACKGROUND);
 
     var box = object.getScreenRect(true);
 
