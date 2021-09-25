@@ -150,7 +150,6 @@ export class Input
             this.mouseDownPos = CAMERA.getCursorPosition();
             this.mouseIsDown = true;
 
-            CAMERA.interruptedCameraPathing = true;
             LAST_MOUSE_CLICKED_OBJECT = MOUSE_OVER_OBJECT;
 
             if(MOUSE_OVER_OBJECT != null)
@@ -174,6 +173,7 @@ export class Input
             }
             else
             {
+                CAMERA.interruptedCameraPathing = true;
                 HUD.playClickAnimation();
             }
         }
