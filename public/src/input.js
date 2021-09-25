@@ -19,7 +19,9 @@ export class Input
         APP.renderer.plugins.interaction.on('pointerup', (e) => {this.onMouseUp(e)});
         APP.renderer.plugins.interaction.on('pointermove', (e) => {this.onMouseMove(e)});
 
-        document.addEventListener('mousewheel', (e) => {this.onMouseWheel(e.deltaY)});
+        window.addEventListener('resize', (e) => {this.onWindowResize(e)});
+
+        document.addEventListener("wheel", (e) => {this.onMouseWheel(e.deltaY)});
         document.addEventListener('keydown', (e) => {this.onKeyPress(e)});
         document.addEventListener('contextmenu', (e) => {
             window.wasRightClick=true;
@@ -27,6 +29,16 @@ export class Input
           });
     }
 
+    onWindowResize(e)
+    {
+        HUD.updateInterfacePositions();
+        APP.renderer.resize(window.innerWidth, window.innerHeight);
+
+        APP.hudContainer.position.y = -window.innerHeight;
+        APP.devContainer.position.y = -window.innerHeight;
+
+        WORLD.updateMap();
+    }
 
     onMouseWheel(deltaY)
     {

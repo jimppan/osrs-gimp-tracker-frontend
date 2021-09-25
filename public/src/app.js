@@ -83,6 +83,7 @@ HUD = new Hud();
 
 hudContainer.position.y = -window.innerHeight;
 devContainer.position.y = -window.innerHeight;
+
 stage.scale.y = -1;
 
 var regionposJsonURL = "./regionpos.json";

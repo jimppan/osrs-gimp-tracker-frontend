@@ -171,7 +171,7 @@ export class InterfaceSkillSlot extends HudObject
             this.skillIcon.setAnchor(0.5, 0.5);
             this.skillIcon.setPosition(-15, -1);
             this.skillIcon.setParent(this);
-            this.skillIcon.setZIndex(1);
+            this.skillIcon.setZIndex(HUD_LAYERS.INTERFACE_FOREGROUND);
         }
 
         this.text1.setAnchor(0.5, 0.5);
@@ -204,10 +204,10 @@ export class InterfaceSkillSlot extends HudObject
         this.text1.setParent(this);
         this.text2.setParent(this);
         
-        this.backgroundLeft.setZIndex(0);
-        this.backgroundRight.setZIndex(0);
-        this.text1.setZIndex(1);
-        this.text2.setZIndex(1);
+        this.backgroundLeft.setZIndex(HUD_LAYERS.INTERFACE_BACKGROUND);
+        this.backgroundRight.setZIndex(HUD_LAYERS.INTERFACE_BACKGROUND);
+        this.text1.setZIndex(HUD_LAYERS.INTERFACE_FOREGROUND);
+        this.text2.setZIndex(HUD_LAYERS.INTERFACE_FOREGROUND);
     }
 }
 

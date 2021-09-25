@@ -47,8 +47,6 @@ export class Hud
 
         SpawnObject(this.hoverTooltip);
         SpawnObject(this.mouseTooltip);
-
-        this.hoverTooltip.setPosition(0, window.innerHeight);
     }
 
     init()
@@ -82,9 +80,16 @@ export class Hud
         this.clickAnim.graphic.zIndex = 1;
 
         this.mainInterface.setVisibility(false);
-        this.mainInterface.setPosition(window.innerWidth, 0);
+        this.updateInterfacePositions();
+
         SpawnObject(this.clickAnim);
         SpawnObject(this.mainInterface);
+    }
+
+    updateInterfacePositions()
+    {
+        this.hoverTooltip.setPosition(0, window.innerHeight);
+        this.mainInterface.setPosition(window.innerWidth, 0);
     }
 
     updateInterface()
@@ -112,14 +117,14 @@ export class Hud
                 attachedToPos.x += object.offset.x * scale;
                 attachedToPos.y += object.offset.y * scale;
 
-                // if its a player, clamp the labels os they're always visible
-                if(object.attachedTo instanceof Player)
+                // if its a player, clamp the labels so they're always visible
+                if(object.attachedTo instanceof Player && object.clampToView)
                 {
                     var box = object.getScreenRect(false);
+
                     //console.log(box);
                     box = CAMERA.clampToView({x:attachedToPos.x, y:attachedToPos.y, width:box.width, height:box.height});
-                   // console.log(box);
-                    //console.log(attachedToPos);
+
                     attachedToPos.x = box.x;
                     attachedToPos.y = box.y;
                 }

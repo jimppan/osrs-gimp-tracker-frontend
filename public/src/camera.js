@@ -72,12 +72,7 @@ export class Camera
             }
         }
     }
-
-    /* getCameraWorldPosition()
-    {
-        return {x:(-this.position.x) + (window.innerWidth / 2), y:(-this.position.y) - (window.innerHeight / 2)};
-    } */
-
+    
     getCameraWorldPosition()
     {
         return {x:(-this.position.x / this.zoom.x), y:(-this.position.y) / this.zoom.y};

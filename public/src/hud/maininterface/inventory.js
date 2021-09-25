@@ -44,6 +44,9 @@ export class InterfaceItemSlot extends HudObject
         this.text.setPosition(-18, 4);
         this.text.setParent(this.icon);
         this.icon.setParent(this);
+
+        this.icon.setZIndex(HUD_LAYERS.INTERFACE_FOREGROUND);
+        this.text.setZIndex(HUD_LAYERS.INTERFACE_FOREGROUND);
     }
 
     setVisibility(value)

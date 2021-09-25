@@ -31,7 +31,9 @@ export class Actor extends WorldObject
         this.label.attachTo(this, true, 0, 4);
         this.label.setAnchor(0, 1);
         this.label.interactable = true;
-        SpawnObject(this.label);
+        this.label.clampToView = true;
+        this.label.setZIndex(HUD_LAYERS.WORLD);
+        //SpawnObject(this.label);
 
         this.setTilePosition(position.x, position.y, 0)
     }

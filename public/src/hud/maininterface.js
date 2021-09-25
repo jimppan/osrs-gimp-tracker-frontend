@@ -123,6 +123,7 @@ export class MainInterface extends Interface
         this.base[INTERFACE_BASE.BACKGROUND].graphic.endFill();
         this.base[INTERFACE_BASE.BACKGROUND].setParent(this);
         this.base[INTERFACE_BASE.BACKGROUND].setPosition(-220, 30);
+        this.base[INTERFACE_BASE.BACKGROUND].setZIndex(HUD_LAYERS.INTERFACE_BACKGROUND);
 
         for(var i = 0; i < INTERFACE_BASE_TEXTURES.length; i++)
         {
@@ -133,6 +134,7 @@ export class MainInterface extends Interface
             this.base[i].setParent(this);
             this.base[i].setPosition(INTERFACE_BASE_OFFSETS[i].x, INTERFACE_BASE_OFFSETS[i].y);
             this.base[i].graphic.anchor.set(0, 1);
+            this.base[i].setZIndex(HUD_LAYERS.INTERFACE_BACKGROUND);
         }
         this.setAnchor(1, 0); // set base anchor to bottom right
 
@@ -146,9 +148,8 @@ export class MainInterface extends Interface
             this.buttons[i].setAnchor(0.5, 0.5);
             this.buttons[i].setPosition(INTERFACE_BUTTON_OFFSETS[i].x, INTERFACE_BUTTON_OFFSETS[i].y);
             this.buttons[i].interactable = true;
+            this.buttons[i].setZIndex(HUD_LAYERS.INTERFACE_FOREGROUND);
         }
-
-        //this.base[INTERFACE_BASE.BACKGROUND].graphic.scale = -1;
 
         for(var i = 0; i < INTERFACE_TAB.MAX; i++)
         {
@@ -156,6 +157,7 @@ export class MainInterface extends Interface
             this.tabs[i].setParent(this); 
         }
 
+        this.base[INTERFACE_BASE.SELECTED_TAB].setZIndex(HUD_LAYERS.INTERFACE);
         this.base[INTERFACE_BASE.SELECTED_TAB].setAnchor(0.5, 0.5);
         this.openInterface(INTERFACE_TAB.INVENTORY);
     }

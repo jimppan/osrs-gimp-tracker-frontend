@@ -40,7 +40,7 @@ export function ConnectToBackend()
             if(!IsValidPacket(packet))
                 return;
     
-            console.log(SocketEvent.UPDATE, ": ", name);
+            //console.log(SocketEvent.UPDATE, ": ", name);
             var player = GetPlayer(packet.name);
             if(player == null)
                 player = ConnectPlayer(packet);

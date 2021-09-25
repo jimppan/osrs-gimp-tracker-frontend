@@ -239,7 +239,8 @@ export class StageObject
 
     setZIndex(val)
     {
-        this.graphic.zIndex = val;
+        if(this.graphic != null)
+            this.graphic.zIndex = val;
     }
 
     // automatically calculates bounds of an object, including all its children (screen)
@@ -510,6 +511,7 @@ export class HudObject extends StageObject
         this.offset = {x:0, y:0};
         this.scaleOffset = false;
         this.attachedTo = null;
+        this.clampToView = false;
     }
 
     setPosition(x, y)

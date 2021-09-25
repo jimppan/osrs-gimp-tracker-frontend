@@ -28,13 +28,12 @@ export function createOverlay(object)
 
     var box = object.getScreenRect(true);
 
-    console.log(box);
     overlay.graphic.drawRect(0, 0, box.width, box.height);
     overlay.graphic.endFill();
     
     overlay.setPosition(box.x, box.y);
     overlay.attachTo(object, false, 0, 0);
-    //overlay.setParent(object);
+
     overlay.interactable = false;
 
     OVERLAYS.set(object, overlay);

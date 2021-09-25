@@ -27,3 +27,12 @@ var SELECTED_OBJECT = null;
 var CAMERA_FOLLOW_OBJECT = null;
 
 var DEVELOPER_MODE = false;
+
+const HUD_LAYERS = 
+{
+    WORLD: 0,
+    INTERFACE_BACKGROUND: 1,
+    INTERFACE: 2,
+    INTERFACE_FOREGROUND: 3,
+    TOOLTIP: 4,
+}

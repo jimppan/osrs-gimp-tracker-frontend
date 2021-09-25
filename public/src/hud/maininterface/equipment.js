@@ -83,6 +83,10 @@ export class InterfaceEquipmentSlot extends HudObject
         this.foreground.setGraphic(new PIXI.Sprite(APP.resourceManager.getTexture(EQUIPMENT_ICON_TEXTURES[this.equipmentId])));
         this.itemIcon.setGraphic(new PIXI.Sprite());
 
+        this.background.setZIndex(HUD_LAYERS.INTERFACE);
+        this.foreground.setZIndex(HUD_LAYERS.INTERFACE_FOREGROUND);
+        this.itemIcon.setZIndex(HUD_LAYERS.INTERFACE_FOREGROUND);
+
         this.background.setZIndex(1);
         this.foreground.setZIndex(2);
         this.itemIcon.setZIndex(3);
