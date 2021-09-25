@@ -35,9 +35,9 @@ export class MouseTooltip extends HudObject
         this.leftText.setParent(this);
         this.rightText.setParent(this);
 
-        this.setZIndex(2);
-        this.leftText.setZIndex(3);
-        this.rightText.setZIndex(3);
+        this.setZIndex(HUD_LAYERS.TOOLTIP_BACKGROUND);
+        this.leftText.setZIndex(HUD_LAYERS.TOOLTIP_FOREGROUND);
+        this.rightText.setZIndex(HUD_LAYERS.TOOLTIP_FOREGROUND);
     }
 
     update()
