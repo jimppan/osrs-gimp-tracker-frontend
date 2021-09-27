@@ -81,6 +81,16 @@ export class Chunk
         return {x:regionPos.x + (this.position.x * X_CHUNKS_PER_REGION * TILE_SIZE), y:regionPos.y + (this.position.y * Y_CHUNKS_PER_REGION * TILE_SIZE) };
     }
 
+    mapDefinitionExists(mapdef)
+    {
+        for(var i = 0; i < this.mapDefinitions[mapdef.plane].length; i++)
+        {
+            if(mapdef.layer == this.mapDefinitions[mapdef.plane][i].layer)
+                return true;
+        }
+        return false;
+    }
+
     // sort these by plane first, then layers
     // the array should look something like this
     // 0 [plane:0, layer:0]
@@ -91,6 +101,12 @@ export class Chunk
 
     addMapDefinition(mapdef)
     {
+        if(this.mapDefinitionExists(mapdef))
+        {
+            console.log("map definition collision");
+            return;
+        }
+
         for(var i = 0; i < this.mapDefinitions[mapdef.plane].length; i++)
         {
             var sortMapDef = this.mapDefinitions[mapdef.plane][i];
