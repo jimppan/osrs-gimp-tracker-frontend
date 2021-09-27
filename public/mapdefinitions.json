@@ -782,7 +782,7 @@
     {
         "id": 35,
         "name": "morytania-graveyard",
-        "display_name": "Morytania Graveyard",
+        "display_name": "Graveyard",
         "layer":0,
         "plane":0,
         "chunks":
@@ -1598,7 +1598,7 @@
         ]
     },
     {
-        "id": 53,
+        "id": 54,
         "name": "tar-swamp",
         "display_name": "Tar Swamp",
         "layer":1,
@@ -1656,6 +1656,1136 @@
             {
                 "s_x":14816,
                 "s_y":15168
+            }
+        ]
+    },
+    {
+        "id": 55,
+        "name": "mushroom-forest",
+        "display_name": "Mushroom Forest",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":14688,
+                "s_y":15296,
+                "e_x":14752,
+                "e_y":15360
+            },
+            {
+                "s_x":14656,
+                "s_y":15392,
+                "e_x":14784,
+                "e_y":15392
+            },
+            {
+                "s_x":14656,
+                "s_y":15424,
+                "e_x":14816,
+                "e_y":15532
+            },
+            {
+                "s_x":14688,
+                "s_y":15552,
+                "e_x":14816,
+                "e_y":15552
+            }
+        ]
+    },
+    {
+        "id": 56,
+        "name": "museum-camp",
+        "display_name": "Museum Camp",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":14912,
+                "s_y":15168,
+                "e_x":15008,
+                "e_y":15168
+            },
+            {
+                "s_x":14912,
+                "s_y":15200,
+                "e_x":15040,
+                "e_y":15264
+            },
+            {
+                "s_x":14880,
+                "s_y":15232,
+                "e_x":14880,
+                "e_y":15264
+            },
+            {
+                "s_x":14912,
+                "s_y":15296,
+                "e_x":14944,
+                "e_y":15296
+            }
+        ]
+    },
+    {
+        "id": 56,
+        "name": "fossil-island-volcano",
+        "display_name": "Volcano",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":15136,
+                "s_y":15104,
+                "e_x":15232,
+                "e_y":15232
+            }
+        ]
+    },
+    {
+        "id": 57,
+        "name": "house-on-the-hill",
+        "display_name": "House on the Hill",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":14976,
+                "s_y":15456,
+                "e_x":14976,
+                "e_y":15488
+            },
+            {
+                "s_x":15008,
+                "s_y":15424,
+                "e_x":15072,
+                "e_y":15520
+            },
+            {
+                "s_x":15104,
+                "s_y":15456,
+                "e_x":15168,
+                "e_y":15520
+            }
+        ]
+    },
+    {
+        "id": 58,
+        "name": "lithkren",
+        "display_name": "Lithkren",
+        "layer":0,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":14080,
+                "s_y":16000,
+                "e_x":14336,
+                "e_y":16096
+            },
+            {
+                "s_x":14144,
+                "s_y":15904,
+                "e_x":14368,
+                "e_y":15968
+            },
+            {
+                "s_x":14368,
+                "s_y":16000,
+                "e_x":14368,
+                "e_y":16064
+            },
+            {
+                "s_x":14272,
+                "s_y":15872,
+                "e_x":14336,
+                "e_y":15872
+            },
+            {
+                "s_x":14400,
+                "s_y":15968
+            }
+        ]
+    },
+    {
+        "id": 59,
+        "name": "wilderness",
+        "display_name": "Wilderness",
+        "layer":0,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11776,
+                "s_y":14080,
+                "e_x":13280,
+                "e_y":15648
+            },
+            {
+                "s_x":11776,
+                "s_y":15680,
+                "e_x":13216,
+                "e_y":15808
+            },
+            {
+                "s_x":11776,
+                "s_y":15840,
+                "e_x":12064,
+                "e_y":15840
+            },
+            {
+                "s_x":12128,
+                "s_y":15840,
+                "e_x":13120,
+                "e_y":15840
+            },
+            {
+                "s_x":13248,
+                "s_y":15680,
+                "e_x":13248,
+                "e_y":15776
+            },
+            {
+                "s_x":13344,
+                "s_y":15840
+            },
+            {
+                "s_x":13440,
+                "s_y":15840,
+                "e_x":13504,
+                "e_y":15840
+            },
+            {
+                "s_x":13370,
+                "s_y":15648,
+                "e_x":13536,
+                "e_y":15808
+            },
+            {
+                "s_x":13312,
+                "s_y":15648,
+                "e_x":13312,
+                "e_y":15712
+            },
+            {
+                "s_x":13312,
+                "s_y":15456,
+                "e_x":13504,
+                "e_y":15616
+            },
+            {
+                "s_x":13536,
+                "s_y":15488,
+                "e_x":13536,
+                "e_y":15552
+            },
+            {
+                "s_x":13312,
+                "s_y":15360,
+                "e_x":13440,
+                "e_y":15424
+            },
+            {
+                "s_x":13312,
+                "s_y":14208,
+                "e_x":13344,
+                "e_y":15328
+            },
+            {
+                "s_x":13376,
+                "s_y":14528,
+                "e_x":13472,
+                "e_y":15072
+            },
+            {
+                "s_x":13376,
+                "s_y":15328
+            },
+            {
+                "s_x":13376,
+                "s_y":15104,
+                "e_x":13408,
+                "e_y":15296
+            },
+            {
+                "s_x":13440,
+                "s_y":15200,
+                "e_x":13472,
+                "e_y":15232
+            },
+            {
+                "s_x":13504,
+                "s_y":14880,
+                "e_x":13536,
+                "e_y":15008
+            },
+            {
+                "s_x":13504,
+                "s_y":14688,
+                "e_x":13536,
+                "e_y":14816
+            },
+            {
+                "s_x":13504,
+                "s_y":14624,
+                "e_x":13504,
+                "e_y":14656
+            },
+            {
+                "s_x":13504,
+                "s_y":14560,
+                "e_x":13536,
+                "e_y":14592
+            },
+            {
+                "s_x":13440,
+                "s_y":14368,
+                "e_x":13504,
+                "e_y":14464
+            },
+            {
+                "s_x":13376,
+                "s_y":14272,
+                "e_x":13408,
+                "e_y":14400
+            },
+            {
+                "s_x":13440,
+                "s_y":14336
+            },
+            {
+                "s_x":13376,
+                "s_y":14240
+            },
+            {
+                "s_x":13536,
+                "s_y":15648,
+                "e_x":13536,
+                "e_y":15808
+            },
+            {
+                "s_x":13376,
+                "s_y":14496
+            }
+        ]
+    },
+    {
+        "id": 60,
+        "name": "chaos-temple-south",
+        "display_name": "Southern Chaos Temple",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12928,
+                "s_y":14400,
+                "e_x":12960,
+                "e_y":14432
+            }
+        ]
+    },
+    {
+        "id": 61,
+        "name": "larrans-chest-east",
+        "display_name": "Larran's Chest",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":13088,
+                "s_y":14624,
+                "e_x":13120,
+                "e_y":14656
+            }
+        ]
+    },
+    {
+        "id": 62,
+        "name": "venenatis",
+        "display_name": "Venenatis",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":13216,
+                "s_y":14944,
+                "e_x":13280,
+                "e_y":15008
+            }
+        ]
+    },
+    {
+        "id": 63,
+        "name": "callisto",
+        "display_name": "Callisto",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":13120,
+                "s_y":15328,
+                "e_x":13184,
+                "e_y":15360
+            }
+        ]
+    },
+    {
+        "id": 64,
+        "name": "vetion",
+        "display_name": "Vet'ion",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12768,
+                "s_y":15072,
+                "e_x":12832,
+                "e_y":15104
+            }
+        ]
+    },
+    {
+        "id": 65,
+        "name": "boneyard",
+        "display_name": "Boneyard",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12864,
+                "s_y":14944,
+                "e_x":12864,
+                "e_y":14976
+            },
+            {
+                "s_x":12896,
+                "s_y":14944,
+                "e_x":12960,
+                "e_y":15008
+            },
+            {
+                "s_x":12992,
+                "s_y":14912,
+                "e_x":13056,
+                "e_y":14944
+            },
+            {
+                "s_x":12992,
+                "s_y":14976,
+                "e_x":13024,
+                "e_y":14976
+            },
+            {
+                "s_x":12960,
+                "s_y":14912
+            },
+            {
+                "s_x":12992,
+                "s_y":14880
+            }
+        ]
+    },
+    {
+        "id": 66,
+        "name": "demonic-ruins",
+        "display_name": "Demonic Ruins",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":13120,
+                "s_y":15488,
+                "e_x":13152,
+                "e_y":15552
+            }
+        ]
+    },
+    {
+        "id": 67,
+        "name": "fountain-of-rune",
+        "display_name": "Fountain of Rune",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":13408,
+                "s_y":15456,
+                "e_x":13504,
+                "e_y":15584
+            },
+            {
+                "s_x":13536,
+                "s_y":15488,
+                "e_x":13536,
+                "e_y":15552
+            }
+        ]
+    },
+    {
+        "id": 68,
+        "name": "wilderness-volcano",
+        "display_name": "Volcano",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":13376,
+                "s_y":15648,
+                "e_x":13536,
+                "e_y":15808
+            },
+            {
+                "s_x":13440,
+                "s_y":15616,
+                "e_x":13472,
+                "e_y":15616
+            },
+            {
+                "s_x":13312,
+                "s_y":15680,
+                "e_x":13344,
+                "e_y":15712
+            },
+            {
+                "s_x":13344,
+                "s_y":15744,
+                "e_x":13344,
+                "e_y":15840
+            },
+            {
+                "s_x":13440,
+                "s_y":15840,
+                "e_x":13504,
+                "e_y":15840
+            }
+        ]
+    },
+    {
+        "id": 69,
+        "name": "rogues-castle",
+        "display_name": "Rogues' Castle",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":13088,
+                "s_y":15680,
+                "e_x":13184,
+                "e_y":15776
+            }
+        ]
+    },
+    {
+        "id": 70,
+        "name": "scorpion-pit",
+        "display_name": "Scorpion Pit",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12864,
+                "s_y":15744,
+                "e_x":12992,
+                "e_y":15776
+            },
+            {
+                "s_x":12992,
+                "s_y":15808,
+                "e_x":13024,
+                "e_y":15808
+            },
+            {
+                "s_x":13024,
+                "s_y":15776
+            }
+        ]
+    },
+    {
+        "id": 71,
+        "name": "resource-area",
+        "display_name": "Resource Area",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12672,
+                "s_y":15680,
+                "e_x":12768,
+                "e_y":15776
+            }
+        ]
+    },
+    {
+        "id": 72,
+        "name": "deserted-keep",
+        "display_name": "Deserted Keep",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12608,
+                "s_y":15648,
+                "e_x":12640,
+                "e_y":15776
+            },
+            {
+                "s_x":12576,
+                "s_y":15680,
+                "e_x":12576,
+                "e_y":15744
+            }
+        ]
+    },
+    {
+        "id": 73,
+        "name": "mage-arena",
+        "display_name": "Mage Arena",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12352,
+                "s_y":15648,
+                "e_x":12448,
+                "e_y":15776
+            },
+            {
+                "s_x":12320,
+                "s_y":15680,
+                "e_x":12320,
+                "e_y":15744
+            },
+            {
+                "s_x":12480,
+                "s_y":15680,
+                "e_x":12480,
+                "e_y":15744
+            }
+        ]
+    },
+    {
+        "id": 74,
+        "name": "pirates-hideout",
+        "display_name": "Pirates Hideout",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12128,
+                "s_y":15776,
+                "e_x":12160,
+                "e_y":15808
+            }
+        ]
+    },
+    {
+        "id": 75,
+        "name": "larrans-chest-north",
+        "display_name": "Larran's Chest",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12032,
+                "s_y":15776,
+                "e_x":12096,
+                "e_y":15808
+            }
+        ]
+    },
+    {
+        "id": 76,
+        "name": "wildernes-agility-training-area",
+        "display_name": "Agility Training Area",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11936,
+                "s_y":15712,
+                "e_x":12000,
+                "e_y":15840
+            }
+        ]
+    },
+    {
+        "id": 77,
+        "name": "frozen-waste-plateau",
+        "display_name": "Frozen Waste Plateau",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11776,
+                "s_y":15616,
+                "e_x":11872,
+                "e_y":15744
+            }
+        ]
+    },
+    {
+        "id": 78,
+        "name": "lava-maze",
+        "display_name": "Lava Maze",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12224,
+                "s_y":15296,
+                "e_x":12448,
+                "e_y":15488
+            },
+            {
+                "s_x":12352,
+                "s_y":15520,
+                "e_x":12416,
+                "e_y":15520
+            },
+            {
+                "s_x":12480,
+                "s_y":15392,
+                "e_x":12480,
+                "e_y":15424
+            },
+            {
+                "s_x":12288,
+                "s_y":15264,
+                "e_x":12352,
+                "e_y":15264
+            },
+            {
+                "s_x":12128,
+                "s_y":15360,
+                "e_x":12192,
+                "e_y":15424
+            },
+            {
+                "s_x":12160,
+                "s_y":15296,
+                "e_x":12192,
+                "e_y":15328
+            },
+            {
+                "s_x":12096,
+                "s_y":15360,
+                "e_x":12096,
+                "e_y":15392
+            },
+            {
+                "s_x":12192,
+                "s_y":15456
+            }
+        ]
+    },
+    {
+        "id": 79,
+        "name": "lava-dragon-isle",
+        "display_name": "Lava Dragon Isle",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12736,
+                "s_y":15264,
+                "e_x":12896,
+                "e_y":15392
+            },
+            {
+                "s_x":12704,
+                "s_y":15200,
+                "e_x":12832,
+                "e_y":15232
+            },
+            {
+                "s_x":12692,
+                "s_y":15232,
+                "e_x":12704,
+                "e_y":15264
+            },
+            {
+                "s_x":12704,
+                "s_y":15296,
+                "e_x":12704,
+                "e_y":15328
+            },
+            {
+                "s_x":12864,
+                "s_y":15232
+            }
+        ]
+    },
+    {
+        "id": 80,
+        "name": "black-chinchompas",
+        "display_name": "Black Chinchompas",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12544,
+                "s_y":15040,
+                "e_x":12640,
+                "e_y":15072
+            },
+            {
+                "s_x":12512,
+                "s_y":15104,
+                "e_x":12576,
+                "e_y":15136
+            },
+            {
+                "s_x":12608,
+                "s_y":15104
+            },
+            {
+                "s_x":12512,
+                "s_y":15072
+            }
+        ]
+    },
+    {
+        "id": 81,
+        "name": "wilderness-ruin-central",
+        "display_name": "Central Ruins",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12544,
+                "s_y":14880,
+                "e_x":12736,
+                "e_y":14976
+            }
+        ]
+    },
+    {
+        "id": 82,
+        "name": "graveyard-of-shadows",
+        "display_name": "Graveyard of Shadows",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12576,
+                "s_y":14624,
+                "e_x":12704,
+                "e_y":14752
+            }
+        ]
+    },
+    {
+        "id": 83,
+        "name": "ferox-enclave",
+        "display_name": "Ferox Enclave",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12480,
+                "s_y":14464,
+                "e_x":12576,
+                "e_y":14560
+            },
+            {
+                "s_x":12512,
+                "s_y":14432,
+                "e_x":12576,
+                "e_y":14432
+            },
+            {
+                "s_x":12608,
+                "s_y":14496,
+                "e_x":12608,
+                "e_y":14560
+            }
+        ]
+    },
+    {
+        "id": 84,
+        "name": "chaos-elemental",
+        "display_name": "Chaos Elemental",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12960,
+                "s_y":15648,
+                "e_x":13056,
+                "e_y":15680
+            }
+        ]
+    },
+    {
+        "id": 85,
+        "name": "chaos-fanatic",
+        "display_name": "Chaos Fanatic",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11904,
+                "s_y":15296,
+                "e_x":11968,
+                "e_y":15360
+            }
+        ]
+    },
+    {
+        "id": 86,
+        "name": "chaos-temple-north",
+        "display_name": "Northern Chaos Temple",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11776,
+                "s_y":15264,
+                "e_x":11808,
+                "e_y":15296
+            }
+        ]
+    },
+    {
+        "id": 87,
+        "name": "the-forgotten-cemetery",
+        "display_name": "The Forgotten Cemetery",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11808,
+                "s_y":14944,
+                "e_x":11968,
+                "e_y":15040
+            }
+        ]
+    },
+    {
+        "id": 88,
+        "name": "wilderness-ruin-western",
+        "display_name": "Western Ruins",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11808,
+                "s_y":14784,
+                "e_x":12000,
+                "e_y":14816
+            },
+            {
+                "s_x":11840,
+                "s_y":14720,
+                "e_x":11968,
+                "e_y":14752
+            },
+            {
+                "s_x":11936,
+                "s_y":14688
+            }
+        ]
+    },
+    {
+        "id": 89,
+        "name": "crazy-archaeologist",
+        "display_name": "Crazy Archaeologist",
+        "layer":2,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11872,
+                "s_y":14752,
+                "e_x":11904,
+                "e_y":14784
+            }
+        ]
+    },
+    {
+        "id": 90,
+        "name": "bandit-camp",
+        "display_name": "Bandit Camp",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12064,
+                "s_y":14752,
+                "e_x":12192,
+                "e_y":14816
+            },
+            {
+                "s_x":12096,
+                "s_y":14720,
+                "e_x":12160,
+                "e_y":14720
+            }
+        ]
+    },
+    {
+        "id": 91,
+        "name": "dark-warriors-fortress",
+        "display_name": "Dark Warriors' Fortress",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12064,
+                "s_y":14464,
+                "e_x":12128,
+                "e_y":14560
+            }
+        ]
+    },
+    {
+        "id": 92,
+        "name": "obelisk-of-air",
+        "display_name": "Obelisk of Air",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12320,
+                "s_y":14240,
+                "e_x":12352,
+                "e_y":14272
+            }
+        ]
+    },
+    {
+        "id": 93,
+        "name": "varrock-palace",
+        "display_name": "Palace",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12768,
+                "s_y":13792,
+                "e_x":12896,
+                "e_y":13984
+            },
+            {
+                "s_x":12800,
+                "s_y":13760,
+                "e_x":12864,
+                "e_y":13760
+            }
+        ]
+    },
+    {
+        "id": 94,
+        "name": "clan-hub",
+        "display_name": "Clan Hub",
+        "layer":2,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12704,
+                "s_y":13856,
+                "e_x":12736,
+                "e_y":13888
+            }
+        ]
+    },
+    {
+        "id": 95,
+        "name": "cooks-guild",
+        "display_name": "Cooks' Guild",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12544,
+                "s_y":13760,
+                "e_x":12576,
+                "e_y":13792
+            }
+        ]
+    },
+    {
+        "id": 96,
+        "name": "varrock-west-bank",
+        "display_name": "Western Bank",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12704,
+                "s_y":13728,
+                "e_x":12736,
+                "e_y":13760
+            }
+        ]
+    },
+    {
+        "id": 97,
+        "name": "varrock-east-bank",
+        "display_name": "Eastern Bank",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12992,
+                "s_y":13664,
+                "e_x":13024,
+                "e_y":13664
+            }
+        ]
+    },
+    {
+        "id": 98,
+        "name": "jolly-boar-inn",
+        "display_name": "Jolly Boar Inn",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":13088,
+                "s_y":13920,
+                "e_x":13120,
+                "e_y":14016
             }
         ]
     }

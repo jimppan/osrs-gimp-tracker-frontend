@@ -6,19 +6,26 @@ export class Input
     constructor()
     {
         this.mouseIsDown = false;
+        this.mouse2IsDown = false;
+        this.spaceIsDown = false;
         this.mouseDownPos = {x:0, y:0};
     }
 
     init()
     {
-        APP.renderer.plugins.interaction.on('pointerdown', (e) => {this.onMouseDown(e)});
-        APP.renderer.plugins.interaction.on('pointerup', (e) => {this.onMouseUp(e)});
+        /* APP.renderer.plugins.interaction.on('mousedown', (e) => {this.onMouseDown(e)});
+        APP.renderer.plugins.interaction.on('mouseup', (e) => {this.onMouseUp(e)}); */
         APP.renderer.plugins.interaction.on('pointermove', (e) => {this.onMouseMove(e)});
+
+
+        window.addEventListener('mousedown', (e) => {this.onMouseDown(e)});
+        window.addEventListener('mouseup', (e) => {this.onMouseUp(e)});
 
         window.addEventListener('resize', (e) => {this.onWindowResize(e)});
 
         document.addEventListener("wheel", (e) => {this.onMouseWheel(e.deltaY)});
         document.addEventListener('keydown', (e) => {this.onKeyPress(e)});
+        document.addEventListener('keyup', (e) => {this.onKeyRelease(e)});
         document.addEventListener('contextmenu', (e) => {
             window.wasRightClick=true;
             e.preventDefault();
@@ -114,7 +121,10 @@ export class Input
                 this.deselectObject();
                 break;
             case 32: // space
-                CAMERA.followCurrentObject();
+                if(WORLD.grid.isVisible())
+                    this.spaceIsDown = true;
+                else
+                    CAMERA.followCurrentObject();
                 break;
             case 81: // q
                 //APP.mapContainer.alpha = 0.2;
@@ -141,26 +151,26 @@ export class Input
         console.log(e.keyCode);
     }
 
+    onKeyRelease(e)
+    {
+        switch(e.keyCode)
+        {
+            case 32:
+                this.spaceIsDown = false;
+                break;
+        }
+    }
+
     onMouseDown(e)
     {
-        if(e.data.buttons == 1)
+        if(e.button == 0)
         {
             this.mouseDownPos = CAMERA.getCursorPosition();
             this.mouseIsDown = true;
 
             if(WORLD.grid.isVisible())
             {
-                // Grid interaction
-                var chunk = CAMERA.getMouseChunk();
-                if(chunk != null)
-                {
-                    var selectedChunk = WORLD.grid.getSelectedChunk(chunk);
-                    console.log(chunk);
-                    if(selectedChunk == null)
-                        WORLD.grid.selectChunk(chunk);
-                    else
-                        WORLD.grid.deselectChunk(chunk);
-                }
+               
             }
             else
             {
@@ -193,8 +203,10 @@ export class Input
                 }
             }
         }
-        else if(e.data.buttons == 2)
+        else if(e.button == 2)
         {
+            this.mouse2IsDown = true;
+
             // right click
             var cursorPos = CAMERA.getCursorPosition();
             console.log("CURSOR POS")
@@ -207,30 +219,79 @@ export class Input
             console.log(WORLD.getChunk(worldPos.x, worldPos.y).getWorldPosition());
 
         }
-        else if(e.data.buttons == 4)
+        else if(e.button == 1)
         {
             DEVELOPER_MODE = !DEVELOPER_MODE;
             SetDeveloperMode(DEVELOPER_MODE);
         }
+        this.onMouseMove()
     }
 
     onMouseUp(e)
     {
-        this.mouseIsDown = false;
+        if(e.button == 0)
+        {
+            this.mouseIsDown = false;
+        }
+
+        if(e.button == 2)
+        {
+            this.mouse2IsDown = false;
+        }
     }
 
     onMouseMove()
     {
-        if(this.mouseIsDown && LAST_MOUSE_CLICKED_OBJECT == null)
+        if(WORLD.grid.isVisible())
         {
-            var currMouse = CAMERA.getCursorPosition();
-                
-            var newX = CAMERA.position.x + (currMouse.x - this.mouseDownPos.x);
-            var newY = CAMERA.position.y - (currMouse.y - this.mouseDownPos.y);
-
-            CAMERA.setPosition(newX, newY);
-
-            this.mouseDownPos = currMouse;
+            if(this.mouseIsDown)
+            {
+                if(this.spaceIsDown)
+                {
+                    var currMouse = CAMERA.getCursorPosition();
+                    
+                    var newX = CAMERA.position.x + (currMouse.x - this.mouseDownPos.x);
+                    var newY = CAMERA.position.y - (currMouse.y - this.mouseDownPos.y);
+        
+                    CAMERA.setPosition(newX, newY);
+        
+                    this.mouseDownPos = currMouse;
+                }
+                else
+                {
+                    var chunk = CAMERA.getMouseChunk();
+                    if(chunk != null)
+                    {
+                        var selectedChunk = WORLD.grid.getSelectedChunk(chunk);
+                        if(selectedChunk == null)
+                            WORLD.grid.selectChunk(chunk);
+                    }
+                }
+            }
+            else if(this.mouse2IsDown)
+            {
+                var chunk = CAMERA.getMouseChunk();
+                if(chunk != null)
+                {
+                    var selectedChunk = WORLD.grid.getSelectedChunk(chunk);
+                    if(selectedChunk != null)
+                        WORLD.grid.deselectChunk(chunk);
+                }
+            }
+        }
+        else
+        {
+            if(this.mouseIsDown && LAST_MOUSE_CLICKED_OBJECT == null)
+            {
+                var currMouse = CAMERA.getCursorPosition();
+                    
+                var newX = CAMERA.position.x + (currMouse.x - this.mouseDownPos.x);
+                var newY = CAMERA.position.y - (currMouse.y - this.mouseDownPos.y);
+    
+                CAMERA.setPosition(newX, newY);
+    
+                this.mouseDownPos = currMouse;
+            }
         }
     }
 }
