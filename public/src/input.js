@@ -1,9 +1,5 @@
-import { Hud } from "./hud/hud.js";
-import { HudObject, StageObject } from "./object.js";
 import { createOverlay, deleteOverlay, getOverlay } from "./overlays.js";
 import { SetDeveloperMode } from "./developer.js";
-import { SKILLS } from "./player.js";
-import { TILE_SIZE, World } from "./world.js";
 
 export class Input
 {
@@ -138,6 +134,9 @@ export class Input
                 var plane = e.keyCode - 49;
                 WORLD.setPlane(plane);
                 break;
+            case 71: // g
+                WORLD.grid.setVisibility(!WORLD.grid.isVisible());
+                break;
         }
         console.log(e.keyCode);
     }
@@ -146,35 +145,52 @@ export class Input
     {
         if(e.data.buttons == 1)
         {
-            // left click
             this.mouseDownPos = CAMERA.getCursorPosition();
             this.mouseIsDown = true;
 
-            LAST_MOUSE_CLICKED_OBJECT = MOUSE_OVER_OBJECT;
-
-            if(MOUSE_OVER_OBJECT != null)
+            if(WORLD.grid.isVisible())
             {
-                if(SELECTED_OBJECT == MOUSE_OVER_OBJECT)
+                // Grid interaction
+                var chunk = CAMERA.getMouseChunk();
+                if(chunk != null)
                 {
-                    HUD.playClickAnimation();
-                    this.deselectObject();
-                }
-                else if(MOUSE_OVER_OBJECT != null)
-                {
-                    if(MOUSE_OVER_OBJECT.selectable)
-                    {
-                        this.selectObject(MOUSE_OVER_OBJECT);
-                        HUD.playClickAnimation();
-                    }
-
-                    if(MOUSE_OVER_OBJECT.onClick != null)
-                        MOUSE_OVER_OBJECT.onClick();
+                    var selectedChunk = WORLD.grid.getSelectedChunk(chunk);
+                    console.log(chunk);
+                    if(selectedChunk == null)
+                        WORLD.grid.selectChunk(chunk);
+                    else
+                        WORLD.grid.deselectChunk(chunk);
                 }
             }
             else
             {
-                CAMERA.interruptedCameraPathing = true;
-                HUD.playClickAnimation();
+                // Normal user interaction
+                LAST_MOUSE_CLICKED_OBJECT = MOUSE_OVER_OBJECT;
+
+                if(MOUSE_OVER_OBJECT != null)
+                {
+                    if(SELECTED_OBJECT == MOUSE_OVER_OBJECT)
+                    {
+                        HUD.playClickAnimation();
+                        this.deselectObject();
+                    }
+                    else if(MOUSE_OVER_OBJECT != null)
+                    {
+                        if(MOUSE_OVER_OBJECT.selectable)
+                        {
+                            this.selectObject(MOUSE_OVER_OBJECT);
+                            HUD.playClickAnimation();
+                        }
+    
+                        if(MOUSE_OVER_OBJECT.onClick != null)
+                            MOUSE_OVER_OBJECT.onClick();
+                    }
+                }
+                else
+                {
+                    CAMERA.interruptedCameraPathing = true;
+                    HUD.playClickAnimation();
+                }
             }
         }
         else if(e.data.buttons == 2)
@@ -188,21 +204,7 @@ export class Input
             var worldPos = CAMERA.screenToWorldPos(cursorPos.x, cursorPos.y);
             console.log(worldPos);
 
-            console.log("CAMER POS");
-            console.log(CAMERA.getCameraWorldPosition());
-
-            console.log(CAMERA.screenToWorldPos(0, 0));
-
-            if(CAMERA.isWorldPositionInView(worldPos.x, worldPos.y))
-                console.log(" IS IN VIEW");
-            else  
-                console.log("IS NOT IN IVEWWFD")
-       
-           // HUD.xpdropper.addDrop(SKILLS.ATTACK, 500342);
-           // HUD.xpdropper.addDrop(SKILLS.HITPOINTS, 500342);
-
-
-           // HUD.xpdropper.displayDrops(CAMERA.getInvertedCursorPosition());
+            console.log(WORLD.getChunk(worldPos.x, worldPos.y).getWorldPosition());
 
         }
         else if(e.data.buttons == 4)

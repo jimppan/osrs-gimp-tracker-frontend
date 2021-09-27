@@ -1,4 +1,4 @@
-import { GetItemComposition } from "../../itemdatabase.js";
+import { GetItemComposition } from "../../resource/itemdatabase.js";
 import { HudObject, HudText } from "../../object.js";
 import { Player } from "../../player.js";
 import { Interface } from "../interface.js";

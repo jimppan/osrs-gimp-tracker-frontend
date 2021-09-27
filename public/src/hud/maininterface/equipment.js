@@ -2,7 +2,7 @@ import { HudObject } from "../../object.js";
 import { Interface } from "../interface.js";
 import { EQUIPMENT, EQUIPMENT_NAMES, InventorySlot, Player } from "../../player.js";
 import { INVALID_ITEM } from "./inventory.js";
-import { GetItemComposition } from "../../itemdatabase.js";
+import { GetItemComposition } from "../../resource/itemdatabase.js";
 
 export const EQUIPMENT_ICON_TEXTURES = 
 [

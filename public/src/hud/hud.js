@@ -1,6 +1,7 @@
 import { StageObject, SpawnObject } from "../object.js";
 import { updateOverlay } from "../overlays.js";
 import { Player } from "../player.js";
+import { World } from "../world.js";
 import { HoverTooltip } from "./hovertooltip.js";
 import { MainInterface } from "./maininterface.js"
 import { MouseTooltip } from "./mousetooltip.js";
@@ -102,79 +103,87 @@ export class Hud
         HUD.mouseTooltip.update();
         HUD.hoverTooltip.update();
 
-        // prio hud objects
-        for(var i = HUD_OBJECTS.length-1; i >= 0; i--)
+        // if we're in grid mode, we wanna interact with chunks/regions
+        if(WORLD.grid.isVisible())
         {
-            var object = HUD_OBJECTS[i];
-            if(object.attachedTo != null)
-            {
-                var attachedToPos = object.attachedTo.getScreenPosition();
-
-                var scale = 1;
-                if(object.scaleOffset)
-                    scale = CAMERA.zoom.x;
-
-                attachedToPos.x += object.offset.x * scale;
-                attachedToPos.y += object.offset.y * scale;
-
-                // if its a player, clamp the labels so they're always visible
-                if(object.attachedTo instanceof Player && object.clampToView)
-                {
-                    var box = object.getScreenRect(false);
-
-                    //console.log(box);
-                    box = CAMERA.clampToView({x:attachedToPos.x, y:attachedToPos.y, width:box.width, height:box.height});
-
-                    attachedToPos.x = box.x;
-                    attachedToPos.y = box.y;
-                }
-                
-
-                object.setPosition(attachedToPos.x, attachedToPos.y);
-            }
-            else if(object.interactable && object.isVisible())
-            {
-                // no need for any weird maths or conversions for HUD
-                var box = object.getScreenRect(true);
-
-                var cursorPos = CAMERA.getInvertedCursorPosition();
-
-                if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
-                    cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
-                {
-                    if(!object.wasHovered)
-                        INPUT.hoverObject(object);
-                    return;
-                }
-                else
-                {
-                    if(object.wasHovered)
-                        INPUT.unhoverObject(object);
-               }
-            }
+            
         }
-
-        for(var i = OBJECTS.length-1; i >= 0; i--)
+        else
         {
-            var object = OBJECTS[i];
-            updateOverlay(object);
-            // this is a root and its interactable
-            if(object.interactable && object.parent == null && object.isVisible())
+            // prio hud objects
+            for(var i = HUD_OBJECTS.length-1; i >= 0; i--)
             {
-                var box = object.getScreenRect(true);
-                var cursorPos = CAMERA.getInvertedCursorPosition();
+                var object = HUD_OBJECTS[i];
+                if(object.attachedTo != null)
+                {
+                    var attachedToPos = object.attachedTo.getScreenPosition();
 
-                if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
-                    cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
-                {
-                    if(!object.wasHovered)
-                        INPUT.hoverObject(object);
-                    return;
+                    var scale = 1;
+                    if(object.scaleOffset)
+                        scale = CAMERA.zoom.x;
+
+                    attachedToPos.x += object.offset.x * scale;
+                    attachedToPos.y += object.offset.y * scale;
+
+                    // if its a player, clamp the labels so they're always visible
+                    if(object.attachedTo instanceof Player && object.clampToView)
+                    {
+                        var box = object.getScreenRect(false);
+
+                        //console.log(box);
+                        box = CAMERA.clampToView({x:attachedToPos.x, y:attachedToPos.y, width:box.width, height:box.height});
+
+                        attachedToPos.x = box.x;
+                        attachedToPos.y = box.y;
+                    }
+                    
+
+                    object.setPosition(attachedToPos.x, attachedToPos.y);
                 }
-                else
+                else if(object.interactable && object.isVisible())
                 {
-                    if(object.wasHovered)
-                        INPUT.unhoverObject(object);
+                    // no need for any weird maths or conversions for HUD
+                    var box = object.getScreenRect(true);
+
+                    var cursorPos = CAMERA.getInvertedCursorPosition();
+
+                    if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
+                        cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
+                    {
+                        if(!object.wasHovered)
+                            INPUT.hoverObject(object);
+                        return;
+                    }
+                    else
+                    {
+                        if(object.wasHovered)
+                            INPUT.unhoverObject(object);
+                }
+                }
+            }
+
+            for(var i = OBJECTS.length-1; i >= 0; i--)
+            {
+                var object = OBJECTS[i];
+                updateOverlay(object);
+                // this is a root and its interactable
+                if(object.interactable && object.parent == null && object.isVisible())
+                {
+                    var box = object.getScreenRect(true);
+                    var cursorPos = CAMERA.getInvertedCursorPosition();
+
+                    if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
+                        cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
+                    {
+                        if(!object.wasHovered)
+                            INPUT.hoverObject(object);
+                        return;
+                    }
+                    else
+                    {
+                        if(object.wasHovered)
+                            INPUT.unhoverObject(object);
+                    }
                 }
             }
         }
