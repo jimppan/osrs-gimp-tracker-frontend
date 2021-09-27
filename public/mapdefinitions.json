@@ -3,21 +3,15 @@
         "id": 0,
         "name": "lumbridge",
         "display_name": "Lumbridge",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
             {
                 "s_x":12800,
                 "s_y":12800,
-                "e_x":12928,
-                "e_y":12928
-            },
-            {
-                "s_x":12960,
-                "s_y":12800,
-                "e_x":12992,
-                "e_y":12832
+                "e_x":13024,
+                "e_y":13088
             },
             {
                 "s_x":12928,
@@ -26,20 +20,26 @@
                 "e_y":12768
             },
             {
-                "s_x":12832,
-                "s_y":12960,
-                "e_x":12896,
-                "e_y":12992
+                "s_x":12896,
+                "s_y":13120,
+                "e_x":13024,
+                "e_y":13184
             },
             {
                 "s_x":12864,
-                "s_y":13024,
-                "e_x":12896,
-                "e_y":13024
+                "s_y":13120,
+                "e_x":12864,
+                "e_y":13152
             },
             {
-                "s_x":12928,
-                "s_y":12960
+                "s_x":12736,
+                "s_y":13056,
+                "e_x":12768,
+                "e_y":13088
+            },
+            {
+                "s_x":12768,
+                "s_y":13024
             },
             {
                 "s_x":12896,
@@ -51,7 +51,7 @@
         "id": 1,
         "name": "tutorial_island",
         "display_name": "Tutorial Island",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -67,7 +67,7 @@
         "id": 2,
         "name": "wizards_tower",
         "display_name": "Wizards' Tower",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -83,7 +83,7 @@
         "id": 3,
         "name": "al-kharid",
         "display_name": "Al Kharid",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -105,7 +105,7 @@
         "id": 4,
         "name": "duel-arena",
         "display_name": "Duel Arena",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -121,7 +121,7 @@
         "id": 5,
         "name": "duel-arena-lobby",
         "display_name": "Duel Arena Lobby",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -143,7 +143,7 @@
         "id": 6,
         "name": "shantay-pass",
         "display_name": "Shantay Pass",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -159,7 +159,7 @@
         "id": 7,
         "name": "desert-mining-camp",
         "display_name": "Desert Mining Camp",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -175,7 +175,7 @@
         "id": 8,
         "name": "bedabin-camp",
         "display_name": "Bedabin Camp",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -191,7 +191,7 @@
         "id": 9,
         "name": "bandit-camp",
         "display_name": "Bandit Camp",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -213,7 +213,7 @@
         "id": 10,
         "name": "quarry",
         "display_name": "Quarry",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -229,7 +229,7 @@
         "id": 11,
         "name": "pyramid",
         "display_name": "Pyramid",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -245,7 +245,7 @@
         "id": 12,
         "name": "ruins-of-unkah",
         "display_name": "Ruins of Unkah",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -261,7 +261,7 @@
         "id": 13,
         "name": "sea-spirit-dock",
         "display_name": "Sea Spirit Dock",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -283,7 +283,7 @@
         "id": 14,
         "name": "menaphos",
         "display_name": "Menaphos",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -299,7 +299,7 @@
         "id": 15,
         "name": "sophanem",
         "display_name": "Sophanem",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -315,7 +315,7 @@
         "id": 16,
         "name": "agility-pyramid",
         "display_name": "Agility Pyramid",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -335,7 +335,7 @@
         "id": 17,
         "name": "nardah",
         "display_name": "Nardah",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -363,7 +363,7 @@
         "id": 18,
         "name": "pollnivneach",
         "display_name": "Pollnivneach",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -409,7 +409,7 @@
         "id": 19,
         "name": "ruins-of-uzer",
         "display_name": "Ruins of Uzer",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -431,7 +431,7 @@
         "id": 20,
         "name": "citharede-abbey",
         "display_name": "Citharede Abbey",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -447,7 +447,7 @@
         "id": 21,
         "name": "mage-training-arena",
         "display_name": "Mage Training Arena",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -463,7 +463,7 @@
         "id": 22,
         "name": "exam-centre",
         "display_name": "Exam Centre",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -479,7 +479,7 @@
         "id": 23,
         "name": "champions-guild",
         "display_name": "Champions' Guild",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -495,7 +495,7 @@
         "id": 24,
         "name": "varrock",
         "display_name": "Varrock",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -563,7 +563,7 @@
         "id": 25,
         "name": "grand-exchange",
         "display_name": "Grand Exchange",
-        "layer":1,
+        "layer":2,
         "plane":0,
         "chunks":
         [
@@ -583,7 +583,7 @@
         "id": 26,
         "name": "digsite",
         "display_name": "Digsite",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -599,7 +599,7 @@
         "id": 27,
         "name": "lumber-yard",
         "display_name": "Lumber Yard",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -621,7 +621,7 @@
         "id": 28,
         "name": "paterdomus-temple",
         "display_name": "Paterdomus Temple",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -637,7 +637,7 @@
         "id": 29,
         "name": "slayer-tower",
         "display_name": "Slayer Tower",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -653,7 +653,7 @@
         "id": 30,
         "name": "mausoleum",
         "display_name": "Mausoleum",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -669,7 +669,7 @@
         "id": 31,
         "name": "canifis",
         "display_name": "Canifis",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -701,7 +701,7 @@
         "id": 32,
         "name": "fenkenstrains-castle",
         "display_name": "Fenkenstrain's Castle",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -733,7 +733,7 @@
         "id": 33,
         "name": "ectofuntus",
         "display_name": "Ectofuntus",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -749,7 +749,7 @@
         "id": 34,
         "name": "port-phasmatys",
         "display_name": "Port Phasmatys",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -783,7 +783,7 @@
         "id": 35,
         "name": "morytania-graveyard",
         "display_name": "Graveyard",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -799,7 +799,7 @@
         "id": 36,
         "name": "castle-drakan",
         "display_name": "Castle Drakan",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -827,7 +827,7 @@
         "id": 37,
         "name": "darkmeyer",
         "display_name": "Darkmeyer",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -861,7 +861,7 @@
         "id": 38,
         "name": "meiyerditch",
         "display_name": "Meiyerditch",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -905,7 +905,7 @@
         "id": 39,
         "name": "mortton",
         "display_name": "Mort'ton",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -921,7 +921,7 @@
         "id": 40,
         "name": "shades-of-mortton",
         "display_name": "Shades of Mort'ton",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -941,7 +941,7 @@
         "id": 41,
         "name": "barrows",
         "display_name": "Barrows",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -969,7 +969,7 @@
         "id": 42,
         "name": "abandoned-mine",
         "display_name": "Abandoned Mine",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -983,25 +983,9 @@
     },
     {
         "id": 43,
-        "name": "abandoned-mine",
-        "display_name": "Abandoned Mine",
-        "layer":0,
-        "plane":0,
-        "chunks":
-        [
-            {
-                "s_x":13696,
-                "s_y":12832,
-                "e_x":13792,
-                "e_y":12960
-            }
-        ]
-    },
-    {
-        "id": 44,
         "name": "burgh-de-rott",
         "display_name": "Burgh de Rott",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -1032,10 +1016,10 @@
         ]
     },
     {
-        "id": 45,
+        "id": 44,
         "name": "ver-sinhaza",
         "display_name": "Ver Sinhaza",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -1060,10 +1044,10 @@
         ]
     },
     {
-        "id": 46,
+        "id": 45,
         "name": "icyene-graveyard",
         "display_name": "Icyene Graveyard",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -1082,10 +1066,10 @@
         ]
     },
     {
-        "id": 47,
+        "id": 46,
         "name": "slepe",
         "display_name": "Slepe",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -1114,10 +1098,10 @@
         ]
     },
     {
-        "id": 48,
+        "id": 47,
         "name": "crombwick-manor",
         "display_name": "Crombwick Manor",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -1136,7 +1120,7 @@
         ]
     },
     {
-        "id": 49,
+        "id": 48,
         "name": "mos-le-harmless",
         "display_name": "Mos Le'Harmless",
         "layer":0,
@@ -1216,7 +1200,7 @@
         ]
     },
     {
-        "id": 50,
+        "id": 49,
         "name": "distilleries",
         "display_name": "Distilleries",
         "layer":1,
@@ -1232,10 +1216,10 @@
         ]
     },
     {
-        "id": 51,
+        "id": 50,
         "name": "harmony",
         "display_name": "Harmony",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -1248,10 +1232,10 @@
         ]
     },
     {
-        "id": 52,
+        "id": 51,
         "name": "dragontooth-island",
         "display_name": "Dragontooth Island",
-        "layer":0,
+        "layer":1,
         "plane":0,
         "chunks":
         [
@@ -1276,7 +1260,7 @@
         ]
     },
     {
-        "id": 53,
+        "id": 52,
         "name": "fossil-island",
         "display_name": "Fossil Island",
         "layer":0,
@@ -1598,7 +1582,7 @@
         ]
     },
     {
-        "id": 54,
+        "id": 53,
         "name": "tar-swamp",
         "display_name": "Tar Swamp",
         "layer":1,
@@ -1660,7 +1644,7 @@
         ]
     },
     {
-        "id": 55,
+        "id": 54,
         "name": "mushroom-forest",
         "display_name": "Mushroom Forest",
         "layer":1,
@@ -1694,7 +1678,7 @@
         ]
     },
     {
-        "id": 56,
+        "id": 55,
         "name": "museum-camp",
         "display_name": "Museum Camp",
         "layer":1,
@@ -2691,7 +2675,7 @@
         "id": 93,
         "name": "varrock-palace",
         "display_name": "Palace",
-        "layer":1,
+        "layer":2,
         "plane":0,
         "chunks":
         [
@@ -2713,7 +2697,7 @@
         "id": 94,
         "name": "clan-hub",
         "display_name": "Clan Hub",
-        "layer":2,
+        "layer":3,
         "plane":0,
         "chunks":
         [
@@ -2729,7 +2713,7 @@
         "id": 95,
         "name": "cooks-guild",
         "display_name": "Cooks' Guild",
-        "layer":1,
+        "layer":2,
         "plane":0,
         "chunks":
         [
@@ -2745,7 +2729,7 @@
         "id": 96,
         "name": "varrock-west-bank",
         "display_name": "Western Bank",
-        "layer":1,
+        "layer":2,
         "plane":0,
         "chunks":
         [
@@ -2761,7 +2745,7 @@
         "id": 97,
         "name": "varrock-east-bank",
         "display_name": "Eastern Bank",
-        "layer":1,
+        "layer":2,
         "plane":0,
         "chunks":
         [
@@ -2787,6 +2771,1210 @@
                 "e_x":13120,
                 "e_y":14016
             }
+        ]
+    },
+    {
+        "id": 99,
+        "name": "edgeville",
+        "display_name": "Edgeville",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12288,
+                "s_y":13856,
+                "e_x":12384,
+                "e_y":14048
+            },
+            {
+                "s_x":12416,
+                "s_y":13984,
+                "e_x":12416,
+                "e_y":14048
+            },
+            {
+                "s_x":12256,
+                "s_y":14048
+            }
+        ]
+    },
+    {
+        "id": 100,
+        "name": "edgeville-monastery",
+        "display_name": "Edgeville Monastery",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12160,
+                "s_y":13920,
+                "e_x":12224,
+                "e_y":14016
+            },
+            {
+                "s_x":12192,
+                "s_y":13888
+            }
+        ]
+    },
+    {
+        "id": 101,
+        "name": "barbarian-village",
+        "display_name": "Barbarian Village",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12288,
+                "s_y":13600,
+                "e_x":12352,
+                "e_y":13728
+            },
+            {
+                "s_x":12384,
+                "s_y":13664,
+                "e_x":12416,
+                "e_y":13728
+            },
+            {
+                "s_x":12288,
+                "s_y":13760,
+                "e_x":12320,
+                "e_y":13760
+            }
+        ]
+    },
+    {
+        "id": 102,
+        "name": "black-knights-fortress",
+        "display_name": "Black Knights' Fortress",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12064,
+                "s_y":14016,
+                "e_x":12128,
+                "e_y":14016
+            },
+            {
+                "s_x":12032,
+                "s_y":14048,
+                "e_x":12096,
+                "e_y":14048
+            }
+        ]
+    },
+    {
+        "id": 103,
+        "name": "ice-mountain",
+        "display_name": "Ice Mountain",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11968,
+                "s_y":13824,
+                "e_x":12000,
+                "e_y":13824
+            },
+            {
+                "s_x":11968,
+                "s_y":13856,
+                "e_x":12096,
+                "e_y":13888
+            },
+            {
+                "s_x":12000,
+                "s_y":13920,
+                "e_x":12032,
+                "e_y":14016
+            },
+            {
+                "s_x":12064,
+                "s_y":13984
+            }
+        ]
+    },
+    {
+        "id": 104,
+        "name": "dwarven-mine",
+        "display_name": "Dwarven Mine",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12032,
+                "s_y":13760,
+                "e_x":12064,
+                "e_y":13792
+            },
+            {
+                "s_x":12096,
+                "s_y":13792
+            }
+        ]
+    },
+    {
+        "id": 105,
+        "name": "goblin-village",
+        "display_name": "Goblin Village",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11776,
+                "s_y":13920,
+                "e_x":11808,
+                "e_y":14048
+            },
+            {
+                "s_x":11840,
+                "s_y":13984,
+                "e_x":11840,
+                "e_y":14048
+            }
+        ]
+    },
+    {
+        "id": 106,
+        "name": "falador",
+        "display_name": "Falador",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11744,
+                "s_y":13216,
+                "e_x":11936,
+                "e_y":13568
+            },
+            {
+                "s_x":11968,
+                "s_y":13280,
+                "e_x":12064,
+                "e_y":13568
+            },
+            {
+                "s_x":12096,
+                "s_y":13312,
+                "e_x":12224,
+                "e_y":13536
+            },
+            {
+                "s_x":12256,
+                "s_y":13440,
+                "e_x":12256,
+                "e_y":13536
+            },
+            {
+                "s_x":11968,
+                "s_y":13248
+            }
+        ]
+    },
+    {
+        "id": 107,
+        "name": "party-room",
+        "display_name": "Party Room",
+        "layer":2,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12128,
+                "s_y":13472,
+                "e_x":12192,
+                "e_y":13536
+            }
+        ]
+    },
+    {
+        "id": 108,
+        "name": "mining-guild",
+        "display_name": "Mining Guild",
+        "layer":2,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12032,
+                "s_y":13312,
+                "e_x":12096,
+                "e_y":13376
+            }
+        ]
+    },
+    {
+        "id": 109,
+        "name": "falador-west-bank",
+        "display_name": "Western Bank",
+        "layer":2,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11776,
+                "s_y":13440,
+                "e_x":11776,
+                "e_y":13472
+            }
+        ]
+    },
+    {
+        "id": 110,
+        "name": "falador-east-bank",
+        "display_name": "Eastern Bank",
+        "layer":2,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12032,
+                "s_y":13408,
+                "e_x":12064,
+                "e_y":13408
+            }
+        ]
+    },
+    {
+        "id": 111,
+        "name": "white-knights-castle",
+        "display_name": "White Knights' Castle",
+        "layer":2,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11808,
+                "s_y":13312,
+                "e_x":11968,
+                "e_y":13376
+            },
+            {
+                "s_x":11840,
+                "s_y":13408,
+                "e_x":11936,
+                "e_y":13408
+            }
+        ]
+    },
+    {
+        "id": 112,
+        "name": "dark-wizards-tower",
+        "display_name": "Dark Wizards' Tower",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11616,
+                "s_y":13312,
+                "e_x":11616,
+                "e_y":13344
+            }
+        ]
+    },
+    {
+        "id": 113,
+        "name": "crafting-guild",
+        "display_name": "Crafting Guild",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11680,
+                "s_y":13056,
+                "e_x":11744,
+                "e_y":13152
+            },
+            {
+                "s_x":11648,
+                "s_y":13120,
+                "e_x":11648,
+                "e_y":13152
+            }
+        ]
+    },
+    {
+        "id": 114,
+        "name": "south-falador-farm",
+        "display_name": "South Falador Farm",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12032,
+                "s_y":13120,
+                "e_x":12224,
+                "e_y":13248
+            },
+            {
+                "s_x":12256,
+                "s_y":13120,
+                "e_x":12256,
+                "e_y":13184
+            }
+        ]
+    },
+    {
+        "id": 115,
+        "name": "draynor-manor",
+        "display_name": "Draynor Manor",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12352,
+                "s_y":13408,
+                "e_x":12480,
+                "e_y":13440
+            },
+            {
+                "s_x":12384,
+                "s_y":13472,
+                "e_x":12448,
+                "e_y":13472
+            }
+        ]
+    },
+    {
+        "id": 116,
+        "name": "draynor-village",
+        "display_name": "Draynor Village",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12384,
+                "s_y":12928,
+                "e_x":12512,
+                "e_y":13128
+            },
+            {
+                "s_x":12320,
+                "s_y":12896,
+                "e_x":12352,
+                "e_y":13088
+            },
+            {
+                "s_x":12384,
+                "s_y":12896,
+                "e_x":12448,
+                "e_y":12896
+            },
+            {
+                "s_x":12288,
+                "s_y":12960,
+                "e_x":12288,
+                "e_y":13024
+            }
+        ]
+    },
+    {
+        "id": 117,
+        "name": "lumbridge-castle",
+        "display_name": "Castle",
+        "layer":2,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12800,
+                "s_y":12800,
+                "e_x":12864,
+                "e_y":12928
+            },
+            {
+                "s_x":12896,
+                "s_y":12832,
+                "e_x":12896,
+                "e_y":12896
+            }
+        ]
+    },
+    {
+        "id": 118,
+        "name": "port-sarim",
+        "display_name": "Port Sarim",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12032,
+                "s_y":12928,
+                "e_x":12192,
+                "e_y":13024
+            },
+            {
+                "s_x":12224,
+                "s_y":12992,
+                "e_x":12224,
+                "e_y":13024
+            },
+            {
+                "s_x":12032,
+                "s_y":12736,
+                "e_x":12096,
+                "e_y":12896
+            },
+            {
+                "s_x":12128,
+                "s_y":12736,
+                "e_x":12192,
+                "e_y":12800
+            },
+            {
+                "s_x":12032,
+                "s_y":12704,
+                "e_x":12064,
+                "e_y":12704
+            }
+        ]
+    },
+    {
+        "id": 119,
+        "name": "melzars-maze",
+        "display_name": "Melzar's Maze",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11680,
+                "s_y":12928,
+                "e_x":11744,
+                "e_y":13024
+            }
+        ]
+    },
+    {
+        "id": 120,
+        "name": "rimmington",
+        "display_name": "Rimmington",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11680,
+                "s_y":12800,
+                "e_x":11872,
+                "e_y":12864
+            },
+            {
+                "s_x":11616,
+                "s_y":12896,
+                "e_x":11840,
+                "e_y":12896
+            }
+        ]
+    },
+    {
+        "id": 121,
+        "name": "mudskipper-point",
+        "display_name": "Mudskipper Point",
+        "layer":1,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11904,
+                "s_y":12416,
+                "e_x":12000,
+                "e_y":12448
+            },
+            {
+                "s_x":11936,
+                "s_y":12480,
+                "e_x":12000,
+                "e_y":12480
+            }
+        ]
+    },
+    {
+        "id": 122,
+        "name": "misthalin",
+        "display_name": "Kingdom of Misthalin",
+        "layer":0,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12160,
+                "s_y":12160,
+                "e_x":12544,
+                "e_y":12512
+            },
+            {
+                "s_x":12576,
+                "s_y":12256,
+                "e_x":12672,
+                "e_y":12512
+            },
+            {
+                "s_x":12288,
+                "s_y":12544,
+                "e_x":12992,
+                "e_y":12736
+            },
+            {
+                "s_x":12288,
+                "s_y":12768,
+                "e_x":13024,
+                "e_y":12768
+            },
+            {
+                "s_x":12288,
+                "s_y":12800,
+                "e_x":13056,
+                "e_y":13280
+            },
+            {
+                "s_x":12288,
+                "s_y":13312,
+                "e_x":13568,
+                "e_y":14048
+            },
+            {
+                "s_x":12256,
+                "s_y":13792,
+                "e_x":12256,
+                "e_y":14048
+            },
+            {
+                "s_x":13600,
+                "s_y":13792,
+                "e_x":13600,
+                "e_y":14048
+            },
+            {
+                "s_x":13600,
+                "s_y":13824,
+                "e_x":13632,
+                "e_y":13984
+            },
+            {
+                "s_x":13664,
+                "s_y":13856,
+                "e_x":13664,
+                "e_y":13952
+            },
+            {
+                "s_x":13600,
+                "s_y":14016
+            }
+        ]
+    },
+    {
+        "id": 123,
+        "name": "asgarnia",
+        "display_name": "Kingdom of Asgarnia",
+        "layer":0,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11904,
+                "s_y":12416,
+                "e_x":12128,
+                "e_y":12512
+            },
+            {
+                "s_x":11904,
+                "s_y":12544,
+                "e_x":12256,
+                "e_y":12640
+            },
+            {
+                "s_x":11872,
+                "s_y":12672,
+                "e_x":12256,
+                "e_y":12704
+            },
+            {
+                "s_x":11744,
+                "s_y":12736,
+                "e_x":12256,
+                "e_y":12736
+            },
+            {
+                "s_x":11712,
+                "s_y":12768,
+                "e_x":12256,
+                "e_y":12768
+            },
+            {
+                "s_x":11680,
+                "s_y":12800,
+                "e_x":12256,
+                "e_y":12800
+            },
+            {
+                "s_x":11616,
+                "s_y":12832,
+                "e_x":12256,
+                "e_y":13120
+            },
+            {
+                "s_x":11520,
+                "s_y":13152,
+                "e_x":12256,
+                "e_y":13536
+            },
+            {
+                "s_x":11488,
+                "s_y":13568,
+                "e_x":12256,
+                "e_y":13760
+            },
+            {
+                "s_x":11488,
+                "s_y":13792,
+                "e_x":12224,
+                "e_y":14048
+            },
+            {
+                "s_x":11520,
+                "s_y":14080,
+                "e_x":11744,
+                "e_y":14304
+            },
+            {
+                "s_x":11328,
+                "s_y":14080,
+                "e_x":11488,
+                "e_y":14208
+            },
+            {
+                "s_x":11488,
+                "s_y":13792,
+                "e_x":12224,
+                "e_y":14048
+            },
+            {
+                "s_x":11456,
+                "s_y":14240,
+                "e_x":11488,
+                "e_y":14240
+            },
+            {
+                "s_x":11488,
+                "s_y":14272
+            },
+            {
+                "s_x":11456,
+                "s_y":13632,
+                "e_x":11456,
+                "e_y":13696
+            },
+            {
+                "s_x":11424,
+                "s_y":13728,
+                "e_x":11456,
+                "e_y":13728
+            },
+            {
+                "s_x":11392,
+                "s_y":13760,
+                "e_x":11456,
+                "e_y":13760
+            },
+            {
+                "s_x":11360,
+                "s_y":13792,
+                "e_x":11456,
+                "e_y":13824
+            },
+            {
+                "s_x":11328,
+                "s_y":13856,
+                "e_x":11456,
+                "e_y":14048
+            },
+            {
+                "s_x":11168,
+                "s_y":13984,
+                "e_x":11296,
+                "e_y":14080
+            },
+            {
+                "s_x":11200,
+                "s_y":14112,
+                "e_x":11296,
+                "e_y":14112
+            },
+            {
+                "s_x":11264,
+                "s_y":14144,
+                "e_x":11296,
+                "e_y":14144
+            },
+            {
+                "s_x":11168,
+                "s_y":13952,
+                "e_x":11232, 
+                "e_y":13952
+            },
+            {
+                "s_x":11296,
+                "s_y":13952
+            }
+        ]
+    },
+    {
+        "id": 124,
+        "name": "kharidian-desert",
+        "display_name": "Kharidian Desert",
+        "layer":0,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":12512,
+                "s_y":11008,
+                "e_x":13280, 
+                "e_y":11232
+            },
+            {
+                "s_x":12512,
+                "s_y":11264,
+                "e_x":13536,
+                "e_y":11488
+            },
+            {
+                "s_x":12512,
+                "s_y":11520,
+                "e_x":13792,
+                "e_y":12128
+            },
+            {
+                "s_x":12576,
+                "s_y":12160,
+                "e_x":12576,
+                "e_y":12192
+            },
+            {
+                "s_x":12608,
+                "s_y":12160,
+                "e_x":12672,
+                "e_y":12224
+            },
+            {
+                "s_x":12704,
+                "s_y":12160,
+                "e_x":13792,
+                "e_y":12256
+            },
+            {
+                "s_x":12704,
+                "s_y":12288,
+                "e_x":14048,
+                "e_y":12512
+            },
+            {
+                "s_x":13024,
+                "s_y":12544,
+                "e_x":13888,
+                "e_y":12576
+            },
+            {
+                "s_x":13024,
+                "s_y":12608,
+                "e_x":13024,
+                "e_y":12736
+            },
+            {
+                "s_x":13056,
+                "s_y":12608,
+                "e_x":13792,
+                "e_y":12768
+            },
+            {
+                "s_x":13088,
+                "s_y":12800,
+                "e_x":13664,
+                "e_y":13056
+            },
+            {
+                "s_x":13088,
+                "s_y":13088,
+                "e_x":13632,
+                "e_y":13280
+            }
+        ]
+    },
+    {
+        "id": 125,
+        "name": "morytania",
+        "display_name": "Morytania",
+        "layer":0,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":13856,
+                "s_y":12640,
+                "e_x":15072,
+                "e_y":14304
+            },
+            {
+                "s_x":13696,
+                "s_y":12800,
+                "e_x":13824,
+                "e_y":14304
+            },
+            {
+                "s_x":13664,
+                "s_y":13088,
+                "e_x":13664,
+                "e_y":13824
+            },
+            {
+                "s_x":13600,
+                "s_y":13312,
+                "e_x":13632,
+                "e_y":13760
+            },
+            {
+                "s_x":13632,
+                "s_y":13792
+            },
+            {
+                "s_x":13664,
+                "s_y":13984
+            },
+            {
+                "s_x":13632,
+                "s_y":14016,
+                "e_x":13664,
+                "e_y":14048
+            },
+            {
+                "s_x":13568,
+                "s_y":14080,
+                "e_x":13664,
+                "e_y":14304
+            }
+        ]
+    },
+    {
+        "id": 126,
+        "name": "entrana",
+        "display_name": "Entrana",
+        "layer":0,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11200,
+                "s_y":13312,
+                "e_x":11456,
+                "e_y":13536
+            },
+            {
+                "s_x":11488,
+                "s_y":13312,
+                "e_x":11488,
+                "e_y":13344
+            },
+            {
+                "s_x":11328,
+                "s_y":13568,
+                "e_x":11360,
+                "e_y":13568
+            }
+        ]
+    },
+    {
+        "id": 127,
+        "name": "crandor",
+        "display_name": "Crandor",
+        "layer":0,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11264,
+                "s_y":12896,
+                "e_x":11328,
+                "e_y":13184
+            },
+            {
+                "s_x":11232,
+                "s_y":13056,
+                "e_x":11232,
+                "e_y":13152
+            },
+            {
+                "s_x":11360,
+                "s_y":12928,
+                "e_x":11392,
+                "e_y":13216
+            },
+            {
+                "s_x":11296,
+                "s_y":13216,
+                "e_x":11328,
+                "e_y":13216
+            },
+            {
+                "s_x":11424,
+                "s_y":13056,
+                "e_x":11424,
+                "e_y":13216
+            },
+            {
+                "s_x":11456,
+                "s_y":13120,
+                "e_x":11456,
+                "e_y":13152
+            },
+            {
+                "s_x":11424,
+                "s_y":12928,
+                "e_x":11424,
+                "e_y":12960
+            }
+        ]
+    },
+    {
+        "id": 128,
+        "name": "karamja",
+        "display_name": "Karamja",
+        "layer":0,
+        "plane":0,
+        "chunks":
+        [
+            {
+                "s_x":11008,
+                "s_y":11648,
+                "e_x":11744,
+                "e_y":12640
+            },
+            {
+                "s_x":11776,
+                "s_y":12544,
+                "e_x":11840,
+                "e_y":12576
+            },
+            {
+                "s_x":11776,
+                "s_y":12608,
+                "e_x":11808,
+                "e_y":12608
+            },
+            {
+                "s_x":11776,
+                "s_y":12096,
+                "e_x":12000,
+                "e_y":12256
+            },
+            {
+                "s_x":11776,
+                "s_y":12032,
+                "e_x":11936,
+                "e_y":12064
+            },
+            {
+                "s_x":11776,
+                "s_y":12000,
+                "e_x":11808,
+                "e_y":12000
+            },
+            {
+                "s_x":11776,
+                "s_y":11520,
+                "e_x":11840,
+                "e_y":11968
+            },
+            {
+                "s_x":11872,
+                "s_y":11936,
+                "e_x":11904,
+                "e_y":11968
+            },
+            {
+                "s_x":11872,
+                "s_y":11840,
+                "e_x":11936,
+                "e_y":11872
+            },
+            {
+                "s_x":11872,
+                "s_y":11904
+            },
+            {
+                "s_x":11872,
+                "s_y":11520,
+                "e_x":11872,
+                "e_y":11712
+            },
+            {
+                "s_x":11904,
+                "s_y":11552,
+                "e_x":11904,
+                "e_y":11648
+            },
+            {
+                "s_x":11040,
+                "s_y":11552,
+                "e_x":11744,
+                "e_y":11616
+            },
+            {
+                "s_x":11072,
+                "s_y":11520,
+                "e_x":11104,
+                "e_y":11520
+            },
+            {
+                "s_x":11232,
+                "s_y":11520,
+                "e_x":11296,
+                "e_y":11520
+            },
+            {
+                "s_x":11360,
+                "s_y":11520
+            },
+            {
+                "s_x":11424,
+                "s_y":11520
+            },
+            {
+                "s_x":11552,
+                "s_y":11520,
+                "e_x":11744,
+                "e_y":11520
+            },
+            {
+                "s_x":12032,
+                "s_y":11776,
+                "e_x":12160,
+                "e_y":12000
+            },
+            {
+                "s_x":12192,
+                "s_y":11808,
+                "e_x":12192,
+                "e_y":12000
+            },
+            {
+                "s_x":12224,
+                "s_y":11840,
+                "e_x":12224,
+                "e_y":11936
+            },
+            {
+                "s_x":10752,
+                "s_y":12960,
+                "e_x":10816,
+                "e_y":12992
+            },
+            {
+                "s_x":10752,
+                "s_y":12928
+            },
+            {
+                "s_x":10912,
+                "s_y":12928,
+                "e_x":11072,
+                "e_y":12960
+            },
+            {
+                "s_x":10848,
+                "s_y":12576,
+                "e_x":10976,
+                "e_y":12896
+            },
+            {
+                "s_x":10880,
+                "s_y":12544,
+                "e_x":10976,
+                "e_y":12544
+            },
+            {
+                "s_x":10816,
+                "s_y":12576,
+                "e_x":10816,
+                "e_y":12640
+            },
+            {
+                "s_x":10816,
+                "s_y":12736,
+                "e_x":10816,
+                "e_y":12768
+            },
+            {
+                "s_x":10752,
+                "s_y":12800,
+                "e_x":10816,
+                "e_y":12864
+            },
+            {
+                "s_x":11008,
+                "s_y":12672,
+                "e_x":11424,
+                "e_y":12800
+            },
+            {
+                "s_x":11008,
+                "s_y":12832,
+                "e_x":11136,
+                "e_y":12864
+            },
+            {
+                "s_x":11168,
+                "s_y":12832,
+                "e_x":11200,
+                "e_y":12832
+            },
+            {
+                "s_x":11008,
+                "s_y":12896,
+                "e_x":11072,
+                "e_y":12896
+            },
+            {
+                "s_x":11456,
+                "s_y":12672,
+                "e_x":11680,
+                "e_y":12704
+            },
+            {
+                "s_x":11456,
+                "s_y":12736,
+                "e_x":11456,
+                "e_y":12768
+            },
+            {
+                "s_x":11616,
+                "s_y":12736,
+                "e_x":11616,
+                "e_y":12768
+            },
+            {
+                "s_x":11488,
+                "s_y":12736
+            },
+            {
+                "s_x":11712,
+                "s_y":12672
+            } 
         ]
     }
 ]
