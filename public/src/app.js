@@ -98,7 +98,7 @@ $.ajax({
     success: (regionpos) => 
     {
         // got region pos
-        JSON_MAP_DATA = regionpos;
+
         $.ajax({
             type: 'GET',
             url: itemcompJsonURL,
@@ -124,7 +124,7 @@ $.ajax({
 
                         // init
                         INPUT.init();
-                        WORLD.init();
+                        WORLD.init(regionpos);
                         HUD.init();
 
                         WORLD.addMapDefinitions(mapdef);

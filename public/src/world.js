@@ -67,18 +67,9 @@ export class Chunk
 {
     constructor(x, y, region)
     {
-        this.position = {x: x, y: y};
-        this.region = region;
-
         this.mapDefinitions = [];
         for(var i = 0; i < MAX_PLANE; i++)
             this.mapDefinitions.push(new Array());
-    }
-
-    getWorldPosition()
-    {
-        var regionPos = this.region.getWorldPosition();
-        return {x:regionPos.x + (this.position.x * X_CHUNKS_PER_REGION * TILE_SIZE), y:regionPos.y + (this.position.y * Y_CHUNKS_PER_REGION * TILE_SIZE) };
     }
 
     mapDefinitionExists(mapdef)
@@ -106,7 +97,7 @@ export class Chunk
             console.log("map definition collision");
             return;
         }
-
+        
         for(var i = 0; i < this.mapDefinitions[mapdef.plane].length; i++)
         {
             var sortMapDef = this.mapDefinitions[mapdef.plane][i];
@@ -143,13 +134,16 @@ export class Region
         for(var i = 0; i < X_CHUNKS_PER_REGION; i++)
             this.chunks.push(new Array(Y_CHUNKS_PER_REGION));
         
-        for(var x = 0; x < X_CHUNKS_PER_REGION; x++)
+        // pre create chunks
+        // pretty bad as it creates for every region, ends up wasting MBs of ram
+        // so just create chunks as they're needed
+        /* for(var x = 0; x < X_CHUNKS_PER_REGION; x++)
         {
             for(var y = 0; y < Y_CHUNKS_PER_REGION; y++)
             {
                 this.chunks[x][y] = new Chunk(x, y, this);
             }
-        }
+        } */
     }
     
     addPlane(plane)
@@ -268,7 +262,6 @@ export class World
         this.id = 0; // mapID
         this.regions = this.initializeMap(MAX_REGION_WIDTH, MAX_REGION_HEIGHT) // 2d array
         this.currentPlane = 0;
-        this.regionData = null;
         this.grid = new Grid();
         this.grid.setVisibility(false);
 
@@ -369,15 +362,13 @@ export class World
         return arr;
     }
 
-    init()
+    init(regionData)
     {
-        this.regionData = JSON_MAP_DATA;
-
-        for(var j = 0; j < this.regionData.length; j++)
+        for(var j = 0; j < regionData.length; j++)
         {
-            var x = this.regionData[j].x;
-            var y = this.regionData[j].y;
-            var plane = this.regionData[j].plane;
+            var x = regionData[j].x;
+            var y = regionData[j].y;
+            var plane = regionData[j].plane;
 
             // create region slots for this map
             var region = this.createRegion(x, y);
@@ -394,15 +385,24 @@ export class World
     getChunksInRange(point1, point2)
     {
         var chunks = [];
-        for(var x = point1.x; x <= point2.x; x += X_CHUNKS_PER_REGION * TILE_SIZE) // add 32 each iteration
+        
+        for(var x = point1.x, xi = 0; x <= point2.x; x += X_CHUNKS_PER_REGION * TILE_SIZE, xi++) // add 32 each iteration
         {
+            var addedIndex = false;
+
             for(var y = point1.y; y <= point2.y; y += Y_CHUNKS_PER_REGION * TILE_SIZE) // same here, 32 per iteration
             {
                 var chunk = WORLD.getChunk(x, y);
                 if(chunk == null)
                     continue;
                 
-                chunks.push(chunk);
+                if(!addedIndex)
+                {
+                    addedIndex = true;
+                    chunks.push(new Array());
+                }
+
+                chunks[xi].push(chunk);
             }
         }
         return chunks;
@@ -423,42 +423,71 @@ export class World
         localX = Math.floor(localX / (X_CHUNKS_PER_REGION * TILE_SIZE)); // 256 is pixel width, so divide by chunk pixel width which is 32 (8 * 4)
         localY = Math.floor(localY / (Y_CHUNKS_PER_REGION * TILE_SIZE));
 
-        return region.getChunk(localX, localY);
+        var chunk = region.getChunk(localX, localY);
+        if(chunk == null)
+        {
+            // if there was no chunk at the position for this region, create it
+            chunk = region.chunks[localX][localY] = new Chunk();
+            //console.log("created chunk")
+        }
+        return chunk;
+    }
+
+    // takes any floating point world position and returns the chunks rounded world position
+    getChunkWorldPosition(x, y)
+    {
+        var regionPos = this.getRegionPositionFromWorldPosition(x, y);
+        
+        var region = this.getRegion(regionPos.x, regionPos.y);
+        if(region == null)
+            return null;
+
+        var localX = x % REGION_WIDTH;
+        var localY = y % REGION_HEIGHT;
+
+        localX = Math.floor(localX / (X_CHUNKS_PER_REGION * TILE_SIZE)); // 256 is pixel width, so divide by chunk pixel width which is 32 (8 * 4)
+        localY = Math.floor(localY / (Y_CHUNKS_PER_REGION * TILE_SIZE));
+
+        var regionWorldPos = region.getWorldPosition();
+        
+        return {x:regionWorldPos.x + (localX * TILE_SIZE * X_CHUNKS_PER_REGION), y:regionWorldPos.y + (localY * TILE_SIZE * Y_CHUNKS_PER_REGION)};
     }
 
     addMapDefinitions(mapdef)
     {
-        for(let i = 0; i < mapdef.length; i++)
+        for(var i = 0; i < mapdef.length; i++)
         {
             // loop all areas
             var chunksArr = mapdef[i].chunks;
             for(var j = 0; j < chunksArr.length; j++)
             {
-                var start = {x:chunksArr[j].s_x, y:chunksArr[j].s_y};
+                var start = {x:chunksArr[j].s_x, y:chunksArr[j].s_y}; // chunk pos are stored as tile position
                 var end = {x:chunksArr[j].e_x, y:chunksArr[j].e_y};
 
                 if(end.x != null && end.y != null)
                 {
                     // if the end values are set, we can get all the chunks within this range and apply the definition
-                    var chunksInRange = this.getChunksInRange(start, end);
-                    if(chunksInRange.length <= 0)
-                        continue;
-                    
-                    for(var k = 0; k < chunksInRange.length; k++)
+                    var chunksInRange = this.getChunksInRange({x:start.x * TILE_SIZE,y:start.y * TILE_SIZE}, {x:end.x * TILE_SIZE, y:end.y * TILE_SIZE});
+                    for(var x = 0; x < chunksInRange.length; x++)
                     {
-                        var chunk = chunksInRange[k];
-                        chunk.addMapDefinition(GetMapDefinition(i)); // set the map def for the chunk
-                        //this.grid.selectChunk(chunk);
+                        for(var y = 0; y < chunksInRange[x].length; y++)
+                        {
+                            var chunk = chunksInRange[x][y];
+                            chunk.addMapDefinition(GetMapDefinition(i)); // set the map def for the chunk
+                            /* if(GetMapDefinition(i).name == "wilderness")
+                                this.grid.selectChunk({x:start.x + (x * X_CHUNKS_PER_REGION), y:start.y + (y * Y_CHUNKS_PER_REGION)}); */
+                        }
                     }
                 }
                 else
                 {
-                    var chunk = this.getChunk(start.x, start.y);
+                    var chunk = this.getChunk(start.x * TILE_SIZE, start.y * TILE_SIZE);
                     if(chunk == null)
                         continue;
 
                     chunk.addMapDefinition(GetMapDefinition(i)); // set the map def for the chunk
-                    //this.grid.selectChunk(chunk);
+                    /* if(GetMapDefinition(i).name == "wilderness")
+                        this.grid.selectChunk(start); */
                 }
             }
         }

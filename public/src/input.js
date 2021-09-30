@@ -214,9 +214,13 @@ export class Input
 
             console.log("CURSOR SCREEN TO WORLD")
             var worldPos = CAMERA.screenToWorldPos(cursorPos.x, cursorPos.y);
-            console.log(worldPos);
+            //console.log(worldPos);
 
-            console.log(WORLD.getChunk(worldPos.x, worldPos.y).getWorldPosition());
+            var worldPos = WORLD.getChunkWorldPosition(worldPos.x, worldPos.y)
+            worldPos.x /= 4;
+            worldPos.y /= 4;
+
+            console.log(worldPos);
 
         }
         else if(e.button == 1)
@@ -259,24 +263,26 @@ export class Input
                 }
                 else
                 {
-                    var chunk = CAMERA.getMouseChunk();
-                    if(chunk != null)
-                    {
-                        var selectedChunk = WORLD.grid.getSelectedChunk(chunk);
-                        if(selectedChunk == null)
-                            WORLD.grid.selectChunk(chunk);
-                    }
+                    var cursorPos = CAMERA.getCursorWorldPosition();
+                    var chunkPos = WORLD.getChunkWorldPosition(cursorPos.x, cursorPos.y);
+                    chunkPos.x /= 4;
+                    chunkPos.y /= 4;
+
+                    var selectedChunk = WORLD.grid.getSelectedChunk(chunkPos);
+                    if(selectedChunk == null)
+                        WORLD.grid.selectChunk(chunkPos);
                 }
             }
             else if(this.mouse2IsDown)
             {
-                var chunk = CAMERA.getMouseChunk();
-                if(chunk != null)
-                {
-                    var selectedChunk = WORLD.grid.getSelectedChunk(chunk);
-                    if(selectedChunk != null)
-                        WORLD.grid.deselectChunk(chunk);
-                }
+                var cursorPos = CAMERA.getCursorWorldPosition();
+                var chunkPos = WORLD.getChunkWorldPosition(cursorPos.x, cursorPos.y);
+                chunkPos.x /= 4;
+                chunkPos.y /= 4;
+
+                var selectedChunk = WORLD.grid.getSelectedChunk(chunkPos);
+                if(selectedChunk != null)
+                    WORLD.grid.deselectChunk(chunkPos);
             }
         }
         else

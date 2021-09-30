@@ -1,3 +1,4 @@
+import { CoordinateMap } from "../../coordinatemap.js";
 import { DeleteObject, SpawnObject, WorldObject } from "../../object.js";
 import { MAX_REGION_HEIGHT, MAX_REGION_WIDTH, REGION_HEIGHT, REGION_WIDTH, TILE_SIZE, X_CHUNKS_PER_REGION, Y_CHUNKS_PER_REGION } from "../../world.js";
 
@@ -12,12 +13,12 @@ export class Grid extends WorldObject
         this.setGraphic(new PIXI.Graphics());
         this.updateGrid();
 
-        this.selectedChunks = new Map();
+        this.selectedChunks = new CoordinateMap();
     }
 
-    selectChunk(chunk)
+    selectChunk(tilePosition)
     {
-        var chunkOverlay = this.getSelectedChunk(chunk);
+        var chunkOverlay = this.getSelectedChunk(tilePosition);
         if(chunkOverlay != null)
             return;
 
@@ -30,28 +31,27 @@ export class Grid extends WorldObject
         chunkOverlay.graphic.alpha = 0.5;
         chunkOverlay.setParent(this);
 
-        var chunkPos = chunk.getWorldPosition();
-        chunkOverlay.setWorldPosition(chunkPos.x, chunkPos.y);
+        chunkOverlay.setWorldPosition(tilePosition.x * TILE_SIZE, tilePosition.y * TILE_SIZE);
 
-        this.selectedChunks.set(chunk, chunkOverlay);
+        this.selectedChunks.set(tilePosition.x, tilePosition.y, chunkOverlay);
         SpawnObject(chunkOverlay);
         
         //chunkOverlay.setZIndex(LAYERS.PLAYER);
     }
 
-    deselectChunk(chunk)
+    deselectChunk(tilePosition)
     {
-        var chunkOverlay = this.getSelectedChunk(chunk);
+        var chunkOverlay = this.getSelectedChunk(tilePosition);
         if(chunkOverlay == null)
             return;
 
-        this.selectedChunks.delete(chunk);
+        this.selectedChunks.delete(tilePosition.x, tilePosition.y);
         DeleteObject(chunkOverlay);
     }
 
-    getSelectedChunk(chunk)
+    getSelectedChunk(tilePosition)
     {
-        return this.selectedChunks.get(chunk);
+        return this.selectedChunks.get(tilePosition.x, tilePosition.y);
     }
 
     onZoom(x, y)
