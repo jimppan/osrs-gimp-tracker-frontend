@@ -3251,6 +3251,7 @@
        "display_name":"Kingdom of Misthalin",
        "layer":0,
        "plane":0,
+       "hidden":true,
        "chunks":[
           {
              "s_x":3040,
@@ -3324,6 +3325,7 @@
        "display_name":"Kingdom of Asgarnia",
        "layer":0,
        "plane":0,
+       "hidden":true,
        "chunks":[
           {
              "s_x":2976,
@@ -3481,6 +3483,7 @@
        "display_name":"Kharidian Desert",
        "layer":0,
        "plane":0,
+       "hidden":true,
        "chunks":[
           {
              "s_x":3128,
@@ -3562,6 +3565,7 @@
        "display_name":"Morytania",
        "layer":0,
        "plane":0,
+       "hidden":true,
        "chunks":[
           {
              "s_x":3392,
@@ -3855,6 +3859,7 @@
        "display_name":"Karamja",
        "layer":0,
        "plane":0,
+       "hidden":true,
        "chunks":[
           {
              "s_x":2752,
@@ -4080,6 +4085,7 @@
        "display_name":"Fremennik Province",
        "layer":0,
        "plane":0,
+       "hidden":true,
        "chunks":[
           {
              "s_x":2736,
@@ -4774,6 +4780,7 @@
        "display_name":"Kingdom of Kandarin",
        "layer":0,
        "plane":0,
+       "hidden":true,
        "chunks":[
           {
              "s_x":2432,
@@ -5231,6 +5238,7 @@
        "display_name":"Tirannwn",
        "layer":0,
        "plane":0,
+       "hidden":true,
        "chunks":[
           {
              "s_x":2168,
@@ -5446,6 +5454,7 @@
        "display_name":"Feldip Hills",
        "layer":0,
        "plane":0,
+       "hidden":true,
        "chunks":[
           {
              "s_x":2480,
@@ -10713,6 +10722,80 @@
                 "s_y":3560,
                 "e_x":1280,
                 "e_y":3568
+            }
+        ]
+    },
+    {
+        "id":302,
+        "name":"witchs-house",
+        "display_name":"Witch's House",
+        "layer":1,
+        "plane":0,
+        "chunks":[
+            {
+                "s_x":2896,
+                "s_y":3456,
+                "e_x":2936,
+                "e_y":3464
+            },
+            {
+                "s_x":2896,
+                "s_y":3472,
+                "e_x":2912,
+                "e_y":3472
+            }
+        ]
+    },
+    {
+        "id":303,
+        "name":"white-wolf-mountain",
+        "display_name":"White Wolf Mountain",
+        "layer":1,
+        "plane":0,
+        "chunks":[
+            {
+                "s_x":2800,
+                "s_y":3504,
+                "e_x":2872,
+                "e_y":3512
+            },
+            {
+                "s_x":2792,
+                "s_y":3496,
+                "e_x":2808,
+                "e_y":3496
+            },
+            {
+                "s_x":2792,
+                "s_y":3504
+            },
+            {
+                "s_x":2856,
+                "s_y":3440,
+                "e_x":2864,
+                "e_y":3496
+            },
+            {
+                "s_x":2848,
+                "s_y":3448,
+                "e_x":2848,
+                "e_y":3496
+            },
+            {
+                "s_x":2840,
+                "s_y":3472,
+                "e_x":2840,
+                "e_y":3496
+            },
+            {
+                "s_x":2832,
+                "s_y":3488,
+                "e_x":2832,
+                "e_y":3496
+            },
+            {
+                "s_x":2824,
+                "s_y":3496
             }
         ]
     }

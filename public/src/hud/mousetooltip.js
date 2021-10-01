@@ -1,6 +1,6 @@
 import { numberWithCommas } from "../helpers.js";
 import { HudObject, HudText } from "../object.js";
-import { SKILLS, SKILL_NAMES } from "../player.js";
+import { LEVELS, SKILLS, SKILL_NAMES } from "../player.js";
 import { GetMapDefinition } from "../resource/mapdefinitions.js";
 import { InterfaceSkillSlot, GetGoalExperience, GetRemainingExperienceToGoal } from "./maininterface/skills.js";
 
@@ -61,7 +61,7 @@ export class SkillTooltip extends HudObject
         var goalXP = GetGoalExperience(currentXP);
         var remainingXP = GetRemainingExperienceToGoal(currentXP);
 
-        if(MOUSE_OVER_OBJECT.skillId == SKILLS.TOTAL)
+        if(MOUSE_OVER_OBJECT.skillId == SKILLS.TOTAL || MOUSE_OVER_OBJECT.experience >= LEVELS[98])
         {
             this.leftText.setText(`${SKILL_NAMES[MOUSE_OVER_OBJECT.skillId]} XP: `);
             this.rightText.setText(`${numberWithCommas(currentXP)}`);
@@ -157,9 +157,10 @@ export class MouseTooltip extends HudObject
             if(chunk != null)
             {
                 var mapDef = chunk.getHighestLayerMapDefinition(WORLD.currentPlane);
-                if(mapDef != null)
+                if(mapDef != null && !mapDef.hidden)
                 {
-                    this.mapToolTip.setText(mapDef.displayName);
+                    var text = chunk.getDisplayName(WORLD.currentPlane);
+                    this.mapToolTip.setText(text);
                     this.mapToolTip.update();
                     this.mapToolTip.setVisibility(true);
                 } 

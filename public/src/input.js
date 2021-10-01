@@ -69,6 +69,10 @@ export class Input
 
     hoverObject(object)
     {
+        // if we called hover on some other object, make sure to unhover previous object
+        if(MOUSE_OVER_OBJECT != null)
+            this.unhoverObject(MOUSE_OVER_OBJECT);
+
         if(object.createOverlay)
         {
             var overlay = getOverlay(object);
@@ -81,6 +85,9 @@ export class Input
 
     selectObject(object)
     {
+        // first deselect current object
+        this.deselectObject();
+
         if(!object.selectable)
             return;
 

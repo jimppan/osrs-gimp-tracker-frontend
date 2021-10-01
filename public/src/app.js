@@ -120,7 +120,7 @@ $.ajax({
                     {
                         // got map defs
                         for(let i = 0; i < mapdef.length; i++)
-                            AddMapDefinition(mapdef[i].id, mapdef[i].name, mapdef[i].display_name, mapdef[i].layer, mapdef[i].plane);
+                            AddMapDefinition(mapdef[i].id, mapdef[i].name, mapdef[i].display_name, mapdef[i].layer, mapdef[i].plane, mapdef[i].hidden != null && mapdef[i].hidden);
 
                         // init
                         INPUT.init();

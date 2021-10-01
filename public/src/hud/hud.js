@@ -152,13 +152,12 @@ export class Hud
                     {
                         if(!object.wasHovered)
                             INPUT.hoverObject(object);
-                        return;
                     }
                     else
                     {
                         if(object.wasHovered)
                             INPUT.unhoverObject(object);
-                }
+                    }
                 }
             }
 
@@ -177,7 +176,6 @@ export class Hud
                     {
                         if(!object.wasHovered)
                             INPUT.hoverObject(object);
-                        return;
                     }
                     else
                     {
