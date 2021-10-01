@@ -118,6 +118,19 @@ export class Chunk
 
         return this.mapDefinitions[plane][this.mapDefinitions[plane].length-1];
     }
+
+    // returns full display name for this chunk (Example: Grand Exchange @ Varrock)
+    getDisplayName(plane)
+    {
+        var highestMapDef = this.getHighestLayerMapDefinition(plane);
+        if(highestMapDef == null)
+            return null;
+
+        if(highestMapDef.layer > 1)
+            return highestMapDef.displayName + " - " + this.mapDefinitions[plane][highestMapDef.layer-1].displayName;
+
+        return highestMapDef.displayName; 
+    }
 }
 
 // a 64x64 tile region of a map
@@ -474,8 +487,8 @@ export class World
                         {
                             var chunk = chunksInRange[x][y];
                             chunk.addMapDefinition(GetMapDefinition(i)); // set the map def for the chunk
-                            /* if(GetMapDefinition(i).name == "wilderness")
-                                this.grid.selectChunk({x:start.x + (x * X_CHUNKS_PER_REGION), y:start.y + (y * Y_CHUNKS_PER_REGION)}); */
+                            //if(GetMapDefinition(i).layer == 0)
+                            //    this.grid.selectChunk({x:start.x + (x * X_CHUNKS_PER_REGION), y:start.y + (y * Y_CHUNKS_PER_REGION)});
                         }
                     }
                 }
@@ -486,8 +499,8 @@ export class World
                         continue;
 
                     chunk.addMapDefinition(GetMapDefinition(i)); // set the map def for the chunk
-                    /* if(GetMapDefinition(i).name == "wilderness")
-                        this.grid.selectChunk(start); */
+                    //if(GetMapDefinition(i).layer == 0)
+                     //   this.grid.selectChunk(start);
                 }
             }
         }
