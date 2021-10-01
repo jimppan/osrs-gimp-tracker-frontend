@@ -118,7 +118,7 @@ export class Player extends Actor
         super(name, color, position);
 
         this.worldLabel = new HudText("PlayerTextWorld", '', WORLD_TEXT_STYLE, 4);
-        this.worldLabel.attachTo(this.label, false, 0, 12);
+        this.worldLabel.attachTo(this.label, false, 0, this.label.getWorldRect().height);
         this.worldLabel.setAnchor(0, 1);
         this.worldLabel.interactable = true;
         this.worldLabel.clampToView = true;
