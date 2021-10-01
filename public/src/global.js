@@ -2,8 +2,6 @@ var GIMP_TRACKER_CACHE_VERSION = "2021-09-02_1"
 
 
 // fuck it, go full global
-var JSON_MAP_DATA = null;
-
 var APP = null;
 var WORLD = null;
 var CAMERA = null;

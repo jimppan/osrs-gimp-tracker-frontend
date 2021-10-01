@@ -3,11 +3,13 @@ import {} from "./font.js"
 import { World } from "./world.js";
 import { Input } from "./input.js";
 import { Camera} from './camera.js'
-import { AddItemComposition } from "./itemdatabase.js";
+import { AddItemComposition } from "./resource/itemdatabase.js";
+import { AddMapDefinition } from "./resource/mapdefinitions.js";
 import { Hud } from "./hud/hud.js"
 
 import { ConnectToBackend } from "./backend.js" // idk whats going on but if I load font after I connect socket, fonts wont load
 import { ResourceManager } from "./resource/resourcemanager.js";
+import { SpawnObject } from "./object.js";
 
 
 const canvas = document.getElementById('osrscanvas');
@@ -76,8 +78,6 @@ for(var i = 0; i < WORLD.planeContainers.length; i++)
     worldContainer.addChild(WORLD.planeContainers[i]);
     
 CAMERA = new Camera();
-CAMERA.setTargetPosition(50 * 256, 50 * 256);
-
 INPUT = new Input();
 HUD = new Hud();
 
@@ -88,6 +88,7 @@ stage.scale.y = -1;
 
 var regionposJsonURL = "./regionpos.json";
 var itemcompJsonURL = "./itemcomp.json";
+var mapdefJsonURL = "./mapdefinitions.json";
 
 // load json data first, needed to preload textures
 $.ajax({
@@ -96,26 +97,43 @@ $.ajax({
     dataType: 'json',
     success: (regionpos) => 
     {
-        JSON_MAP_DATA = regionpos;
+        // got region pos
+
         $.ajax({
             type: 'GET',
             url: itemcompJsonURL,
             dataType: 'json',
             success: (itemcomp) => 
             {
+                // got item def
                 for(var i = 0; i < itemcomp.items.length; i++)
                 {
                     var item = itemcomp.items[i];
                     AddItemComposition(item.id, item.name, item.stackable, item.tradable);
                 }
-                
-                // init
-                INPUT.init();
-                WORLD.init();
-                HUD.init();
-                
-                // preload textures
-                APP.resourceManager.load(assetsLoaded);
+
+                $.ajax({
+                    type: 'GET',
+                    url: mapdefJsonURL,
+                    dataType: 'json',
+                    success: (mapdef) => 
+                    {
+                        // got map defs
+                        for(let i = 0; i < mapdef.length; i++)
+                            AddMapDefinition(mapdef[i].id, mapdef[i].name, mapdef[i].display_name, mapdef[i].layer, mapdef[i].plane, mapdef[i].hidden != null && mapdef[i].hidden);
+
+                        // init
+                        INPUT.init();
+                        WORLD.init(regionpos);
+                        HUD.init();
+
+                        WORLD.addMapDefinitions(mapdef);
+                        
+                        // preload textures
+                        APP.resourceManager.load(assetsLoaded);
+                    },
+                    async: false
+                });
             },
             async: false
         });
@@ -131,6 +149,10 @@ function assetsLoaded()
     console.log("Loaded assets.");
 
     HUD.onAssetsLoaded();
+
+    //CAMERA.setTargetPosition(50 * 256, 50 * 256);
+    CAMERA.setPosition(50 * -256 + (window.innerWidth / 2), 50 * -256 - (window.innerHeight / 2));
+    CAMERA.interruptedCameraPathing = true;
 
     // render loop
     ticker.add((delta) => 

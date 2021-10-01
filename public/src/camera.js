@@ -1,5 +1,5 @@
 import { WorldObject } from "./object.js";
-import { getRegionWidth, getRegionHeight } from "./world.js";
+import { REGION_WIDTH, REGION_HEIGHT, TILE_SIZE, X_CHUNKS_PER_REGION, Y_CHUNKS_PER_REGION } from "./world.js";
 
 export class Camera
 {
@@ -31,6 +31,15 @@ export class Camera
         // update camera movement
         if(!this.interruptedCameraPathing)
         {
+            if(CAMERA_FOLLOW_OBJECT != null && CAMERA_FOLLOW_OBJECT instanceof WorldObject)
+            {
+                if(CAMERA_FOLLOW_OBJECT.plane != WORLD.currentPlane)
+                    WORLD.setPlane(CAMERA_FOLLOW_OBJECT.plane);
+
+                var worldPos = CAMERA_FOLLOW_OBJECT.getWorldPosition();
+                this.setTargetPosition(worldPos.x, worldPos.y);
+            }
+
             // TODO: if we get close enough to target, stop following
 
             // lerp to target pos
@@ -47,6 +56,7 @@ export class Camera
     
             if(this.isWorldPositionInView(this.targetPosition.x, this.targetPosition.y))
             {
+                
                 // if the point is in view, we can keep lerping, else just TP the camera
                 cameraWorldPos.x += diff.x * 0.05;
                 cameraWorldPos.y += diff.y * 0.05;
@@ -61,15 +71,6 @@ export class Camera
             cameraWorldPos.y *= this.zoom.y;
     
             this.setPosition(-cameraWorldPos.x, -cameraWorldPos.y);
-
-            if(CAMERA_FOLLOW_OBJECT != null && CAMERA_FOLLOW_OBJECT instanceof WorldObject)
-            {
-                if(CAMERA_FOLLOW_OBJECT.plane != WORLD.currentPlane)
-                    WORLD.setPlane(CAMERA_FOLLOW_OBJECT.plane);
-
-                var worldPos = CAMERA_FOLLOW_OBJECT.getWorldPosition();
-                this.setTargetPosition(worldPos.x, worldPos.y);
-            }
         }
     }
     
@@ -221,6 +222,24 @@ export class Camera
 
         return true;
     }
+    
+    // a region is a 64x64 tile region (256x256 pixels)
+    getMouseRegion()
+    {
+        var cursorWorldPos = this.getCursorWorldPosition();
+
+        var x = Math.floor(cursorWorldPos.x / REGION_WIDTH);
+        var y = Math.floor(cursorWorldPos.y / REGION_HEIGHT);
+
+        return WORLD.getRegion(x, y);
+    }
+
+    // a chunk is a 8x8 tile region (64x64 pixels)
+    getMouseChunk()
+    {
+        var cursorWorldPos = this.getCursorWorldPosition();
+        return WORLD.getChunk(cursorWorldPos.x, cursorWorldPos.y);
+    }
 
     // gets an array of regions that are currently in the view
     // starting from top left to bottom right
@@ -229,8 +248,8 @@ export class Camera
         var bottomLeftPos = this.screenToWorldPos(0, window.innerHeight);
         var bottomLeftRegion = WORLD.getRegionPositionFromWorldPosition(bottomLeftPos.x, bottomLeftPos.y);
 
-        var xRegionMax = Math.floor(((bottomLeftRegion.x + window.innerWidth) / getRegionWidth()) / this.zoom.x) + 2;
-        var yRegionMax = Math.floor(((bottomLeftRegion.y + window.innerHeight) / getRegionHeight()) / this.zoom.y) + 2;
+        var xRegionMax = Math.floor(((bottomLeftRegion.x + window.innerWidth) / REGION_WIDTH) / this.zoom.x) + 2;
+        var yRegionMax = Math.floor(((bottomLeftRegion.y + window.innerHeight) / REGION_HEIGHT) / this.zoom.y) + 2;
 
         var regionPosList = [];
         for(var x = bottomLeftRegion.x; x < bottomLeftRegion.x + xRegionMax; x++)

@@ -1,4 +1,4 @@
-import { GetItemComposition } from "../../itemdatabase.js";
+import { GetItemComposition } from "../../resource/itemdatabase.js";
 import { HudObject, HudText } from "../../object.js";
 import { Player } from "../../player.js";
 import { Interface } from "../interface.js";
@@ -45,7 +45,7 @@ export class InterfaceItemSlot extends HudObject
         this.text.setParent(this.icon);
         this.icon.setParent(this);
 
-        this.icon.setZIndex(HUD_LAYERS.INTERFACE_FOREGROUND);
+        this.icon.setZIndex(HUD_LAYERS.INTERFACE);
         this.text.setZIndex(HUD_LAYERS.INTERFACE_FOREGROUND);
     }
 

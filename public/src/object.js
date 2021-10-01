@@ -249,16 +249,8 @@ export class StageObject
         var bounds = this.getScreenBounds();
 
         var bl = this.getBottomLeftScreen({x:bounds.x, y:bounds.y}, interactables);
-
-        // clamp to screen pos
-        if(bl.x < 0) bl.x = 0;
-        if(bl.y < 0) bl.y = 0;
-
         var tr = this.getTopRightScreen({x:bounds.x + bounds.width, y:bounds.y + bounds.height}, interactables);
-
-        if(tr.x > window.innerWidth) tr.x = window.innerWidth;
-        if(tr.y > window.innerHeight) tr.y = window.innerHeight;
-
+        
         return new PIXI.Rectangle(bl.x, bl.y, tr.x - bl.x, tr.y - bl.y)
     }
 
