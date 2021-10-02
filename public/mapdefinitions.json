@@ -10828,5 +10828,26 @@
                 "s_y":3496
             }
         ]
+    },
+    {
+        "id":304,
+        "name":"motherlode-mine",
+        "display_name":"Motherlode Mine",
+        "layer":1,
+        "plane":0,
+        "chunks":[
+            {
+                "s_x":3712,
+                "s_y":5632,
+                "e_x":3768,
+                "e_y":5680
+            },
+            {
+                "s_x":3720,
+                "s_y":5688,
+                "e_x":3768,
+                "e_y":3688
+            }
+        ]
     }
  ]
