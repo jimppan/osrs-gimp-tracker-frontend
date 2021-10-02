@@ -1,3 +1,4 @@
+import { DeleteObject } from './object.js';
 import { ConnectPlayer, GetPlayer, DisconnectPlayer, IsValidPacket } from './player.js'
 
 const CURRENT_SYSTEM = 'frontend'
@@ -23,7 +24,9 @@ export function ConnectToBackend()
         ADDED_LISTENERS = true;
         SOCKET.on('disconnect', ()=>
         {
-            console.log("Disconnected");
+            console.log("Lost connection to backend");
+            // clear all networked actors so we dont manage to get duplicates
+            ClearNetworkedActors();
         })
     
         // Client joins the map
@@ -60,4 +63,14 @@ export function ConnectToBackend()
     
         console.log("Connected to backend")
     });
+}
+
+// for now its just players
+function ClearNetworkedActors()
+{
+    for (let [key, value] of PLAYERS) 
+        DeleteObject(value);
+
+    for (let [key, value] of PLAYERS) 
+        PLAYERS.delete(key);
 }
