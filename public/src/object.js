@@ -250,7 +250,7 @@ export class StageObject
 
         var bl = this.getBottomLeftScreen({x:bounds.x, y:bounds.y}, interactables);
         var tr = this.getTopRightScreen({x:bounds.x + bounds.width, y:bounds.y + bounds.height}, interactables);
-        
+
         return new PIXI.Rectangle(bl.x, bl.y, tr.x - bl.x, tr.y - bl.y)
     }
 
@@ -690,6 +690,12 @@ export function SpawnObject(object)
 
 export function DeleteObject(object)
 {
+    if(MOUSE_OVER_OBJECT == object)
+        INPUT.unhoverObject(object);
+        
+    if(SELECTED_OBJECT == object)
+        INPUT.deselectObject();
+
     for(var i = 0; i < object.children.length; i++)
         DeleteObject(object.children[i]);
 
