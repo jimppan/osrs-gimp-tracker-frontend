@@ -94,7 +94,22 @@ export class InterfaceItemSlot extends HudObject
 
             this.icon.graphic.texture = PIXI.Texture.from(`img/items/${itemIconId}.png`);
             this.icon.graphic.texture.rotate = 8;
-            this.text.setText(`${this.quantity}`);
+                  
+            // Truncation
+            if(this.quantity > 99999 && this.quantity <= 9999999)
+            {
+                let _quantity = Math.trunc(this.quantity / 1000);
+                this.text.setText(`${_quantity}K`);
+            }
+            else if(this.quantity > 9999999)
+            {
+                let _quantity = Math.trunc(this.quantity / 1000000);
+                this.text.setText(`${_quantity}M`);
+            }
+            else
+            {
+                this.text.setText(`${this.quantity}`);
+            }
             
             this.text.setVisibility(this.quantity > 0 && comp.stackable && this.parent.isVisible());
             this.icon.setVisibility(this.parent.isVisible());
