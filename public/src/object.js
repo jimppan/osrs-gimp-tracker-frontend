@@ -607,6 +607,11 @@ export class HudText extends HudObject
         this.graphic.zIndex = 1;
     }
 
+    setStyle(style)
+    {
+        this.graphic.style = style;
+    }
+
     setText(text)
     {
         this.graphic.text = text;
@@ -692,7 +697,7 @@ export function DeleteObject(object)
 {
     if(MOUSE_OVER_OBJECT == object)
         INPUT.unhoverObject(object);
-        
+
     if(SELECTED_OBJECT == object)
         INPUT.deselectObject();
 

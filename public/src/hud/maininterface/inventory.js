@@ -7,6 +7,28 @@ export const INVENTORY_SIZE = 28;
 export const INVALID_ITEM = -1;
 const INVENTORY_ROWS = 4;
 
+const ITEM_ICON_TEXT_M = new PIXI.TextStyle({
+    fontFamily: 'OSRS Font Plain',
+    fontSize:'16px',
+    fill: ['#00ff99'],
+    //strokeThickness:1,
+    dropShadow : true,
+    dropShadowAlpha: 1,
+    dropShadowAngle:0.6,
+    dropShadowDistance: 16,
+})
+
+const ITEM_ICON_TEXT_K = new PIXI.TextStyle({
+    fontFamily: 'OSRS Font Plain',
+    fontSize:'16px',
+    fill: ['#ffffff'],
+    //strokeThickness:1,
+    dropShadow : true,
+    dropShadowAlpha: 1,
+    dropShadowAngle:0.6,
+    dropShadowDistance: 16,
+})
+
 const ITEM_ICON_TEXT = new PIXI.TextStyle({
     fontFamily: 'OSRS Font Plain',
     fontSize:'16px',
@@ -27,7 +49,7 @@ export class InterfaceItemSlot extends HudObject
         super(name);
 
         this.itemId = itemId;
-        this.quantity = 0;
+        this.quantity = quantity;
         this.icon = new HudObject("InterfaceItemSlotIcon");
         this.text = new HudText("InterfaceItemSlotText", `${quantity}`, ITEM_ICON_TEXT, 16);
 
@@ -54,7 +76,7 @@ export class InterfaceItemSlot extends HudObject
         this.icon.setVisibility(value);
 
         var comp = GetItemComposition(this.itemId);
-        this.text.graphic.visible = this.quantity > 0 && comp.stackable && value;
+        this.text.graphic.visible = this.itemId != INVALID_ITEM && this.quantity > 0 && comp.stackable && value;
     }
 
     loadSprite()
@@ -94,7 +116,26 @@ export class InterfaceItemSlot extends HudObject
 
             this.icon.graphic.texture = PIXI.Texture.from(`img/items/${itemIconId}.png`);
             this.icon.graphic.texture.rotate = 8;
-            this.text.setText(`${this.quantity}`);
+                  
+            // Truncation
+            
+            if(this.quantity > 9999999)
+            {
+                let _quantity = Math.trunc(this.quantity / 1000000);
+                this.text.setText(`${_quantity}M`);
+                this.text.setStyle(ITEM_ICON_TEXT_M);
+            }
+            else if(this.quantity > 99999)
+            {
+                let _quantity = Math.trunc(this.quantity / 1000);
+                this.text.setText(`${_quantity}K`);
+                this.text.setStyle(ITEM_ICON_TEXT_K);
+            }
+            else
+            {
+                this.text.setText(`${this.quantity}`);
+                this.text.setStyle(ITEM_ICON_TEXT);
+            }
             
             this.text.setVisibility(this.quantity > 0 && comp.stackable && this.parent.isVisible());
             this.icon.setVisibility(this.parent.isVisible());
@@ -119,18 +160,6 @@ export class InventoryInterface extends Interface
 
             this.inventorySlots[i].setPosition(INVENTORY_OFFSET.x + (40 * x), INVENTORY_OFFSET.y - (36 * y));
         }
-    }
-
-    setSlot(slot, itemId, quantity)
-    {
-        this.inventorySlots[slot].itemId = itemId;
-        this.inventorySlots[slot].quantity = quantity;
-    }
-
-    emptySlot(slot)
-    {
-        this.inventorySlots[slot].itemId = INVALID_ITEM;
-        this.inventorySlots[slot].quantity = 0;
     }
 
     getSlot(slot)
