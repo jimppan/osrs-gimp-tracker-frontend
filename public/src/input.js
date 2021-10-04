@@ -1,5 +1,9 @@
 import { createOverlay, deleteOverlay, getOverlay } from "./overlays.js";
 import { SetDeveloperMode } from "./developer.js";
+import { clamp } from "./helpers.js";
+
+const MIN_ZOOM = 0.03125
+const MAX_ZOOM = 8;
 
 export class Input
 {
@@ -48,7 +52,9 @@ export class Input
         const scaleBy = 2;
 
         var worldPos = CAMERA.getCursorWorldPosition();
-        const newScale = deltaY < 0 ? CAMERA.zoom.x * scaleBy : CAMERA.zoom.x / scaleBy;
+        var newScale = deltaY < 0 ? CAMERA.zoom.x * scaleBy : CAMERA.zoom.x / scaleBy;
+
+        newScale = clamp(newScale, MIN_ZOOM, MAX_ZOOM)
 
         CAMERA.setZoom(newScale, newScale);
         CAMERA.setPosition(-(worldPos.x - CAMERA.getCursorPosition().x / newScale) * newScale, (-worldPos.y - CAMERA.getCursorPosition().y / newScale) * newScale);
@@ -177,7 +183,8 @@ export class Input
 
             if(WORLD.grid.isVisible())
             {
-               
+                var test1 = CAMERA.getRegionsInView();
+                var test2 = CAMERA.getScaledRegionsInView();
             }
             else
             {
@@ -221,19 +228,33 @@ export class Input
 
             console.log("CURSOR SCREEN TO WORLD")
             var worldPos = CAMERA.screenToWorldPos(cursorPos.x, cursorPos.y);
-            //console.log(worldPos);
 
-            var worldPos = WORLD.getChunkWorldPosition(worldPos.x, worldPos.y)
-            worldPos.x /= 4;
-            worldPos.y /= 4;
-
-            console.log(worldPos);
+            var regionPos = WORLD.getRegionPositionFromWorldPosition(worldPos.x, worldPos.y);
+            console.log(regionPos)
+            var region = WORLD.getRegion(regionPos.x, regionPos.y);
+            if(region != null)
+            {
+                console.log(region.planes);
+                console.log(region.currentZoom)
+                region.planes[0].sprite.visible = false;
+            }
 
         }
         else if(e.button == 1)
         {
-            DEVELOPER_MODE = !DEVELOPER_MODE;
-            SetDeveloperMode(DEVELOPER_MODE);
+            var cursorPos = CAMERA.getCursorPosition();
+            var worldPos = CAMERA.screenToWorldPos(cursorPos.x, cursorPos.y);
+            var regionPos = WORLD.getRegionPositionFromWorldPosition(worldPos.x, worldPos.y);
+            console.log(regionPos)
+            var region = WORLD.getRegion(regionPos.x, regionPos.y);
+            if(region != null)
+            {
+                console.log(region.planes);
+                region.planes[1].sprite.visible = false;
+            }
+
+            /* DEVELOPER_MODE = !DEVELOPER_MODE;
+            SetDeveloperMode(DEVELOPER_MODE); */
         }
         this.onMouseMove()
     }
@@ -272,24 +293,30 @@ export class Input
                 {
                     var cursorPos = CAMERA.getCursorWorldPosition();
                     var chunkPos = WORLD.getChunkWorldPosition(cursorPos.x, cursorPos.y);
-                    chunkPos.x /= 4;
-                    chunkPos.y /= 4;
-
-                    var selectedChunk = WORLD.grid.getSelectedChunk(chunkPos);
-                    if(selectedChunk == null)
-                        WORLD.grid.selectChunk(chunkPos);
+                    if(chunkPos != null)
+                    {
+                        chunkPos.x /= 4;
+                        chunkPos.y /= 4;
+    
+                        var selectedChunk = WORLD.grid.getSelectedChunk(chunkPos);
+                        if(selectedChunk == null)
+                            WORLD.grid.selectChunk(chunkPos);
+                    }
                 }
             }
             else if(this.mouse2IsDown)
             {
                 var cursorPos = CAMERA.getCursorWorldPosition();
                 var chunkPos = WORLD.getChunkWorldPosition(cursorPos.x, cursorPos.y);
-                chunkPos.x /= 4;
-                chunkPos.y /= 4;
-
-                var selectedChunk = WORLD.grid.getSelectedChunk(chunkPos);
-                if(selectedChunk != null)
-                    WORLD.grid.deselectChunk(chunkPos);
+                if(chunkPos != null)
+                {
+                    chunkPos.x /= 4;
+                    chunkPos.y /= 4;
+    
+                    var selectedChunk = WORLD.grid.getSelectedChunk(chunkPos);
+                    if(selectedChunk != null)
+                        WORLD.grid.deselectChunk(chunkPos);
+                }
             }
         }
         else

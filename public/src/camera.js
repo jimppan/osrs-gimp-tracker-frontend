@@ -1,5 +1,6 @@
+import { clamp, floorToNearestMultiple } from "./helpers.js";
 import { WorldObject } from "./object.js";
-import { REGION_WIDTH, REGION_HEIGHT, TILE_SIZE, X_CHUNKS_PER_REGION, Y_CHUNKS_PER_REGION } from "./world.js";
+import { REGION_WIDTH, REGION_HEIGHT, MAX_REGION_WIDTH, MAX_REGION_HEIGHT } from "./world.js";
 
 export class Camera
 {
@@ -21,11 +22,12 @@ export class Camera
         if(this.tickCounter > 20)
         {
             this.tickCounter = 0;
+
             if(this.needsUpdate)
             {
                 WORLD.updateMap();
                 this.needsUpdate = false;
-            }
+            }   
         }
 
         // update camera movement
@@ -245,21 +247,77 @@ export class Camera
     // starting from top left to bottom right
     getRegionsInView()
     {
+        var regionRect = this.getRegionRect();
+
+        var regionPosList = [];
+        for(var x = regionRect.x; x < regionRect.x + regionRect.width; x++)
+        {
+            for(var y = regionRect.y; y < regionRect.y + regionRect.height; y++)
+            {
+                regionPosList.push({x:x, y:y});
+            }
+        }
+        //console.log(count);
+        return regionPosList;
+    }
+
+    // gets camera view rect but in region position
+    getRegionRect()
+    {
         var bottomLeftPos = this.screenToWorldPos(0, window.innerHeight);
         var bottomLeftRegion = WORLD.getRegionPositionFromWorldPosition(bottomLeftPos.x, bottomLeftPos.y);
 
         var xRegionMax = Math.floor(((bottomLeftRegion.x + window.innerWidth) / REGION_WIDTH) / this.zoom.x) + 2;
         var yRegionMax = Math.floor(((bottomLeftRegion.y + window.innerHeight) / REGION_HEIGHT) / this.zoom.y) + 2;
 
+        return {x: bottomLeftRegion.x, y:bottomLeftRegion.y, width: xRegionMax, height: yRegionMax};
+    }
+
+
+    // get scaled regions in view, meaning that it doesnt check every single region
+    // in view if we're scaled down, it skips uneccessary regions that
+    // we do not need when rendering scaled down maps
+    getScaledRegionsInView()
+    {
+        var bottomLeftPos = this.screenToWorldPos(0, window.innerHeight);
+        var bottomLeftRegion = WORLD.getRegionPositionFromWorldPosition(bottomLeftPos.x, bottomLeftPos.y);
+
+
+        // if we're zoomed out, lets say by just 0.5 (which is 1 scroll)
+        // then we want maps to display every 2 regions and scale them by 2 in X and Y
+        
+        // if we're zoomed out by 0.25 (which is 2 scrolls)
+        // then we want maps to display every 4 regions and scale them by 4 in X and Y
+
+        var xZoomedOut = Math.max(1 / this.zoom.x, 1);
+        var yZoomedOut = Math.max(1 / this.zoom.y, 1);
+
+        bottomLeftRegion.x = floorToNearestMultiple(bottomLeftRegion.x, xZoomedOut);
+        bottomLeftRegion.y = floorToNearestMultiple(bottomLeftRegion.y, yZoomedOut);
+
+        // add additional chunks to render on each axis so we dont have empty regions on edges
+        var xRegionMax = Math.floor(((bottomLeftRegion.x + window.innerWidth) / REGION_WIDTH) / this.zoom.x) + (2 * xZoomedOut)
+        var yRegionMax = Math.floor(((bottomLeftRegion.y + window.innerHeight) / REGION_HEIGHT) / this.zoom.y) + (2 * yZoomedOut);
+
+
+        bottomLeftRegion.x = clamp(bottomLeftRegion.x, 0, MAX_REGION_WIDTH-1);
+        bottomLeftRegion.y = clamp(bottomLeftRegion.y, 0, MAX_REGION_HEIGHT-1);
+
+        var comparisonX = clamp(bottomLeftRegion.x + xRegionMax, 0, MAX_REGION_WIDTH-1);
+        var comparisonY = clamp(bottomLeftRegion.y + yRegionMax, 0, MAX_REGION_HEIGHT-1);
+
+        xRegionMax = floorToNearestMultiple(xRegionMax, xZoomedOut);
+        yRegionMax = floorToNearestMultiple(yRegionMax, yZoomedOut);
+
         var regionPosList = [];
-        for(var x = bottomLeftRegion.x; x < bottomLeftRegion.x + xRegionMax; x++)
+        // also iterate here by
+        for(var x = bottomLeftRegion.x; x < comparisonX; x += xZoomedOut)
         {
-            for(var y = bottomLeftRegion.y; y < bottomLeftRegion.y + yRegionMax; y++)
+            for(var y = bottomLeftRegion.y; y < comparisonY; y += yZoomedOut)
             {
                 regionPosList.push({x:x, y:y});
             }
         }
-        //console.log(count);
         return regionPosList;
     }
 }

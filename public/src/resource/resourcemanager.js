@@ -23,7 +23,7 @@ export class ResourceManager
     }
 
     // loads a texture onto a sprite as soon as its downloaded and uploaded to GPU
-    lateLoadTexture(path, sprite)
+    lateLoadTexture(path, onTextureLoaded)
     {
         var status = this.getResourceStatus(path);
         switch(status)
@@ -37,7 +37,7 @@ export class ResourceManager
                     APP.renderer.plugins.prepare.upload(resource.texture, () =>
                     {
                         this.setResourceStatus(path, RESOURCE_STATUS.READY);
-                        sprite.texture = resource.texture;
+                        onTextureLoaded(resource.texture);
                     });
                 })
 
@@ -51,8 +51,8 @@ export class ResourceManager
 
                 break;
             case RESOURCE_STATUS.READY:
-                sprite.texture = this.loader.resources[path].texture;
-
+                onTextureLoaded(this.loader.resources[path].texture);
+                
                 // == USE THIS LOAD FAST BUT LAGGY ===
                 //sprite.texture = PIXI.loader.resources[path].texture;
                 break;

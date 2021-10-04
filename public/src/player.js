@@ -1,5 +1,4 @@
-import { TILE_SIZE, LAYERS} from "./world.js";
-import { WorldText, SpawnObject, DeleteObject, HudText} from "./object.js";
+import { SpawnObject, DeleteObject, HudText} from "./object.js";
 import { INVALID_ITEM, INVENTORY_SIZE } from "./hud/maininterface/inventory.js";
 import { Actor } from "./actor/actor.js";
 

@@ -1,3 +1,4 @@
+import { clamp } from "./helpers.js";
 import { Grid } from "./hud/devtools/grid.js";
 import { SpawnObject, StageObject, WorldObject } from "./object.js";
 import { GetMapDefinition } from "./resource/mapdefinitions.js";
@@ -14,8 +15,8 @@ export const REGION_TILE_HEIGHT = 64;
 export const TILE_SIZE = 4;
 export const START_TILE = {x:3221, y:3218}; // starting pos for camera (lumbridge)
 
-export const MAX_REGION_WIDTH = 70;
-export const MAX_REGION_HEIGHT = 200;
+export const MAX_REGION_WIDTH = 80;
+export const MAX_REGION_HEIGHT = 210;
 
 export const X_CHUNKS_PER_REGION = 8;
 export const Y_CHUNKS_PER_REGION = 8;
@@ -29,9 +30,43 @@ export const LAYERS =
     PLAYER: 5,
 }
 
-function BuildRegionTexturePath(x, y, z)
+function BuildRegionTexturePath(zoom, x, y, z)
 {
-    return `img/map/${z}_${x}_${y}.png`;
+    return `img/map/${zoom}/${z}_${x}_${y}.png`;
+}
+
+// the map zoom level from camera zoom
+// -3 is 32x    (0.03125)
+// -2 is 16x    (0.0625)
+// -1 is 8x     (0.125)
+//  0 is 4x     (0.25)
+//  1 is 2x     (0.50)
+//  2 is normal (1)
+//  anything higher is also normal
+function getZoomFolderLevel(zoom)
+{
+    if(zoom >= 1)
+    {
+        return 2;
+    }
+    else if(zoom >= 0.50)
+    {
+        return 1;
+    }
+    else if(zoom >= 0.25)
+    {
+        return 0;
+    }
+    else if(zoom >= 0.125)
+    {
+        return -1;
+    }
+    else if(zoom >= 0.0625)
+    {
+        return -2;
+    }
+    
+    return -3;
 }
 
 // plane (Z level of a region)
@@ -41,19 +76,75 @@ export class Plane
     {
         this.planeId = planeId;
         this.sprite = new PIXI.Sprite();
-        this.textureLoaded = false;
+        //this.textureLoaded = false;
 
         this.region = region;
     }
 
     setSprite()
     {
-        this.textureLoaded = true;
-        // invert Y position
-        var spritePath = BuildRegionTexturePath(this.region.position.x, this.region.position.y, this.planeId);
-        APP.resourceManager.lateLoadTexture(spritePath, this.sprite);
+        //this.textureLoaded = true;
 
-        this.sprite.zIndex = this.planeId;
+        var zoomFolder = getZoomFolderLevel(CAMERA.zoom.x);
+
+        var zoomAmount = clamp(1 / CAMERA.zoom.x, 1, 32);
+
+        var xPath = Math.floor(this.region.position.x / zoomAmount);
+        var yPath = Math.floor(this.region.position.y / zoomAmount);
+
+        var newSpriteRegionPosX = xPath * zoomAmount;
+        var newSpriteRegionPosY = yPath * zoomAmount;
+        //console.log(zoomFolder + " - " + xPath + " / " + yPath);
+
+        var spritePath = BuildRegionTexturePath(zoomFolder, xPath, yPath, this.planeId);
+        APP.resourceManager.lateLoadTexture(spritePath, (texture) =>
+        {
+            // texture downloaded and uploaded to GPU
+
+            this.sprite.texture = texture;
+
+            this.sprite.scale.x = zoomAmount;
+            this.sprite.scale.y = zoomAmount;
+
+            // example:
+            // if xPath was 50 (which is lumbirdge chunk)
+            // divide it by the zoom amount, lets say we're on zoomed out by 4 times
+            // floor(50 / 4) is 12
+            // 12 * 4 is 46 which is where the zoomed map image should be rendered
+            // 46 * 64 * 4 is the world position (chunkPos * region_tile_width * tile_pixel_width)
+
+            
+            this.sprite.position.x = newSpriteRegionPosX * REGION_TILE_WIDTH * TILE_SIZE;
+            this.sprite.position.y = newSpriteRegionPosY * REGION_TILE_HEIGHT * TILE_SIZE;
+
+            this.sprite.zIndex = this.planeId;
+
+            // once we have loaded this sprite, we wanna disable older resolutions of this sprite
+            for(var x = newSpriteRegionPosX; x < newSpriteRegionPosX + zoomAmount; x++)
+            {
+                for(var y = newSpriteRegionPosY; y < newSpriteRegionPosY + zoomAmount; y++)
+                {
+                    // disable the visibility of all planes this sprite is gonna cover
+                    // then enable the visibility of this one
+                    var region = WORLD.getRegion(x, y);
+                    if(region != null)
+                    {
+                        var plane = region.getPlane(this.planeId);
+                        if(plane != null)
+                        {
+                            plane.setVisibility(false);
+                            plane.parent = this;
+                        }
+                    }
+                }
+            }
+ 
+            //if(this.parent != null)
+                //this.parent.setVisibility(false);
+            this.setVisibility(true);
+        });
+
+        
     }
 
     setVisibility(val)
@@ -166,6 +257,11 @@ export class Region
         plane.sprite.y = this.position.y * REGION_HEIGHT;
 
         this.world.getPlaneContainer(plane.planeId).add(plane)
+    }
+
+    hasPlane(planeId)
+    {
+        return this.planes[planeId] != null;
     }
 
     isChunkPosInRange(x, y)
@@ -425,7 +521,7 @@ export class World
     getChunk(x, y)
     {
         var regionPos = this.getRegionPositionFromWorldPosition(x, y);
-        
+
         var region = this.getRegion(regionPos.x, regionPos.y);
         if(region == null)
             return null;
@@ -506,13 +602,13 @@ export class World
         }
     }
 
-    // 3200, 3200 to 50, 50 (50 * 64)
+    // 12800, 12800 to 50, 50 (50 * 64)
     getRegionPositionFromWorldPosition(x, y)
     {
         return {x: Math.floor(x / REGION_WIDTH), y: Math.floor(y / REGION_HEIGHT)};
     }
 
-    // 50, 50 to 3200, 3200 (50 * 64)
+    // 50, 50 to 12800, 12800 (50 * 64)
     getWorldPositionFromRegionPosition(x, y)
     {
         return {x: x * REGION_WIDTH, y: y * REGION_HEIGHT};
@@ -526,8 +622,9 @@ export class World
         return {x: newX, y: newY};
     }
 
-    clearMap()
+    /* clearMap()
     {
+        var regionsInView = CAMERA.getRegionsInView()
         for(var x = 0; x < MAX_REGION_WIDTH; x++)
         {
             for(var y = 0; y < MAX_REGION_HEIGHT; y++)
@@ -535,8 +632,85 @@ export class World
                 var region = this.getRegion(x, y);
                 if(region == null)
                     continue;
+
+                var foundRegion = false;
+                for(var i = 0; i < regionsInView.length; i++)
+                {
+                    if(region.position.x == regionsInView[i].x &&
+                        region.position.y == regionsInView[i].y)
+                    {
+                        foundRegion = true;
+                        break;
+                    }
+                }
+
+                if(foundRegion)
+                {
+                    for(var z = 0; z < MAX_PLANE; z++)
+                    {
+                        if(z != 0 && z != this.currentPlane)
+                        {
+                            var plane = region.getPlane(z);
+                            if(plane != null)
+                                plane.setVisibility(false);
+                        }
+                    }
+                }
+                else
+                {
+                    region.setVisibility(false);
+                }
+            }
+        }
+    } */
+
+    clearMap()
+    {
+        var regionRect = CAMERA.getRegionRect();
+        for(var x = 0; x < MAX_REGION_WIDTH; x++)
+        {
+            for(var y = 0; y < MAX_REGION_HEIGHT; y++)
+            {
+                var region = this.getRegion(x, y);
+                if(region == null)
+                    continue;
+
+                var outOfBoundsPlanes = [];
+                // if the region is within the camera bounds
+                if(x > regionRect.x && x <= regionRect.x + regionRect.width &&
+                    y > regionRect.y && y <= regionRect.y + regionRect.height)
+                {
+
+                    // lets see if the parent of this plane (the plane that actually draws over this area if its a zoomed out region)
+                    // is outside of our view, if it is, add it to a list to later on enable
                     
-                region.setVisibility(false);
+                    for(var z = 0; z < MAX_PLANE; z++)
+                    {
+                        var plane = region.getPlane(z);
+                        if(plane != null)
+                        {
+                            if(z != 0 && z != this.currentPlane)
+                            {
+                                plane.setVisibility(false);
+                            }
+                            else
+                            {
+                                // this can only happen for planes left or bottom
+                                if(plane.parent != null && (plane.parent.region.position.x < x || plane.parent.region.position.y < y))
+                                    outOfBoundsPlanes.push(plane.parent);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    region.setVisibility(false);
+                }
+
+                // set their visibility back to true for a smoother transition
+                // disable their visibility once the real texture loads later on in setSprite
+                //for(var i = 0; i < outOfBoundsPlanes.length; i++)
+                //    outOfBoundsPlanes[i].setVisibility(true);
             }
         }
     }
@@ -548,7 +722,7 @@ export class World
         for(var i = 0; i < MAX_PLANE; i++)
         {
             var container = this.getPlaneContainer(i);
-            container.alpha = i == planeId?1.0:0.3;
+            container.alpha = ((i == planeId)?1.0:0.3);
         }
 
         // lets go through all hud objects that are attached to a player, and disable them
@@ -588,48 +762,64 @@ export class World
     updateMap()
     {
         this.clearMap();
-        var regionsInView = CAMERA.getRegionsInView();
+        var regionsInView = CAMERA.getScaledRegionsInView();
+
+        var zoomAmount = clamp(1 / CAMERA.zoom.x, 1, 32);
+
         for(let i = 0; i < regionsInView.length; i++)
         {
-            var region = this.getRegion(regionsInView[i].x, regionsInView[i].y);
-            if(region == null)
+            var region = null;
+            var regionsFound = [];
+
+            // if scale is 1, then everything is fine, if we're scaled up, we want to check
+            // surrounding regions, if there exists any valid regions around us
+            // grab all regions so we can grab a region that we need for a specific plane
+            // that means that we're supposed to draw a region at this position, so lets use
+            // the sprite object of the first region we find, and place it there to draw it
+            
+            for(var x = regionsInView[i].x; x < regionsInView[i].x + zoomAmount; x++)
+            {
+                for(var y = regionsInView[i].y; y < regionsInView[i].y + zoomAmount; y++)
+                {
+                    region = this.getRegion(x, y);
+                    if(region != null)
+                        regionsFound.push(region);
+                }
+            }
+
+            // if no surrounding regions was found, then theres nothing to render for this area
+            if(regionsFound.length <= 0)
                 continue;
 
-            // always load base plane sprites
-            var basePlane = region.getPlane(0);
-            var currentPlane = region.getPlane(this.currentPlane);
-            if(basePlane != null)
+            // lets find a region with baseplane (0)
+            // lets also find a region that has the same plane as the current plane
+
+            var baseRegion = null;
+            var currentPlaneRegion = null;
+
+            for(var j = 0; j < regionsFound.length; j++)
             {
-                if(!basePlane.textureLoaded)
+                if(baseRegion == null && regionsFound[j].hasPlane(0))
+                {
+                    baseRegion = regionsFound[j];
+
+                    // always load base plane sprites
+                    var basePlane = baseRegion.getPlane(0); 
                     basePlane.setSprite();
-            }
+                }
 
-            if(currentPlane != null)
-            {
-                if(!currentPlane.textureLoaded)
-                    currentPlane.setSprite();
-            }
+                if(currentPlaneRegion == null && regionsFound[j].hasPlane(this.currentPlane))
+                {
+                    currentPlaneRegion = regionsFound[j];
 
-            region.setVisibility(true);
+                    // if the current plane is not the base plane
+                    if(this.currentPlane != 0)
+                    {
+                        var currentPlane = currentPlaneRegion.getPlane(this.currentPlane);
+                        currentPlane.setSprite();
+                    }
+                }
+            }
         } 
     }
-
-    // always show map
-    /* updateMap()
-    {
-        for(var x = 0; x < 100; x++)
-        {
-            for(var y = 0; y < 100; y++)
-            {
-                var region = this.getRegion({x:x, y:y});
-                if(region == null)
-                    continue;
-
-                region.setSprite(0);
-
-                APP.mapContainer.addChild(region.sprite);
-                region.setVisibility(true);
-            }
-        }
-    } */
 }
