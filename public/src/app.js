@@ -122,6 +122,7 @@ $.ajax({
                         for(let i = 0; i < mapdef.length; i++)
                             AddMapDefinition(mapdef[i].id, mapdef[i].name, mapdef[i].display_name, mapdef[i].layer, mapdef[i].plane, mapdef[i].hidden != null && mapdef[i].hidden);
 
+                            
                         // init
                         INPUT.init();
                         WORLD.init(regionpos);
@@ -154,6 +155,7 @@ function assetsLoaded()
     CAMERA.setPosition(50 * -256 + (window.innerWidth / 2), 50 * -256 - (window.innerHeight / 2));
     CAMERA.interruptedCameraPathing = true;
 
+    ticker.maxFPS = 144;
     // render loop
     ticker.add((delta) => 
     {
