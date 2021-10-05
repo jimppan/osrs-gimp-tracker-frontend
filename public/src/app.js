@@ -11,7 +11,6 @@ import { ConnectToBackend } from "./backend.js" // idk whats going on but if I l
 import { ResourceManager } from "./resource/resourcemanager.js";
 import { SpawnObject } from "./object.js";
 
-
 const canvas = document.getElementById('osrscanvas');
 
 var renderer = new PIXI.Renderer({
@@ -149,10 +148,14 @@ function assetsLoaded()
     // once we finished preloading 
     console.log("Loaded assets.");
 
+    if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+        USING_PHONE = true;
+
     HUD.onAssetsLoaded();
 
     //CAMERA.setTargetPosition(50 * 256, 50 * 256);
     CAMERA.setPosition(50 * -256 + (window.innerWidth / 2), 50 * -256 - (window.innerHeight / 2));
+
     CAMERA.interruptedCameraPathing = true;
 
     ticker.maxFPS = 144;

@@ -145,7 +145,7 @@ export class Hud
                     // no need for any weird maths or conversions for HUD
                     var box = object.getScreenRect(true);
 
-                    var cursorPos = CAMERA.getInvertedCursorPosition();
+                    var cursorPos = INPUT.getInvertedCursorPosition();
 
                     if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
                         cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
@@ -169,7 +169,7 @@ export class Hud
                 if(object.interactable && object.parent == null && object.isVisible())
                 {
                     var box = object.getScreenRect(true);
-                    var cursorPos = CAMERA.getInvertedCursorPosition();
+                    var cursorPos = INPUT.getInvertedCursorPosition();
 
                     if( cursorPos.x > box.x && cursorPos.x <= box.x + box.width &&
                         cursorPos.y > box.y && cursorPos.y <= box.y + box.height)
