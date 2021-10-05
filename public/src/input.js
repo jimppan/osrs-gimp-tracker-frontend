@@ -1,9 +1,5 @@
 import { createOverlay, deleteOverlay, getOverlay } from "./overlays.js";
 import { SetDeveloperMode } from "./developer.js";
-import { clamp } from "./helpers.js";
-
-const MIN_ZOOM = 0.03125
-const MAX_ZOOM = 8;
 
 export class Input
 {
@@ -13,14 +9,17 @@ export class Input
         this.mouse2IsDown = false;
         this.spaceIsDown = false;
         this.mouseDownPos = {x:0, y:0};
+
+        this.touchPos = {x:0, y:0};
     }
 
     init()
     {
-        /* APP.renderer.plugins.interaction.on('mousedown', (e) => {this.onMouseDown(e)});
-        APP.renderer.plugins.interaction.on('mouseup', (e) => {this.onMouseUp(e)}); */
         APP.renderer.plugins.interaction.on('pointermove', (e) => {this.onMouseMove(e)});
 
+        APP.renderer.plugins.interaction.on('touchmove', (e) => {this.onTouchMove(e)});
+        APP.renderer.plugins.interaction.on('touchstart', (e) => {this.onTouchStart(e)});
+        APP.renderer.plugins.interaction.on('touchend', (e) => {this.onTouchEnd(e)});
 
         window.addEventListener('mousedown', (e) => {this.onMouseDown(e)});
         window.addEventListener('mouseup', (e) => {this.onMouseUp(e)});
@@ -52,12 +51,10 @@ export class Input
         const scaleBy = 2;
 
         var worldPos = CAMERA.getCursorWorldPosition();
-        var newScale = deltaY < 0 ? CAMERA.zoom.x * scaleBy : CAMERA.zoom.x / scaleBy;
-
-        newScale = clamp(newScale, MIN_ZOOM, MAX_ZOOM)
+        const newScale = deltaY < 0 ? CAMERA.zoom.x * scaleBy : CAMERA.zoom.x / scaleBy;
 
         CAMERA.setZoom(newScale, newScale);
-        CAMERA.setPosition(-(worldPos.x - CAMERA.getCursorPosition().x / newScale) * newScale, (-worldPos.y - CAMERA.getCursorPosition().y / newScale) * newScale);
+        CAMERA.setPosition(-(worldPos.x - this.getCursorPosition().x / newScale) * newScale, (-worldPos.y - this.getCursorPosition().y / newScale) * newScale);
     }
 
     unhoverObject(object)
@@ -140,14 +137,7 @@ export class Input
                     CAMERA.followCurrentObject();
                 break;
             case 81: // q
-                //APP.mapContainer.alpha = 0.2;
-                /* for(var x = 0; x < 70; x++)
-                {
-                    for(var y = 0; y < 200; y++)
-                    {   
-                        WORLD.map
-                    }
-                } */
+                
                 break;
             case 49: // 1
             case 50: // 2
@@ -174,105 +164,79 @@ export class Input
         }
     }
 
-    onMouseDown(e)
+    // since UI is flipped, lets make it simple on our brains and use inverted cursor position
+    // to check for UI collision
+    getInvertedCursorPosition()
     {
-        if(e.button == 0)
-        {
-            this.mouseDownPos = CAMERA.getCursorPosition();
-            this.mouseIsDown = true;
+        if(USING_PHONE)
+            return {x:this.touchPos.x, y:(this.touchPos.y - window.innerHeight) * -1};
 
-            if(WORLD.grid.isVisible())
+        return {x:APP.renderer.plugins.interaction.mouse.global.x, y:(APP.renderer.plugins.interaction.mouse.global.y - window.innerHeight) * -1};
+    }
+
+    getCursorPosition()
+    {
+        if(USING_PHONE)
+            return {x:this.touchPos.x, y:this.touchPos.y};
+
+        return {x:APP.renderer.plugins.interaction.mouse.global.x, y:APP.renderer.plugins.interaction.mouse.global.y};
+    }
+
+    onPointerDown(x, y)
+    {
+        this.mouseDownPos = this.touchPos = {x:x, y:y};
+        this.mouseIsDown = true;
+
+        if(WORLD.grid.isVisible())
+        {
+            
+        }
+        else
+        {
+            // Normal user interaction
+            LAST_MOUSE_CLICKED_OBJECT = MOUSE_OVER_OBJECT;
+
+            if(MOUSE_OVER_OBJECT != null)
             {
-                var test1 = CAMERA.getRegionsInView();
-                var test2 = CAMERA.getScaledRegionsInView();
+                if(SELECTED_OBJECT == MOUSE_OVER_OBJECT)
+                {
+                    HUD.playClickAnimation();
+                    this.deselectObject();
+                }
+                else if(MOUSE_OVER_OBJECT != null)
+                {
+                    if(MOUSE_OVER_OBJECT.selectable)
+                    {
+                        this.selectObject(MOUSE_OVER_OBJECT);
+                        HUD.playClickAnimation();
+                    }
+
+                    if(MOUSE_OVER_OBJECT.onClick != null)
+                        MOUSE_OVER_OBJECT.onClick();
+                }
             }
             else
             {
-                // Normal user interaction
-                LAST_MOUSE_CLICKED_OBJECT = MOUSE_OVER_OBJECT;
-
-                if(MOUSE_OVER_OBJECT != null)
-                {
-                    if(SELECTED_OBJECT == MOUSE_OVER_OBJECT)
-                    {
-                        HUD.playClickAnimation();
-                        this.deselectObject();
-                    }
-                    else if(MOUSE_OVER_OBJECT != null)
-                    {
-                        if(MOUSE_OVER_OBJECT.selectable)
-                        {
-                            this.selectObject(MOUSE_OVER_OBJECT);
-                            HUD.playClickAnimation();
-                        }
-    
-                        if(MOUSE_OVER_OBJECT.onClick != null)
-                            MOUSE_OVER_OBJECT.onClick();
-                    }
-                }
-                else
-                {
-                    CAMERA.interruptedCameraPathing = true;
-                    HUD.playClickAnimation();
-                }
+                CAMERA.interruptedCameraPathing = true;
+                HUD.playClickAnimation();
             }
         }
-        else if(e.button == 2)
-        {
-            this.mouse2IsDown = true;
-
-            // right click
-            var cursorPos = CAMERA.getCursorPosition();
-            console.log("CURSOR POS")
-            console.log(cursorPos);
-
-            console.log("CURSOR SCREEN TO WORLD")
-            var worldPos = CAMERA.screenToWorldPos(cursorPos.x, cursorPos.y);
-
-            var regionPos = WORLD.getRegionPositionFromWorldPosition(worldPos.x, worldPos.y);
-            console.log(regionPos)
-            var region = WORLD.getRegion(regionPos.x, regionPos.y);
-            if(region != null)
-            {
-                console.log(region.planes);
-                console.log(region.currentZoom)
-                region.planes[0].sprite.visible = false;
-            }
-
-        }
-        else if(e.button == 1)
-        {
-            var cursorPos = CAMERA.getCursorPosition();
-            var worldPos = CAMERA.screenToWorldPos(cursorPos.x, cursorPos.y);
-            var regionPos = WORLD.getRegionPositionFromWorldPosition(worldPos.x, worldPos.y);
-            console.log(regionPos)
-            var region = WORLD.getRegion(regionPos.x, regionPos.y);
-            if(region != null)
-            {
-                console.log(region.planes);
-                region.planes[1].sprite.visible = false;
-            }
-
-            /* DEVELOPER_MODE = !DEVELOPER_MODE;
-            SetDeveloperMode(DEVELOPER_MODE); */
-        }
-        this.onMouseMove()
     }
 
-    onMouseUp(e)
+    onPointerUp(button)
     {
-        if(e.button == 0)
+        if(button == 0)
         {
             this.mouseIsDown = false;
         }
 
-        if(e.button == 2)
+        if(button == 2)
         {
             this.mouse2IsDown = false;
         }
     }
 
-    onMouseMove()
+    onPointerMove(x, y)
     {
         if(WORLD.grid.isVisible())
         {
@@ -280,7 +244,7 @@ export class Input
             {
                 if(this.spaceIsDown)
                 {
-                    var currMouse = CAMERA.getCursorPosition();
+                    var currMouse = this.getCursorPosition();
                     
                     var newX = CAMERA.position.x + (currMouse.x - this.mouseDownPos.x);
                     var newY = CAMERA.position.y - (currMouse.y - this.mouseDownPos.y);
@@ -293,37 +257,31 @@ export class Input
                 {
                     var cursorPos = CAMERA.getCursorWorldPosition();
                     var chunkPos = WORLD.getChunkWorldPosition(cursorPos.x, cursorPos.y);
-                    if(chunkPos != null)
-                    {
-                        chunkPos.x /= 4;
-                        chunkPos.y /= 4;
-    
-                        var selectedChunk = WORLD.grid.getSelectedChunk(chunkPos);
-                        if(selectedChunk == null)
-                            WORLD.grid.selectChunk(chunkPos);
-                    }
+                    chunkPos.x /= 4;
+                    chunkPos.y /= 4;
+
+                    var selectedChunk = WORLD.grid.getSelectedChunk(chunkPos);
+                    if(selectedChunk == null)
+                        WORLD.grid.selectChunk(chunkPos);
                 }
             }
             else if(this.mouse2IsDown)
             {
                 var cursorPos = CAMERA.getCursorWorldPosition();
                 var chunkPos = WORLD.getChunkWorldPosition(cursorPos.x, cursorPos.y);
-                if(chunkPos != null)
-                {
-                    chunkPos.x /= 4;
-                    chunkPos.y /= 4;
-    
-                    var selectedChunk = WORLD.grid.getSelectedChunk(chunkPos);
-                    if(selectedChunk != null)
-                        WORLD.grid.deselectChunk(chunkPos);
-                }
+                chunkPos.x /= 4;
+                chunkPos.y /= 4;
+
+                var selectedChunk = WORLD.grid.getSelectedChunk(chunkPos);
+                if(selectedChunk != null)
+                    WORLD.grid.deselectChunk(chunkPos);
             }
         }
         else
         {
             if(this.mouseIsDown && LAST_MOUSE_CLICKED_OBJECT == null)
             {
-                var currMouse = CAMERA.getCursorPosition();
+                var currMouse = this.touchPos = {x:x, y:y};
                     
                 var newX = CAMERA.position.x + (currMouse.x - this.mouseDownPos.x);
                 var newY = CAMERA.position.y - (currMouse.y - this.mouseDownPos.y);
@@ -333,5 +291,68 @@ export class Input
                 this.mouseDownPos = currMouse;
             }
         }
+    }
+
+    onTouchStart(e)
+    {
+        this.onPointerDown(e.data.global.x, e.data.global.y);
+        this.onTouchMove(e);
+    }
+
+    onTouchEnd(e)
+    {
+        this.onPointerUp(0);
+    }
+
+    onTouchMove(e)
+    {
+        this.onPointerMove(e.data.global.x, e.data.global.y);
+    }
+
+    onMouseDown(e)
+    {
+        if(e.button == 0)
+        {
+            var pos = this.getCursorPosition();
+            this.onPointerDown(pos.x, pos.y);
+            this.mouseIsDown = true;
+        }
+        else if(e.button == 2)
+        {
+            this.mouse2IsDown = true;
+
+            // right click
+            var cursorPos = this.getCursorPosition();
+            console.log("CURSOR POS")
+            console.log(cursorPos);
+
+            console.log("CURSOR SCREEN TO WORLD")
+            var worldPos = CAMERA.screenToWorldPos(cursorPos.x, cursorPos.y);
+            //console.log(worldPos);
+
+            var worldPos = WORLD.getChunkWorldPosition(worldPos.x, worldPos.y)
+            worldPos.x /= 4;
+            worldPos.y /= 4;
+
+            console.log(worldPos);
+
+        }
+        else if(e.button == 1)
+        {
+            DEVELOPER_MODE = !DEVELOPER_MODE;
+            SetDeveloperMode(DEVELOPER_MODE);
+        }
+        this.onMouseMove()
+    }
+
+    onMouseUp(e)
+    {
+        this.onPointerUp(e.button);
+    }
+
+    onMouseMove()
+    {
+        var cursorPos = this.getCursorPosition();
+        this.onPointerMove(cursorPos.x, cursorPos.y);
     }
 }

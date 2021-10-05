@@ -149,27 +149,9 @@ export class Camera
         return ret;
     }
 
-    // since UI is flipped, lets make it simple on our brains and use inverted cursor position
-    // to check for UI collision
-    getInvertedCursorPosition()
-    {
-        var x = APP.renderer.plugins.interaction.mouse.global.x;
-        var y = (APP.renderer.plugins.interaction.mouse.global.y - window.innerHeight) * -1;
-
-        return {x:x, y:y};
-    }
-
-    getCursorPosition()
-    {
-        var x = APP.renderer.plugins.interaction.mouse.global.x;
-        var y = APP.renderer.plugins.interaction.mouse.global.y;
-
-        return {x:x, y:y};
-    }
-
     getCursorWorldPosition()
     {
-        var cursorPos = this.getCursorPosition();
+        var cursorPos = INPUT.getCursorPosition();
         return this.screenToWorldPos(cursorPos.x, cursorPos.y);
     }
 
