@@ -73,7 +73,7 @@ export class SkillTooltip extends HudObject
         }
         
 
-        var pos = CAMERA.getInvertedCursorPosition();
+        var pos = INPUT.getInvertedCursorPosition();
         var bounds = this.getScreenBounds();
         var newPos = CAMERA.clampToView({x:pos.x, y:pos.y, width:bounds.width, height:bounds.height});
 
@@ -106,7 +106,7 @@ export class MapTooltip extends HudObject
 
     update()
     {
-        var pos = CAMERA.getInvertedCursorPosition();
+        var pos = INPUT.getInvertedCursorPosition();
         var bounds = this.getScreenBounds();
         var newPos = CAMERA.clampToView({x:pos.x, y:pos.y, width:bounds.width, height:bounds.height});
 

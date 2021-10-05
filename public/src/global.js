@@ -26,6 +26,8 @@ var CAMERA_FOLLOW_OBJECT = null;
 
 var DEVELOPER_MODE = false;
 
+var USING_PHONE = false;
+
 const HUD_LAYERS = 
 {
     WORLD_BACKGROUND: 0,
