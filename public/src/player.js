@@ -139,7 +139,7 @@ export class Player extends Actor
         super(name, color, position);
 
         this.worldLabel = new HudText("PlayerTextWorld", '', WORLD_TEXT_STYLE, 4);
-        this.worldLabel.attachTo(this.label, false, 0, this.label.getWorldRect().height);
+        this.worldLabel.attachTo(this.label, false, 0, this.label.getWorldBounds().height);
         this.worldLabel.setAnchor(0, 1);
         this.worldLabel.interactable = true;
         this.worldLabel.clampToView = true;
@@ -149,7 +149,7 @@ export class Player extends Actor
         {
             this.accTypeIcon = new HudObject("PlayerAccTypeIcon");
             this.accTypeIcon.setGraphic(new PIXI.Sprite(APP.resourceManager.getTexture(ACCOUNT_TYPE_ICONS[accountType])));
-            this.accTypeIcon.attachTo(this.worldLabel, false, this.worldLabel.getWorldRect().width, 0);
+            this.accTypeIcon.attachTo(this.worldLabel, false, this.worldLabel.getWorldBounds().width, 0);
             this.accTypeIcon.setAnchor(0, 0);
             this.accTypeIcon.interactable = true;
             this.accTypeIcon.clampToView = true;
@@ -188,7 +188,7 @@ export class Player extends Actor
 
             // update the offset of the account type icon
             if(this.accTypeIcon != null)
-                this.accTypeIcon.updateAttachment(false, this.worldLabel.getWorldRect().width, 0)
+                this.accTypeIcon.updateAttachment(false, this.worldLabel.getWorldBounds().width, 0)
         }
 
         if(packet.pos != null)
