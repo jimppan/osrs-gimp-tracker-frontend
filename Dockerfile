@@ -14,7 +14,7 @@ USER node
 RUN mkdir public
 
 RUN wget --output-document public/map.zip https://github.com/Rachnus/osrs-gimp-tracker-frontend/releases/download/assets-v1.0/img.zip
-RUN unzip public/map.zip -d public/
+RUN unzip public/map.zip -d public/img/
 
 # Bundle app source
 COPY --chown=node:node . .
