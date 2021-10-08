@@ -55,7 +55,7 @@ export class InterfaceItemSlot extends HudObject
 
         this.icon.setGraphic(new PIXI.Sprite());
 
-        this.icon.interactable = true;
+        this.interactable = true;
 
         this.icon.setVisibility(false);
         this.text.setVisibility(false);
@@ -71,12 +71,26 @@ export class InterfaceItemSlot extends HudObject
         this.text.setZIndex(HUD_LAYERS.INTERFACE_FOREGROUND);
     }
 
+    getScreenRect()
+    {
+        return this.icon.getScreenRect();
+    }
+
+    isVisible()
+    {
+        return this.parent.isVisible() && this.itemId != INVALID_ITEM;
+    }
+
     setVisibility(value)
     {
-        this.icon.setVisibility(value);
+        var visible = value;
+        if(this.itemId == INVALID_ITEM)
+            visible = false;
+
+        this.icon.setVisibility(visible);
 
         var comp = GetItemComposition(this.itemId);
-        this.text.graphic.visible = this.itemId != INVALID_ITEM && this.quantity > 0 && comp.stackable && value;
+        this.text.setVisibility(this.itemId != INVALID_ITEM && this.quantity > 0 && comp.stackable && visible)
     }
 
     loadSprite()
@@ -86,15 +100,14 @@ export class InterfaceItemSlot extends HudObject
             if(this.icon != null)
             {
                 this.icon.graphic.texture = null;
-                this.icon.setVisibility(false);
-                this.text.setVisibility(false);
+                this.setVisibility(false);
             }
         }
         else
         {
             var comp = GetItemComposition(this.itemId);
 
-            this.icon.name = comp.name;
+            this.name = comp.name;
             
             var itemIconId = this.itemId;
 
@@ -2369,8 +2382,7 @@ export class InterfaceItemSlot extends HudObject
                 this.text.setStyle(ITEM_ICON_TEXT);
             }
             
-            this.text.setVisibility(this.quantity > 0 && comp.stackable && this.parent.isVisible());
-            this.icon.setVisibility(this.parent.isVisible());
+            this.setVisibility(this.parent.isVisible());
         }
     }
 }

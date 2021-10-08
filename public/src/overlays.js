@@ -7,13 +7,14 @@ export function updateOverlay(object)
     var overlay = getOverlay(object);
     if(overlay == null)
         return;
-    
+
     overlay.graphic.clear();
     overlay.graphic.beginFill(0xffff00);
     overlay.graphic.alpha = 0.3;
     
     var box = object.getScreenRect(true);
 
+    overlay.setPosition(box.x, box.y);
     overlay.graphic.drawRect(0, 0, box.width, box.height);
     overlay.graphic.endFill();
 }
