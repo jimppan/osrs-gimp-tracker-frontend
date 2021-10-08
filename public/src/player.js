@@ -1,5 +1,5 @@
 import { TILE_SIZE, LAYERS} from "./world.js";
-import { WorldText, SpawnObject, DeleteObject, HudText} from "./object.js";
+import { WorldText, SpawnObject, DeleteObject, HudText, HudObject} from "./object.js";
 import { INVALID_ITEM, INVENTORY_SIZE } from "./hud/maininterface/inventory.js";
 import { Actor } from "./actor/actor.js";
 
@@ -81,7 +81,28 @@ export const LEVELS =
     814445,  899257,  992895,  1096278, 1210421, 1336443, 1475581,  1629200,  1798808, 1986068, // 71 - 80
     2192818, 2421087, 2673114, 2951373, 3258594, 3597792, 3972294,  4385776,  4842295, 5349332, // 81 - 90
     5902831, 6517253, 7195629, 7944614, 8771558, 9684557, 10692629, 11805606, 13034431          // 91 - 99
+]
 
+export const ACCOUNT_TYPE =
+{
+    NORMAL: 0,
+    IRONMAN: 1,
+    ULTIMATE_IRONMAN: 2,
+    HARDCORE_IRONMAN: 3,
+    GROUP_IRONMAN: 4,
+    HARDCORE_GROUP_IRONMAN: 5,
+
+    MAX: 6,
+}
+
+export const ACCOUNT_TYPE_ICONS =
+[
+    '',
+    '423-2.png',
+    '423-3.png',
+    '423-10.png',
+    '423-41.png',
+    '423-42.png'
 ]
 
 const WORLD_TEXT_STYLE = new PIXI.TextStyle({
@@ -113,7 +134,7 @@ export class SkillSlot
 
 export class Player extends Actor
 {
-    constructor(name, color, position)
+    constructor(name, accountType, color, position)
     {
         super(name, color, position);
 
@@ -124,6 +145,17 @@ export class Player extends Actor
         this.worldLabel.clampToView = true;
         this.worldLabel.setZIndex(HUD_LAYERS.WORLD_FOREGROUND);
 
+        if(accountType != ACCOUNT_TYPE.NORMAL)
+        {
+            this.accTypeIcon = new HudObject("PlayerAccTypeIcon");
+            this.accTypeIcon.setGraphic(new PIXI.Sprite(APP.resourceManager.getTexture(ACCOUNT_TYPE_ICONS[accountType])));
+            this.accTypeIcon.attachTo(this.worldLabel, false, this.worldLabel.getWorldRect().width, 0);
+            this.accTypeIcon.setAnchor(0, 0);
+            this.accTypeIcon.interactable = true;
+            this.accTypeIcon.clampToView = true;
+            this.accTypeIcon.setZIndex(HUD_LAYERS.WORLD_FOREGROUND);
+        }
+        
         this.inventory = new Array(INVENTORY_SIZE);
         for(var i = 0; i < INVENTORY_SIZE; i++)
             this.inventory[i] = new InventorySlot(INVALID_ITEM, 0);
@@ -151,7 +183,12 @@ export class Player extends Actor
             this.name = this.label.graphic.text = packet.name;
 
         if(packet.world != null)
+        {
             this.world = this.worldLabel.graphic.text = `W${packet.world}`;
+
+            // update the offset of the account type icon
+            this.accTypeIcon.updateAttachment(false, this.worldLabel.getWorldRect().width, 0)
+        }
 
         if(packet.pos != null)
             this.setTilePosition(packet.pos.x, packet.pos.y, packet.pos.plane);
@@ -224,7 +261,7 @@ export function ConnectPlayer(packet)
 
     console.log("Player connected: ", packet.name);
 
-    var player = new Player(packet.name, 0x00ff00, {x:0, y:0});
+    var player = new Player(packet.name, packet.accountType, 0x00ff00, {x:0, y:0});
     player.parsePacket(packet, true);
     PLAYERS.set(packet.name, player);
 
