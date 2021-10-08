@@ -1,7 +1,9 @@
 import { numberWithCommas } from "../helpers.js";
 import { HudObject, HudText } from "../object.js";
-import { LEVELS, SKILLS, SKILL_NAMES } from "../player.js";
+import { InventorySlot, LEVELS, SKILLS, SKILL_NAMES } from "../player.js";
 import { GetMapDefinition } from "../resource/mapdefinitions.js";
+import { InterfaceEquipmentSlot } from "./maininterface/equipment.js";
+import { InterfaceItemSlot } from "./maininterface/inventory.js";
 import { InterfaceSkillSlot, GetGoalExperience, GetRemainingExperienceToGoal } from "./maininterface/skills.js";
 
 const TOOLTIP_TEXT_LEFT = new PIXI.TextStyle({
@@ -148,6 +150,12 @@ export class MouseTooltip extends HudObject
             {
                 this.skillToolTip.update();
                 this.skillToolTip.setVisibility(true);
+            }
+            else if(MOUSE_OVER_OBJECT instanceof InterfaceEquipmentSlot || MOUSE_OVER_OBJECT instanceof InterfaceItemSlot)
+            {
+                this.mapToolTip.setText(MOUSE_OVER_OBJECT.name);
+                this.mapToolTip.update();
+                this.mapToolTip.setVisibility(true);
             }
         }
         else
