@@ -145,7 +145,7 @@ export class Player extends Actor
         this.worldLabel.clampToView = true;
         this.worldLabel.setZIndex(HUD_LAYERS.WORLD_FOREGROUND);
 
-        if(accountType != ACCOUNT_TYPE.NORMAL)
+        if(accountType != null && accountType != ACCOUNT_TYPE.NORMAL)
         {
             this.accTypeIcon = new HudObject("PlayerAccTypeIcon");
             this.accTypeIcon.setGraphic(new PIXI.Sprite(APP.resourceManager.getTexture(ACCOUNT_TYPE_ICONS[accountType])));
