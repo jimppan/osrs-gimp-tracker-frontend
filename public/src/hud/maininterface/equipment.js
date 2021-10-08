@@ -63,7 +63,7 @@ export class InterfaceEquipmentSlot extends HudObject
         this.foreground  = new HudObject("InterfaceEquipmentSlotFG");
         this.itemIcon    = new HudObject("InterfaceEquipmentSlotItem");
 
-        this.itemIcon.interactable = true;
+        this.interactable = true;
     }
 
     setVisibility(value)
@@ -75,6 +75,16 @@ export class InterfaceEquipmentSlot extends HudObject
         // TODO: SET THE COUNT FOR QUIVER
         //var comp = GetItemComposition(this.itemSlot.itemId);
         //this.text.graphic.visible = this.quantity > 0 && comp.stackable && value;
+    }
+
+    getScreenRect()
+    {
+        return this.itemIcon.getScreenRect();
+    }
+
+    isVisible()
+    {
+        return this.parent.isVisible() && this.itemSlot.itemId != INVALID_ITEM;
     }
 
     onAssetsLoaded()
@@ -112,7 +122,7 @@ export class InterfaceEquipmentSlot extends HudObject
         {
             var comp = GetItemComposition(this.itemSlot.itemId);
 
-            this.itemIcon.name = comp.name;
+            this.name = comp.name;
 
             var itemIconId = this.itemSlot.itemId;
 
