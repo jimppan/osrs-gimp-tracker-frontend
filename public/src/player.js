@@ -187,7 +187,8 @@ export class Player extends Actor
             this.world = this.worldLabel.graphic.text = `W${packet.world}`;
 
             // update the offset of the account type icon
-            this.accTypeIcon.updateAttachment(false, this.worldLabel.getWorldRect().width, 0)
+            if(this.accTypeIcon != null)
+                this.accTypeIcon.updateAttachment(false, this.worldLabel.getWorldRect().width, 0)
         }
 
         if(packet.pos != null)
