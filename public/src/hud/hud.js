@@ -1,6 +1,6 @@
 import { StageObject, SpawnObject } from "../object.js";
 import { updateOverlay } from "../overlays.js";
-import { Player } from "../player.js";
+import { ACCOUNT_TYPE, ACCOUNT_TYPE_ICONS, Player } from "../player.js";
 import { World } from "../world.js";
 import { HoverTooltip } from "./hovertooltip.js";
 import { MainInterface } from "./maininterface.js"
@@ -57,6 +57,10 @@ export class Hud
 
         APP.resourceManager.add('img/ui/', POINTER_CLICK_EMPTY_PATH);
         APP.resourceManager.add('img/ui/', POINTER_CLICK_OBJECT_PATH);
+
+        // add acc status images to cache
+        for(var i = ACCOUNT_TYPE.IRONMAN; i < ACCOUNT_TYPE.MAX; i++)
+            APP.resourceManager.add('img/ui/', ACCOUNT_TYPE_ICONS[i]);
     }
 
     onAssetsLoaded()
@@ -137,7 +141,6 @@ export class Hud
                         attachedToPos.y = box.y;
                     }
                     
-
                     object.setPosition(attachedToPos.x, attachedToPos.y);
                 }
                 else if(object.interactable && object.isVisible())
