@@ -2,7 +2,7 @@ export var ITEM_COMPOSITIONS = [];
 
 export function GetItemComposition(id)
 {
-    return ITEM_COMPOSITIONS[id];
+    return ITEM_COMPOSITIONS[id] ?? new ItemComposition(-1, "Unknown Item", false, false);
 }
 
 export function AddItemComposition(id, name, stackable, tradeable)
