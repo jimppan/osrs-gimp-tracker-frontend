@@ -1,1 +1,1 @@
-const CONFIG_BACKEND_URL = 'insert-backend-url:with-port-here'
+const CONFIG_BACKEND_URL = 'https://app-gimp-tracker.herokuapp.com/'
