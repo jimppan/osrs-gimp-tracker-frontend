@@ -1,1 +1,0 @@
-const CONFIG_BACKEND_URL = 'insert-backend-url:with-port-here'
